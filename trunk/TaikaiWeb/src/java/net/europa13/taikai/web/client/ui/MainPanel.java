@@ -23,6 +23,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import net.europa13.taikai.web.client.TaikaiControl;
+import net.europa13.taikai.web.client.logging.LogLevel;
+import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.client.logging.PanelHtmlLogTarget;
 
 /**
  *
@@ -36,14 +39,37 @@ public class MainPanel extends DockPanel {
         topPanel.add(new HTML("<h1>TaikaiWeb</h1>"));
         add(topPanel, DockPanel.NORTH);
         
+        VerticalPanel logPanel = new VerticalPanel();
+        logPanel.add(new HTML("<h2>Logg</h2>"));
+        add(logPanel, DockPanel.SOUTH);
+        
+        
         add(new SidePanel(), DockPanel.LINE_START);
         
 //        VerticalPanel contentPanel = new VerticalPanel();
 //        contentPanel.add(new HTML("<h2>Content</h2>"));
 //        contentPanel.set
         
+        
+        
         TaikaiPanel contentPanel = new TaikaiPanel(new TaikaiControl());
         add(contentPanel, DockPanel.CENTER);
+        
+        
+        
+        Logger.setTarget(new PanelHtmlLogTarget(logPanel));
+//        Logger.setFormatter(new )
+        Logger.setLevel(LogLevel.TRACE);
+        Logger.debug("Meddelande 1");
+        Logger.warn("Meddelande 2");
+        
+//        Logger rootLogger = LogManager.getRootLogger();
+//        rootLogger.setTarget(new PanelHtmlLogTarget(logPanel));
+//        rootLogger.setLevel(LogLevel.TRACE);
+//        
+//        Logger logger = Logger.getLogger("log");
+//        logger.setLevel(LogLevel.TRACE);
+//        logger.debug("Logmeddelande!");
         
     }
     

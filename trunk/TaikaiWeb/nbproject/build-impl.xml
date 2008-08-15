@@ -511,20 +511,20 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     <target depends="init" if="dist.ear.dir" name="library-inclusion-in-manifest">
         <basename file="${libs.GWT1.5.0.classpath}" property="included.lib.libs.GWT1.5.0.classpath"/>
         <copy-ear-war file="${libs.GWT1.5.0.classpath}" propname="included.lib.libs.GWT1.5.0.classpath.X"/>
-        <basename file="${file.reference.gwt-dev-linux.jar}" property="included.lib.file.reference.gwt-dev-linux.jar"/>
-        <copy-ear-war file="${file.reference.gwt-dev-linux.jar}" propname="included.lib.file.reference.gwt-dev-linux.jar.X"/>
-        <basename file="${file.reference.gwt-servlet.jar}" property="included.lib.file.reference.gwt-servlet.jar"/>
-        <copy-ear-war file="${file.reference.gwt-servlet.jar}" propname="included.lib.file.reference.gwt-servlet.jar.X"/>
+        <basename file="${libs.GWT-DEV1.5.0.classpath}" property="included.lib.libs.GWT-DEV1.5.0.classpath"/>
+        <copy-ear-war file="${libs.GWT-DEV1.5.0.classpath}" propname="included.lib.libs.GWT-DEV1.5.0.classpath.X"/>
+        <basename file="${libs.GWT-SERVLET1.5.0.classpath}" property="included.lib.libs.GWT-SERVLET1.5.0.classpath"/>
+        <copy-ear-war file="${libs.GWT-SERVLET1.5.0.classpath}" propname="included.lib.libs.GWT-SERVLET1.5.0.classpath.X"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.libs.GWT1.5.0.classpath} ${included.lib.file.reference.gwt-dev-linux.jar} ${included.lib.file.reference.gwt-servlet.jar} "/>
+            <attribute name="Class-Path" value="${included.lib.libs.GWT1.5.0.classpath} ${included.lib.libs.GWT-DEV1.5.0.classpath} ${included.lib.libs.GWT-SERVLET1.5.0.classpath} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
         <copy file="${libs.GWT1.5.0.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${file.reference.gwt-dev-linux.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${file.reference.gwt-servlet.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${libs.GWT-DEV1.5.0.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${libs.GWT-SERVLET1.5.0.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" name="do-ear-dist">
         <dirname file="${dist.ear.war}" property="dist.jar.dir"/>

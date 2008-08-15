@@ -16,33 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.europa13.taikai.web.client;
+package net.europa13.taikai.web.client.logging;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.ui.RootPanel;
-import net.europa13.taikai.web.client.ui.MainPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Panel;
 
 /**
  *
  * @author daniel
  */
-public class TaikaiWebEntryPoint implements EntryPoint {
+public class PanelHtmlLogTarget implements LogTarget {
 
-    /** Creates a new instance of TaikaiWebEntryPoint */
-    public TaikaiWebEntryPoint() {
+    private Panel target;
+
+    public PanelHtmlLogTarget(Panel target) {
+        this.target = target;
     }
 
-    /** 
-        The entry point method, called automatically by loading a module
-        that declares an implementing class as an entry-point
-    */
-    public void onModuleLoad() {
-
-        
-        
-        
-        RootPanel.get().add(new MainPanel());
-        
+    public void log(LogLevel level, String message) {
+        target.add(new HTML(message));
     }
-
 }
