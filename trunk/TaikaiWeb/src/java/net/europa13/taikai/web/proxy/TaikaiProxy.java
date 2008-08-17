@@ -34,12 +34,12 @@ public class TaikaiProxy implements Serializable {
         
     }
     
-    public TaikaiProxy(int id, String name, int playerCount, int tournamentCount) {
+    public TaikaiProxy(Integer id, String name, Long playerCount, Long tournamentCount) {
         this.id = id;
         this.name = name;
-        this.playerCount = playerCount;
-        this.tournamentCount = tournamentCount;
-            
+//        long pc = playerCount;
+        this.playerCount = playerCount.intValue();
+        this.tournamentCount = tournamentCount.intValue();
     }
     
     /**

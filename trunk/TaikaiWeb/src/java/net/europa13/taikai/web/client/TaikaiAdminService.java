@@ -24,9 +24,14 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 @RemoteServiceRelativePath(value="taikaiadminservice")
 public interface TaikaiAdminService extends RemoteService{
+    
+    public void createTaikai(TaikaiProxy proxy);
+    
+    
+    public TaikaiProxy getTaikai(int id);
     public List<TaikaiProxy> getTaikais();
 }

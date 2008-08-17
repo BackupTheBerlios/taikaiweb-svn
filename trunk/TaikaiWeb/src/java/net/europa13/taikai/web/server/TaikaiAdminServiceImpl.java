@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.server;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
     TaikaiAdminService {
@@ -37,18 +37,63 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
     @PersistenceUnit
     EntityManagerFactory emf;
     
-    public List<TaikaiProxy> getTaikais() {
+    public void createTaikai(TaikaiProxy proxy) {
         
         EntityManager em = emf.createEntityManager();
         
-        List<TaikaiProxy> proxies = new ArrayList<TaikaiProxy>();
-        List<Object[]> taikaiData = em.createQuery("SELECT t.id, t.name FROM Taikai t").getResultList();
-        
-        for (Object[] data : taikaiData) {
-            TaikaiProxy proxy = new TaikaiProxy((Integer)data[0], (String)data[1], 0, 0);
-            proxies.add(proxy);
+        try {
+            Taikai taikai = new Taikai();
+            taikai.setName(proxy.getName());
+            
+            em.getTransaction().begin();
+            em.persist(em);
+            em.getTransaction().commit();
+        }
+        finally {
+            em.close();
         }
         
-        return proxies;
+    }
+    
+    public TaikaiProxy getTaikai(int id) {
+        
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            TaikaiProxy proxy = (TaikaiProxy)em.createQuery(
+                "SELECT " +
+                "NEW net.europa13.taikai.web.proxy.TaikaiProxy(" +
+                "t.id, t.name. COUNT(DISTINCT p), COUNT(DISTINCT tmt)) " +
+                "FROM Taikai t LEFT JOIN t.players p LEFT JOIN t.tournaments tmt " +
+                "WHERE t.id = :taikaiId GROUP BY t.id, t.name").setParameter("taikaiId", id).getSingleResult();
+            
+            return proxy;
+        }
+        finally {
+            em.close();
+        }
+    }
+
+    public List<TaikaiProxy> getTaikais() {
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            List<TaikaiProxy> proxies = new ArrayList<TaikaiProxy>();
+
+            List<TaikaiProxy> taikaiData = em.createQuery(
+                "SELECT NEW net.europa13.taikai.web.proxy.TaikaiProxy(" +
+                "t.id, t.name, COUNT(DISTINCT p), COUNT(DISTINCT tmt)) " +
+                "FROM Taikai t LEFT JOIN t.players p LEFT JOIN t.tournaments tmt " +
+                "GROUP BY t.id, t.name").getResultList();
+          
+            proxies.addAll(taikaiData);
+            return proxies;
+
+        }
+        finally {
+            em.close();
+        }
+        
     }
 }

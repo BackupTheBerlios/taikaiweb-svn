@@ -18,12 +18,17 @@
 
 package net.europa13.taikai.web.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public interface TaikaiAdminServiceAsync {
+    
+    public void createTaikai(TaikaiProxy proxy, AsyncCallback callback);
+    
+    public void getTaikai(int id, AsyncCallback callback);
     public void getTaikais(AsyncCallback callback);
 }

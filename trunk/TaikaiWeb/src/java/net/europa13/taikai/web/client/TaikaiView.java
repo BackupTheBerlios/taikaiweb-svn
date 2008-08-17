@@ -23,7 +23,7 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public interface TaikaiView {
 

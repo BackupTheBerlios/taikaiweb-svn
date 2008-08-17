@@ -21,6 +21,8 @@ package net.europa13.taikai.web.client.ui;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import net.europa13.taikai.web.client.TaikaiControl;
 import net.europa13.taikai.web.client.logging.LogLevel;
@@ -32,45 +34,52 @@ import net.europa13.taikai.web.client.logging.PanelHtmlLogTarget;
  * @author daniel
  */
 public class MainPanel extends DockPanel {
-
+    
+    private VerticalPanel contentContainerPanel = new VerticalPanel();
+    private HorizontalPanel toolBarPanel = new HorizontalPanel();
+    private Panel contentPanel;
+    
+    
     public MainPanel() {
         
         HorizontalPanel topPanel = new HorizontalPanel();
         topPanel.add(new HTML("<h1>TaikaiWeb</h1>"));
+        topPanel.setBorderWidth(1);
         add(topPanel, DockPanel.NORTH);
         
         VerticalPanel logPanel = new VerticalPanel();
+        logPanel.setBorderWidth(1);
         logPanel.add(new HTML("<h2>Logg</h2>"));
         add(logPanel, DockPanel.SOUTH);
         
         
         add(new SidePanel(), DockPanel.LINE_START);
         
-//        VerticalPanel contentPanel = new VerticalPanel();
-//        contentPanel.add(new HTML("<h2>Content</h2>"));
-//        contentPanel.set
         
         
+        toolBarPanel.add(new Label("Tools:"));
         
-        TaikaiPanel contentPanel = new TaikaiPanel(new TaikaiControl());
-        add(contentPanel, DockPanel.CENTER);
+        contentContainerPanel.setBorderWidth(1);
+        contentContainerPanel.add(toolBarPanel);
+        add(contentContainerPanel, DockPanel.CENTER);
         
+        setContent(new TaikaiPanel(new TaikaiControl()));
         
         
         Logger.setTarget(new PanelHtmlLogTarget(logPanel));
-//        Logger.setFormatter(new )
         Logger.setLevel(LogLevel.TRACE);
         Logger.debug("Meddelande 1");
         Logger.warn("Meddelande 2");
         
-//        Logger rootLogger = LogManager.getRootLogger();
-//        rootLogger.setTarget(new PanelHtmlLogTarget(logPanel));
-//        rootLogger.setLevel(LogLevel.TRACE);
-//        
-//        Logger logger = Logger.getLogger("log");
-//        logger.setLevel(LogLevel.TRACE);
-//        logger.debug("Logmeddelande!");
+    }
+    
+    public void setContent(Panel panel) {
+        if (contentPanel != null) {
+            contentContainerPanel.remove(contentPanel);
+        }
         
+        contentPanel = panel;
+        contentContainerPanel.add(contentPanel);
     }
     
 }
