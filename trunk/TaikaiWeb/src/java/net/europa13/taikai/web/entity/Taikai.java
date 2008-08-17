@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -59,9 +58,15 @@ public class Taikai implements Serializable {
     (cascade=CascadeType.ALL)
     private List<Court> courts;
     
+    public void addCourt(Court court) {
+        courts.add(court);
+    }
+    
     public void addPlayer(Player player) {
         player.setNumber(playerNumber++);
+        player.setTaikai(this);
         players.add(player);
+        
     }
     
     public void addTournament(Tournament tournament) {
@@ -88,10 +93,12 @@ public class Taikai implements Serializable {
     
     public void removePlayer(Player player) {
         players.remove(player);
+        player.setTaikai(null);
     }
 
     public void removeTournament(Tournament tournament) {
         tournaments.remove(tournament);
+        tournament.setTaikai(null);
     }
     
     public void setId(Integer id) {

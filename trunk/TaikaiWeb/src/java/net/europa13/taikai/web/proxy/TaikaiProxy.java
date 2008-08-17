@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public class TaikaiProxy implements Serializable {
 
@@ -37,7 +37,6 @@ public class TaikaiProxy implements Serializable {
     public TaikaiProxy(Integer id, String name, Long playerCount, Long tournamentCount) {
         this.id = id;
         this.name = name;
-//        long pc = playerCount;
         this.playerCount = playerCount.intValue();
         this.tournamentCount = tournamentCount.intValue();
     }
@@ -68,6 +67,10 @@ public class TaikaiProxy implements Serializable {
      */
     public String getName() {
         return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
     

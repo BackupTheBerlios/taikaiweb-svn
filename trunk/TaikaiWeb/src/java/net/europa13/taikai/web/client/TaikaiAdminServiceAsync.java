@@ -15,20 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
-
 
 /**
  *
  * @author Daniel Wentzel
  */
 public interface TaikaiAdminServiceAsync {
-    
+
     public void createTaikai(TaikaiProxy proxy, AsyncCallback callback);
-    
+
     public void getTaikai(int id, AsyncCallback callback);
+
     public void getTaikais(AsyncCallback callback);
+    
+    
 }

@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.entity;
 
 import java.io.Serializable;
@@ -37,19 +36,46 @@ public class Player implements Serializable {
         FEMALE,
         MALE
     }
-    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String name;
+    private String surname;
     private int age;
     private Grade grade;
     private Sex sex;
     private Integer number;
-    
     @ManyToOne
     private Taikai taikai;
+    private boolean checkedIn;
+    
+
+    /**
+     * Get the value of surname
+     *
+     * @return the value of surname
+     */
+    public String getSurname() {
+        return surname;
+    }
+
+    /**
+     * Set the value of surname
+     *
+     * @param surname new value of surname
+     */
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public Taikai getTaikai() {
+        return taikai;
+    }
+
+    public void setTaikai(Taikai taikai) {
+        this.taikai = taikai;
+    }
 
     /**
      * Get the value of sex

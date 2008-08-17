@@ -31,7 +31,7 @@ import net.europa13.taikai.web.client.logging.PanelHtmlLogTarget;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public class MainPanel extends DockPanel {
     

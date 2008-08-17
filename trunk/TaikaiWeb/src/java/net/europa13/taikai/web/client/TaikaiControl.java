@@ -15,64 +15,72 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.ArrayList;
 import java.util.List;
+import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public class TaikaiControl {
-    
+
     private TaikaiAdminServiceAsync taikaiService =
         GWT.create(TaikaiAdminService.class);
-
     private List<TaikaiView> views = new ArrayList<TaikaiView>();
-    
     private List<TaikaiProxy> taikaiList;
-    
-    
+
     public TaikaiControl() {
-        
     }
-    
+
     public void addTaikaiView(TaikaiView view) {
         views.add(view);
     }
-    
+
     public void createTaikai(String name) {
-        
+        TaikaiProxy proxy = new TaikaiProxy();
+        proxy.setName(name);
+        taikaiService.createTaikai(proxy, new AsyncCallback() {
+
+            public void onFailure(Throwable t) {
+                Logger.error(t.getLocalizedMessage());
+//                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void onSuccess(Object nothing) {
+                updateTaikaiList();
+//                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
     }
-    
+
     protected void fireTaikaiListUpdated() {
         for (TaikaiView view : views) {
             view.taikaiListUpdated(taikaiList);
         }
     }
-    
+
     public void removeTaikaiView(TaikaiView view) {
         views.remove(view);
     }
-    
+
     public void updateTaikaiList() {
         taikaiService.getTaikais(new AsyncCallback<List<TaikaiProxy>>() {
 
             public void onFailure(Throwable t) {
-                throw new RuntimeException(t);
+                Logger.error(t.getLocalizedMessage());
+//                throw new RuntimeException(t);
             }
 
             public void onSuccess(List<TaikaiProxy> taikaiList) {
                 TaikaiControl.this.taikaiList = taikaiList;
                 fireTaikaiListUpdated();
             }
-            
         });
     }
-    
 }
