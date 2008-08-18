@@ -42,22 +42,22 @@ public class TaikaiControl {
         views.add(view);
     }
 
-    public void createTaikai(String name) {
-        TaikaiProxy proxy = new TaikaiProxy();
-        proxy.setName(name);
-        taikaiService.createTaikai(proxy, new AsyncCallback() {
-
-            public void onFailure(Throwable t) {
-                Logger.error(t.getLocalizedMessage());
-//                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            public void onSuccess(Object nothing) {
-                updateTaikaiList();
-//                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
-    }
+//    public void createTaikai(String name) {
+////        TaikaiProxy proxy = new TaikaiProxy();
+////        proxy.setName(name);
+////
+////        taikaiService.createTaikai(proxy, new AsyncCallback() {
+////
+////            public void onFailure(Throwable t) {
+////                Logger.error(t.getLocalizedMessage());
+////            }
+////
+////            public void onSuccess(Object nothing) {
+////                updateTaikaiList();
+////            }
+////        });
+//
+//    }
 
     protected void fireTaikaiListUpdated() {
         for (TaikaiView view : views) {
@@ -65,16 +65,41 @@ public class TaikaiControl {
         }
     }
 
+//    public void loadTaikai(int taikaiId, TaikaiView view) {
+//        taikaiService.loadTaikai(taikaiId, new AsyncCallback<TaikaiProxy>() {
+//
+//            public void onFailure(Throwable t) {
+//                Logger.error(t.getLocalizedMessage());
+//            }
+//
+//            public void onSuccess(TaikaiProxy proxy) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+//            }
+//        });
+//    }
+    
     public void removeTaikaiView(TaikaiView view) {
         views.remove(view);
     }
 
+    public void storeTaikai(TaikaiProxy proxy) {
+        taikaiService.storeTaikai(proxy, new AsyncCallback() {
+
+            public void onFailure(Throwable t) {
+                Logger.error(t.getLocalizedMessage());
+            }
+
+            public void onSuccess(Object nothing) {
+                updateTaikaiList();
+            }
+        });
+    }
+    
     public void updateTaikaiList() {
         taikaiService.getTaikais(new AsyncCallback<List<TaikaiProxy>>() {
 
             public void onFailure(Throwable t) {
                 Logger.error(t.getLocalizedMessage());
-//                throw new RuntimeException(t);
             }
 
             public void onSuccess(List<TaikaiProxy> taikaiList) {

@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.europa13.taikai.web.client.TaikaiControl;
 import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
@@ -76,7 +77,13 @@ public class CreateTaikaiPanel extends VerticalPanel implements ClickListener {
     public void onClick(Widget source) {
         infoPanel.setContent(new Label("The Taikai was updated"));
         infoPanel.setOpen(true);
-        control.createTaikai(tournamentNameTB.getText());
+
+        // Nytt sätt...
+        TaikaiProxy taikai = new TaikaiProxy();
+        taikai.setName(tournamentNameTB.getText());
+        control.storeTaikai(taikai);
+
+        // control.createTaikai(tournamentNameTB.getText());
         Logger.trace("'Save Taikai' clicked. Taikai name is:" +
                 tournamentNameTB.getText());
     }

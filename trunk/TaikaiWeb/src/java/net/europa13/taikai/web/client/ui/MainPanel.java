@@ -65,7 +65,7 @@ public class MainPanel extends DockPanel {
         add(contentContainerPanel, DockPanel.CENTER);
         
         TaikaiControl taikaiControl = new TaikaiControl();
-        setContent(new TaikaiPanel(taikaiControl));
+        setContent(new TaikaiListPanel(taikaiControl));
         
         
         Logger.setTarget(new PanelHtmlLogTarget(logPanel));
@@ -77,6 +77,10 @@ public class MainPanel extends DockPanel {
         CreateTaikaiPanel createTournamentPanel = new CreateTaikaiPanel(taikaiControl);
         createTournamentPanel.setBorderWidth(1);
         add(createTournamentPanel, DockPanel.LINE_END);
+        
+        TournamentPanel tournamentPanel = new TournamentPanel();
+        tournamentPanel.setBorderWidth(1);
+        add(tournamentPanel, DockPanel.LINE_END);
         
         
     }

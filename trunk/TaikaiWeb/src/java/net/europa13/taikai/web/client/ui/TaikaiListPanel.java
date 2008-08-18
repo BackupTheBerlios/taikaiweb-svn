@@ -29,12 +29,12 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  *
  * @author daniel
  */
-public class TaikaiPanel extends VerticalPanel implements TaikaiView {
+public class TaikaiListPanel extends VerticalPanel implements TaikaiView {
 
     private Grid taikaiGrid;
     private TaikaiControl control;
     
-    public TaikaiPanel(TaikaiControl control) {
+    public TaikaiListPanel(TaikaiControl control) {
         
         this.control = control;
         
