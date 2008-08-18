@@ -20,7 +20,11 @@ package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -33,24 +37,47 @@ import net.europa13.taikai.web.client.logging.Logger;
  */
 public class CreateTaikaiPanel extends VerticalPanel implements ClickListener {
     private TaikaiControl control;
+    private Grid dataGrid;
     private TextBox tournamentNameTB;
+    private TextBox tournamentLocationTB;
     private Button saveTournamentBTN;
+    private DisclosurePanel infoPanel;
     
     public CreateTaikaiPanel(TaikaiControl control) {
         this.control = control;
         
+        add(new HTML("<h2>Edit Taikai</h2>"));
+        
+        infoPanel = new DisclosurePanel("Information message");
+        add(infoPanel);
+        
         tournamentNameTB = new TextBox();
         tournamentNameTB.setVisibleLength(20);
-        add(tournamentNameTB);
         
-        saveTournamentBTN = new Button("Save tournament", this);        
+        tournamentLocationTB = new TextBox();
+        tournamentLocationTB.setVisibleLength(20);
+        
+        dataGrid = new Grid(4, 2);
+        dataGrid.setWidget(0, 0, new Label("Name"));
+        dataGrid.setWidget(0, 1, tournamentNameTB);
+        dataGrid.setWidget(1, 0, new Label("Date"));
+        
+        dataGrid.setWidget(2, 0, new Label("Location"));
+        dataGrid.setWidget(2, 1, tournamentLocationTB);
+        
+        
+        add(dataGrid);
+        
+        saveTournamentBTN = new Button("Save Taikai", this);        
         add(saveTournamentBTN);
         
     }
     
     public void onClick(Widget source) {
+        infoPanel.setContent(new Label("The Taikai was updated"));
+        infoPanel.setOpen(true);
         control.createTaikai(tournamentNameTB.getText());
-        Logger.trace("'Save tournament' clicked. Tournament name is:" +
+        Logger.trace("'Save Taikai' clicked. Taikai name is:" +
                 tournamentNameTB.getText());
     }
     

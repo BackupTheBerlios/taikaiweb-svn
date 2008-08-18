@@ -72,7 +72,6 @@ public class MainPanel extends DockPanel {
         Logger.setLevel(LogLevel.TRACE);
         Logger.debug("Meddelande 1");
         Logger.warn("Meddelande 2");
-        Logger.warn("Meddelande 3");
         
         // Test with form for adding a Tournament
         CreateTaikaiPanel createTournamentPanel = new CreateTaikaiPanel(taikaiControl);
