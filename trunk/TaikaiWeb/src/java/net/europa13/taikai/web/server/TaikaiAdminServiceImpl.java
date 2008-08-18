@@ -46,7 +46,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
             taikai.setName(proxy.getName());
             
             em.getTransaction().begin();
-            em.persist(em);
+            em.persist(taikai);
             em.getTransaction().commit();
         }
         finally {

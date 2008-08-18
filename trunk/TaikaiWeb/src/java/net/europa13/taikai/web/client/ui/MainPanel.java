@@ -52,8 +52,9 @@ public class MainPanel extends DockPanel {
         logPanel.add(new HTML("<h2>Logg</h2>"));
         add(logPanel, DockPanel.SOUTH);
         
-        
-        add(new SidePanel(), DockPanel.LINE_START);
+        SidePanel sidePanel = new SidePanel();
+        sidePanel.setBorderWidth(1);
+        add(sidePanel, DockPanel.LINE_START);
         
         
         
@@ -63,13 +64,21 @@ public class MainPanel extends DockPanel {
         contentContainerPanel.add(toolBarPanel);
         add(contentContainerPanel, DockPanel.CENTER);
         
-        setContent(new TaikaiPanel(new TaikaiControl()));
+        TaikaiControl taikaiControl = new TaikaiControl();
+        setContent(new TaikaiPanel(taikaiControl));
         
         
         Logger.setTarget(new PanelHtmlLogTarget(logPanel));
         Logger.setLevel(LogLevel.TRACE);
         Logger.debug("Meddelande 1");
         Logger.warn("Meddelande 2");
+        Logger.warn("Meddelande 3");
+        
+        // Test with form for adding a Tournament
+        CreateTaikaiPanel createTournamentPanel = new CreateTaikaiPanel(taikaiControl);
+        createTournamentPanel.setBorderWidth(1);
+        add(createTournamentPanel, DockPanel.LINE_END);
+        
         
     }
     
