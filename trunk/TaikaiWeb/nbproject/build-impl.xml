@@ -509,20 +509,26 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,-do-dist-with-manifest,-do-dist-without-manifest" name="do-dist"/>
     <target depends="init" if="dist.ear.dir" name="library-inclusion-in-manifest">
-        <basename file="${libs.GWT1.5.0.classpath}" property="included.lib.libs.GWT1.5.0.classpath"/>
-        <copy-ear-war file="${libs.GWT1.5.0.classpath}" propname="included.lib.libs.GWT1.5.0.classpath.X"/>
+        <basename file="${libs.GWT1.5.0.classpath.libfile.3}" property="included.lib.libs.GWT1.5.0.classpath.3"/>
+        <basename file="${libs.GWT1.5.0.classpath.libfile.2}" property="included.lib.libs.GWT1.5.0.classpath.2"/>
+        <basename file="${libs.GWT1.5.0.classpath.libfile.1}" property="included.lib.libs.GWT1.5.0.classpath.1"/>
+        <copy-ear-war file="${libs.GWT1.5.0.classpath.libfile.3}" propname="included.lib.libs.GWT1.5.0.classpath.3.X"/>
+        <copy-ear-war file="${libs.GWT1.5.0.classpath.libfile.2}" propname="included.lib.libs.GWT1.5.0.classpath.2.X"/>
+        <copy-ear-war file="${libs.GWT1.5.0.classpath.libfile.1}" propname="included.lib.libs.GWT1.5.0.classpath.1.X"/>
         <basename file="${libs.GWT-DEV1.5.0.classpath}" property="included.lib.libs.GWT-DEV1.5.0.classpath"/>
         <copy-ear-war file="${libs.GWT-DEV1.5.0.classpath}" propname="included.lib.libs.GWT-DEV1.5.0.classpath.X"/>
         <basename file="${libs.GWT-SERVLET1.5.0.classpath}" property="included.lib.libs.GWT-SERVLET1.5.0.classpath"/>
         <copy-ear-war file="${libs.GWT-SERVLET1.5.0.classpath}" propname="included.lib.libs.GWT-SERVLET1.5.0.classpath.X"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.libs.GWT1.5.0.classpath} ${included.lib.libs.GWT-DEV1.5.0.classpath} ${included.lib.libs.GWT-SERVLET1.5.0.classpath} "/>
+            <attribute name="Class-Path" value="${included.lib.libs.GWT1.5.0.classpath.1.X} ${included.lib.libs.GWT1.5.0.classpath.2.X} ${included.lib.libs.GWT1.5.0.classpath.3.X} ${included.lib.libs.GWT-DEV1.5.0.classpath} ${included.lib.libs.GWT-SERVLET1.5.0.classpath} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
-        <copy file="${libs.GWT1.5.0.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${libs.GWT1.5.0.classpath.libfile.3}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${libs.GWT1.5.0.classpath.libfile.2}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${libs.GWT1.5.0.classpath.libfile.1}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${libs.GWT-DEV1.5.0.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${libs.GWT-SERVLET1.5.0.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>

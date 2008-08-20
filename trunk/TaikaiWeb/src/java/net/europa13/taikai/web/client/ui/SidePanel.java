@@ -19,8 +19,11 @@
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import net.europa13.taikai.web.client.logging.Logger;
 
 /**
  *
@@ -28,13 +31,69 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class SidePanel extends VerticalPanel {
     
-    public SidePanel() {
+    final private MainPanel mainPanel;
+    final private TreeItem sysadmin;
+    final private TreeItem admin;
+    final private TreeItem court;
+    
+    public SidePanel(MainPanel mainPanel) {
+        
+        
+        this.mainPanel = mainPanel;
         add(new HTML("<h2>SidePanel</h2>"));
-        add(new Label("Option 1"));
-        add(new Label("Option 2"));
-        add(new Label("Option 3"));
-        add(new Label("Option 4"));
-        add(new Label("Option 5"));
+        
+        
+        Tree tree = new Tree();
+        
+        tree.addTreeListener(new TreeListener() {
+
+            public void onTreeItemSelected(TreeItem treeItem) {
+//                treeItem.setState(true);
+                Content content = (Content) treeItem.getUserObject();
+                
+                if (content != null) {
+                    SidePanel.this.mainPanel.setContent(content);
+                }
+                Logger.debug(treeItem.getText() + " selected");
+            }
+
+            public void onTreeItemStateChanged(TreeItem treeItem) {
+                Logger.debug(treeItem.getText() + " state changed");
+            }
+        });
+        
+        sysadmin = new TreeItem("System");
+        tree.addItem(sysadmin);
+        
+        admin = new TreeItem("Administration");
+        admin.setState(true);
+        tree.addItem(admin);
+        
+        court = new TreeItem("Match");
+        tree.addItem(court);
+     
+        
+        add(tree);
+        
+    }
+    
+    public void registerContent(Content content, MainPanel.Subsystem subsystem) {
+        
+        TreeItem ti = new TreeItem(content.getTitle());
+        ti.setUserObject(content);
+        
+        switch (subsystem) {
+            case SYSADMIN:
+                sysadmin.addItem(ti);
+                break;
+            case ADMIN:
+                admin.addItem(ti);
+                break;
+            case COURT:
+                court.addItem(ti);
+                break;
+        }
+        
     }
 
 }
