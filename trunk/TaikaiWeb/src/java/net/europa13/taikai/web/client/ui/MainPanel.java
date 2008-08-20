@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.DockPanel;
@@ -35,18 +34,19 @@ import net.europa13.taikai.web.client.logging.PanelHtmlLogTarget;
  * @author Daniel Wentzel
  */
 public class MainPanel extends VerticalPanel {
-    
+
     private SidePanel sidePanel;
-    private VerticalPanel contentContainerPanel = new VerticalPanel();
+    private HTMLPanel contentContainerPanel;
     private HorizontalPanel toolBarPanel = new HorizontalPanel();
     private Panel contentPanel;
-    
+
     public static enum Subsystem {
+
         SYSADMIN,
         ADMIN,
         COURT
     }
-    
+
     public MainPanel() {
 //        super("<div id=\"main_panel\">" +
 //                "<div id=\"top\"></div>" +
@@ -54,77 +54,77 @@ public class MainPanel extends VerticalPanel {
 //                "<div id=\"bottom\"></div>" +
 //                "</div>");
         setWidth("100%");
-        
-        
+
+
 //        setCellHorizontalAlignment(contentContainerPanel, "middle");
-        
+
         TaikaiControl taikaiControl = new TaikaiControl();
-        
+
         HorizontalPanel topPanel = new HorizontalPanel();
         topPanel.setWidth("100%");
         topPanel.add(new HTML("<h1>TaikaiWeb</h1>"));
         topPanel.setBorderWidth(1);
         add(topPanel);
-        
+
         HorizontalPanel middlePanel = new HorizontalPanel();
-        
-        
+
+
         sidePanel = new SidePanel(this);
         sidePanel.setWidth("100%");
         sidePanel.setHeight("100%");
         sidePanel.setBorderWidth(1);
         middlePanel.add(sidePanel);
-        
+
         toolBarPanel.add(new Label("Tools:"));
-        
-        contentContainerPanel.setBorderWidth(1);
+
+        contentContainerPanel =
+                new HTMLPanel("<div id=\"toolbar\"></div><div id=\"content\"></div>");
         contentContainerPanel.setWidth("100%");
         contentContainerPanel.setHeight("100%");
-        contentContainerPanel.add(toolBarPanel);
+        contentContainerPanel.add(toolBarPanel, "toolbar");
         middlePanel.add(contentContainerPanel);
-        
+
 //        middlePanel.setCellHeight(sidePanel, "100%");
         middlePanel.setCellWidth(sidePanel, "20%");
         middlePanel.setCellHeight(sidePanel, "100%");
         middlePanel.setCellWidth(contentContainerPanel, "80%");
         middlePanel.setCellWidth(contentContainerPanel, "100%");
         middlePanel.setWidth("100%");
-        
+
         add(middlePanel);
-        
+
         VerticalPanel logPanel = new VerticalPanel();
         logPanel.setWidth("100%");
         logPanel.setBorderWidth(1);
         logPanel.add(new HTML("<h2>Logg</h2>"));
         add(logPanel);
-        
-        
+
+
         Content tc = new Content("Taikai", new TaikaiListPanel(taikaiControl));
         registerContent(tc, Subsystem.ADMIN);
         setContent(tc);
-        
+
         Content ctc = new Content("Skapa Taikai", new CreateTaikaiPanel(taikaiControl));
         registerContent(ctc, Subsystem.ADMIN);
-        Content tpc  = new Content("Skapa Turnering", new TournamentPanel(taikaiControl));
+        Content tpc = new Content("Skapa Turnering", new TournamentPanel(taikaiControl));
         registerContent(tpc, Subsystem.ADMIN);
-        
+
         Logger.setTarget(new PanelHtmlLogTarget(logPanel));
         Logger.setLevel(LogLevel.TRACE);
-        
+
     }
-    
+
     public void registerContent(Content content, Subsystem subsystem) {
         sidePanel.registerContent(content, subsystem);
     }
-    
+
     public void setContent(Content content) {
         if (contentPanel != null) {
             contentContainerPanel.remove(contentPanel);
         }
-        
+
         contentPanel = content.getPanel();
         contentPanel.setWidth("100%");
-        contentContainerPanel.add(contentPanel);
+        contentContainerPanel.add(contentPanel, "content");
     }
-    
 }
