@@ -17,13 +17,18 @@
  */
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import net.europa13.taikai.web.client.TaikaiControl;
 import net.europa13.taikai.web.client.logging.LogLevel;
 import net.europa13.taikai.web.client.logging.Logger;
@@ -94,9 +99,22 @@ public class MainPanel extends VerticalPanel {
         add(middlePanel);
 
         VerticalPanel logPanel = new VerticalPanel();
+        VerticalPanel logPanelContents = new VerticalPanel();
         logPanel.setWidth("100%");
         logPanel.setBorderWidth(1);
-        logPanel.add(new HTML("<h2>Logg</h2>"));
+        Button logClearBTN = new Button("Clear Log", new ClickListener() {
+            public void onClick(Widget source) {
+                Logger.clear();
+            }
+        });
+        
+        HorizontalPanel logPanelHeader = new HorizontalPanel();
+        logPanelHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+        logPanelHeader.add(new HTML("<h2>Logg</h2>"));
+        logPanelHeader.add(logClearBTN);
+        
+        logPanel.add(logPanelHeader);
+        logPanel.add(logPanelContents);
         add(logPanel);
 
 
@@ -109,7 +127,7 @@ public class MainPanel extends VerticalPanel {
         Content tpc = new Content("Skapa Turnering", new TournamentPanel(taikaiControl));
         registerContent(tpc, Subsystem.ADMIN);
 
-        Logger.setTarget(new PanelHtmlLogTarget(logPanel));
+        Logger.setTarget(new PanelHtmlLogTarget(logPanelContents));
         Logger.setLevel(LogLevel.TRACE);
 
     }

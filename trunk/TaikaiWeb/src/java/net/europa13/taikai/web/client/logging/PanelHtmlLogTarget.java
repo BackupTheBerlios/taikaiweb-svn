@@ -36,4 +36,8 @@ public class PanelHtmlLogTarget implements LogTarget {
     public void log(LogLevel level, String message) {
         target.add(new HTML(message));
     }
+    
+    public void clear() {
+        target.clear();
+    }
 }

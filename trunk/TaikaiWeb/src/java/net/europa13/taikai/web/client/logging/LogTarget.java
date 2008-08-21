@@ -24,4 +24,5 @@ package net.europa13.taikai.web.client.logging;
  */
 public interface LogTarget {
     public void log(LogLevel level, String message);
+    public void clear();
 }

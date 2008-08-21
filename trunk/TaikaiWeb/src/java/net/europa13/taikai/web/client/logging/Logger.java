@@ -100,6 +100,10 @@ public class Logger {
 //            }
         }
     }
+    
+    public static void clear() {
+        target.clear();
+    }
 
     public static void fatal(String message) {
         log(LogLevel.FATAL, message);
