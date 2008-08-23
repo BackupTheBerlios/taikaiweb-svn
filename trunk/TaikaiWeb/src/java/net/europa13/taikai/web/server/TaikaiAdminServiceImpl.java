@@ -110,10 +110,11 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
             }
 
             List<Object[]> tournamentData = em.createQuery(
-                "SELECT t.id, t.name " +
-                "FROM Tournament t" +
-                "WHERE t.taikai = :taikai").setParameter("taikai", taikai).getResultList();
+                "SELECT tmt.id, tmt.name " +
+                "FROM Tournament tmt " +
+                "WHERE tmt.taikai = :taikai").setParameter("taikai", taikai).getResultList();
 
+//            System.out.println("Tournament count: " + tournamentData.size());
 
             List<TournamentProxy> proxies = new ArrayList<TournamentProxy>();
 

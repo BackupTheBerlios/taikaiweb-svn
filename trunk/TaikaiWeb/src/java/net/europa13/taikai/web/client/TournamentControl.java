@@ -31,6 +31,7 @@ public class TournamentControl {
     }
 
     protected void fireTournamentListUpdated() {
+//        Logger.trace("TournamentControl.fireTournamentListUpdated()");
         for (TournamentView view : views) {
             view.tournamentListUpdated(tournamentList);
         }
@@ -54,13 +55,20 @@ public class TournamentControl {
     }
     
     public void updateTournamentList() {
-        taikaiService.getTaikais(new AsyncCallback<List<TournamentProxy>>() {
+        if (TaikaiWeb.getSession().getTaikai() == null) {
+            Logger.warn("Inget evenemang aktiverat. Listan över turneringar" +
+                    "kan inte hämtas.");
+            return;
+        }
+        taikaiService.getTournaments(TaikaiWeb.getSession().getTaikai(), 
+                new AsyncCallback<List<TournamentProxy>>() {
 
             public void onFailure(Throwable t) {
                 Logger.error(t.getLocalizedMessage());
             }
 
-            public void onSuccess(List<TournamentProxy> taikaiList) {
+            public void onSuccess(List<TournamentProxy> tournamentList) {
+//                Logger.trace("TournamentControl.updateTournamentList.onSuccess()");
                 TournamentControl.this.tournamentList = tournamentList;
                 fireTournamentListUpdated();
             }

@@ -33,7 +33,7 @@ public class TaikaiControl {
     private TaikaiAdminServiceAsync taikaiService =
         GWT.create(TaikaiAdminService.class);
     private List<TaikaiView> views = new ArrayList<TaikaiView>();
-    private List<TaikaiProxy> taikaiList;
+    private List<TaikaiProxy> taikaiList = new ArrayList<TaikaiProxy>(0);
 
     public TaikaiControl() {
     }
@@ -65,6 +65,10 @@ public class TaikaiControl {
         }
     }
 
+    
+    public List<TaikaiProxy> getTaikaiList() {
+        return taikaiList;
+    }
 //    public void loadTaikai(int taikaiId, TaikaiView view) {
 //        taikaiService.loadTaikai(taikaiId, new AsyncCallback<TaikaiProxy>() {
 //
@@ -82,6 +86,10 @@ public class TaikaiControl {
         views.remove(view);
     }
 
+    /**
+     * Sends a TaikaiProxy object to the server for persistence.
+     * @param proxy the proxy to be stored.
+     */
     public void storeTaikai(TaikaiProxy proxy) {
         taikaiService.storeTaikai(proxy, new AsyncCallback() {
 
@@ -95,6 +103,10 @@ public class TaikaiControl {
         });
     }
     
+    /**
+     * Updates the list of TaikaiProxies. Upon completion of the update all
+     * registered views are signalled for update.
+     */
     public void updateTaikaiList() {
         taikaiService.getTaikais(new AsyncCallback<List<TaikaiProxy>>() {
 

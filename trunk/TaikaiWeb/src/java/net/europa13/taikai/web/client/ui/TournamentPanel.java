@@ -17,13 +17,18 @@
  */
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
+import net.europa13.taikai.web.client.Controllers;
 import net.europa13.taikai.web.client.TaikaiControl;
 import net.europa13.taikai.web.client.TaikaiView;
-import net.europa13.taikai.web.client.TournamentView;
+import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
@@ -37,9 +42,10 @@ public class TournamentPanel extends VerticalPanel implements TaikaiView {
     private ListBox lbTaikaiList;
     private List<TaikaiProxy> taikaiList;
     private TaikaiControl taikaiControl;
+    private boolean active;
 
-    public TournamentPanel(TaikaiControl taikaiControl) {
-        this.taikaiControl = taikaiControl;
+    public TournamentPanel() {
+        this.taikaiControl = Controllers.taikaiControl;
         taikaiControl.addTaikaiView(this);
 
         tbTournamentName = new TextBox();
@@ -47,10 +53,41 @@ public class TournamentPanel extends VerticalPanel implements TaikaiView {
 
         lbTaikaiList = new ListBox();
         add(lbTaikaiList);
+        
+        Button btnSave = new Button("Spara");
+        btnSave.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                TournamentProxy tournament = new TournamentProxy();
+                tournament.setTaikai(TaikaiWeb.getSession().getTaikai());
+                tournament.setName(tbTournamentName.getText());
+                Controllers.tournamentControl.storeTournament(tournament);
+            }
+        });
+        add(btnSave);
 
 //        taikaiControl = new TaikaiControl();
 //        taikaiControl.addTaikaiView(this);
 //        taikaiControl.updateTaikaiList();
+    }
+    
+       public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        if (this.active == active) {
+            return;
+        }
+        
+        this.active = active;
+        
+        if (active) {
+            taikaiControl.addTaikaiView(this);
+        }
+        else {
+            taikaiControl.removeTaikaiView(this);
+        }
     }
 
     public void taikaiListUpdated(List<TaikaiProxy> taikaiList) {
@@ -71,5 +108,9 @@ public class TournamentPanel extends VerticalPanel implements TaikaiView {
             lbTaikaiList.addItem(taikai.getName());
         }
 
+    }
+
+    public Panel getPanel() {
+        return this;
     }
 }

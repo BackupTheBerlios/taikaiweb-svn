@@ -12,7 +12,7 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  *
  * @author daniel
  */
-public interface TournamentView {
+public interface TournamentView extends View {
 
     public void tournamentListUpdated(List<TournamentProxy> tournamentList);
 

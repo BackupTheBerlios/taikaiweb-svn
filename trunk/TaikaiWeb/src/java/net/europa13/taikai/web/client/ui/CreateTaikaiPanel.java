@@ -21,14 +21,16 @@ package net.europa13.taikai.web.client.ui;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import net.europa13.taikai.web.client.Controllers;
 import net.europa13.taikai.web.client.TaikaiControl;
+import net.europa13.taikai.web.client.View;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
@@ -36,7 +38,7 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  *
  * @author jonatan
  */
-public class CreateTaikaiPanel extends VerticalPanel implements ClickListener {
+public class CreateTaikaiPanel extends VerticalPanel implements ClickListener, View {
     private TaikaiControl control;
     private Grid dataGrid;
     private TextBox tournamentNameTB;
@@ -44,8 +46,10 @@ public class CreateTaikaiPanel extends VerticalPanel implements ClickListener {
     private Button saveTournamentBTN;
     private DisclosurePanel infoPanel;
     
-    public CreateTaikaiPanel(TaikaiControl control) {
-        this.control = control;
+    private boolean active;
+    
+    public CreateTaikaiPanel() {
+        this.control = Controllers.taikaiControl;
         
         add(new HTML("<h2>Edit Taikai</h2>"));
         
@@ -86,6 +90,24 @@ public class CreateTaikaiPanel extends VerticalPanel implements ClickListener {
         // control.createTaikai(tournamentNameTB.getText());
         Logger.trace("'Save Taikai' clicked. Taikai name is:" +
                 tournamentNameTB.getText());
+    }
+
+    public boolean isActive() {
+        return active;
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setActive(boolean active) {
+        if (this.active = active) {
+            return;
+        }
+        
+        this.active = active;
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public Panel getPanel() {
+        return this;
     }
     
 }

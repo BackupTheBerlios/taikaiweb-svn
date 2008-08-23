@@ -19,17 +19,17 @@ package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import net.europa13.taikai.web.client.TaikaiControl;
+import net.europa13.taikai.web.client.Controllers;
+import net.europa13.taikai.web.client.TaikaiWeb;
+import net.europa13.taikai.web.client.View;
 import net.europa13.taikai.web.client.logging.LogLevel;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.client.logging.PanelHtmlLogTarget;
@@ -44,26 +44,23 @@ public class MainPanel extends VerticalPanel {
     private HTMLPanel contentContainerPanel;
     private HorizontalPanel toolBarPanel = new HorizontalPanel();
     private Panel contentPanel;
+//    private Session session;
+    private View currentView;
 
     public static enum Subsystem {
 
+        SESSION,
         SYSADMIN,
         ADMIN,
         COURT
     }
 
+    /**
+     * Constructor.
+     */
     public MainPanel() {
-//        super("<div id=\"main_panel\">" +
-//                "<div id=\"top\"></div>" +
-//                "<div id=\"middle\"></div>" +
-//                "<div id=\"bottom\"></div>" +
-//                "</div>");
+
         setWidth("100%");
-
-
-//        setCellHorizontalAlignment(contentContainerPanel, "middle");
-
-        TaikaiControl taikaiControl = new TaikaiControl();
 
         HorizontalPanel topPanel = new HorizontalPanel();
         topPanel.setWidth("100%");
@@ -117,32 +114,94 @@ public class MainPanel extends VerticalPanel {
         logPanel.add(logPanelContents);
         add(logPanel);
 
+        
+        Controllers.taikaiControl.updateTaikaiList();
+        
+        //*********************************************************************
+        // Session Content
+        Content sessionContent = new Content("Session",
+                new SessionPanel(TaikaiWeb.getSession()));
+        registerContent(sessionContent, Subsystem.SESSION);
 
-        Content tc = new Content("Taikai", new TaikaiListPanel(taikaiControl));
-        registerContent(tc, Subsystem.ADMIN);
-        setContent(tc);
+        //*********************************************************************
+        // Taikai Content
+        Content taikaiListContent = new Content("Taikai", new TaikaiListPanel());
+        registerContent(taikaiListContent, Subsystem.ADMIN);
+        final Content createTaikaiContent = new Content("Skapa Taikai", new CreateTaikaiPanel());
+        
+        Button btnCreateTaikai = new Button("Ny Taikai...");
+        btnCreateTaikai.addClickListener(new ClickListener() {
 
-        Content ctc = new Content("Skapa Taikai", new CreateTaikaiPanel(taikaiControl));
-        registerContent(ctc, Subsystem.ADMIN);
-        Content tpc = new Content("Skapa Turnering", new TournamentPanel(taikaiControl));
-        registerContent(tpc, Subsystem.ADMIN);
+            public void onClick(Widget arg0) {
+                setContent(createTaikaiContent);
+            }
+        });
+        
+        taikaiListContent.addControl(btnCreateTaikai);
+        
+        //*********************************************************************
+        // Tournament Content
+        Content tournamentListContent = 
+                new Content("Turnering", new TournamentListPanel());
+        registerContent(tournamentListContent, Subsystem.ADMIN);
+        final Content tournamentContent =
+                new Content("Turnering", new TournamentPanel());
+        
+        Button btnCreateTournament = new Button("Ny Turnering...");
+        btnCreateTournament.addClickListener(new ClickListener() {
 
+            public void onClick(Widget arg0) {
+                setContent(tournamentContent);
+            }
+        });
+        
+        tournamentListContent.addControl(btnCreateTournament);
+        
+        
+        
+        
+        setContent(sessionContent);
+        
+        //*********************************************************************
+        // Logger
         Logger.setTarget(new PanelHtmlLogTarget(logPanelContents));
         Logger.setLevel(LogLevel.TRACE);
 
     }
 
+    /**
+     * Registers content to be accessible from the sidebar.
+     * @param content the content to register.
+     * @param subsystem the subsystem that specifies where in the sidebar tree
+     * to put the content.
+     */
     public void registerContent(Content content, Subsystem subsystem) {
         sidePanel.registerContent(content, subsystem);
     }
 
+    /**
+     * Sets the currently visible content in the main panel.
+     * @param content the content to set as visible.
+     */
     public void setContent(Content content) {
         if (contentPanel != null) {
             contentContainerPanel.remove(contentPanel);
+            
+        }
+        if (currentView != null) {
+            currentView.setActive(false);
         }
 
-        contentPanel = content.getPanel();
+        currentView = content.getView();
+        
+        contentPanel = currentView.getPanel();
         contentPanel.setWidth("100%");
         contentContainerPanel.add(contentPanel, "content");
+        currentView.setActive(true);
+        
+        toolBarPanel.clear();
+        for (Widget control : content.getControlList()) {
+            toolBarPanel.add(control);
+        }
     }
 }

@@ -18,10 +18,11 @@
 
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.user.client.ui.Panel;
 import net.europa13.taikai.web.client.*;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import java.util.List;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
@@ -29,14 +30,15 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  *
  * @author daniel
  */
-public class TaikaiListPanel extends VerticalPanel implements TaikaiView {
+public class TaikaiListPanel extends SimplePanel implements TaikaiView {
 
-    private Grid taikaiGrid;
-    private TaikaiControl control;
+    private final Grid taikaiGrid;
+    private final TaikaiControl control;
+    private boolean active;
     
-    public TaikaiListPanel(TaikaiControl control) {
+    public TaikaiListPanel() {
         
-        this.control = control;
+        this.control = Controllers.taikaiControl;
         
         taikaiGrid = new Grid(1, 4);
     
@@ -46,11 +48,30 @@ public class TaikaiListPanel extends VerticalPanel implements TaikaiView {
         taikaiGrid.setWidget(0, 3, new HTML("<h3>Turneringar</h3>"));
         
         add(taikaiGrid);
-        
-        control.addTaikaiView(this);
-        control.updateTaikaiList();
+
+    }
+    
+    public boolean isActive() {
+        return active;
     }
 
+    public void setActive(boolean active) {
+        if (this.active == active) {
+            return;
+        }
+        
+        this.active = active;
+        
+        if (active) {
+            control.addTaikaiView(this);
+//            setTaikaiList(control.getTaikaiList());
+            Controllers.taikaiControl.updateTaikaiList();
+        }
+        else {
+            control.removeTaikaiView(this);
+        }
+    }
+    
     public void taikaiListUpdated(List<TaikaiProxy> taikaiList) {
         setTaikaiList(taikaiList);
     }
@@ -64,6 +85,10 @@ public class TaikaiListPanel extends VerticalPanel implements TaikaiView {
             taikaiGrid.setText(i + 1, 2, String.valueOf(taikai.getPlayerCount()));
             taikaiGrid.setText(i + 1, 3, String.valueOf(taikai.getTournamentCount()));
         }
+    }
+
+    public Panel getPanel() {
+        return this;
     }
     
     

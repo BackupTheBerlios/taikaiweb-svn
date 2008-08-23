@@ -32,6 +32,7 @@ import net.europa13.taikai.web.client.logging.Logger;
 public class SidePanel extends VerticalPanel {
     
     final private MainPanel mainPanel;
+    final private TreeItem session;
     final private TreeItem sysadmin;
     final private TreeItem admin;
     final private TreeItem court;
@@ -54,13 +55,16 @@ public class SidePanel extends VerticalPanel {
                 if (content != null) {
                     SidePanel.this.mainPanel.setContent(content);
                 }
-                Logger.debug(treeItem.getText() + " selected");
+//                Logger.debug(treeItem.getText() + " selected");
             }
 
             public void onTreeItemStateChanged(TreeItem treeItem) {
-                Logger.debug(treeItem.getText() + " state changed");
+//                Logger.debug(treeItem.getText() + " state changed");
             }
         });
+        
+        session = new TreeItem("Session");
+        tree.addItem(session);
         
         sysadmin = new TreeItem("System");
         tree.addItem(sysadmin);
@@ -83,6 +87,9 @@ public class SidePanel extends VerticalPanel {
         ti.setUserObject(content);
         
         switch (subsystem) {
+            case SESSION:
+                session.setUserObject(content);
+                break;
             case SYSADMIN:
                 sysadmin.addItem(ti);
                 break;

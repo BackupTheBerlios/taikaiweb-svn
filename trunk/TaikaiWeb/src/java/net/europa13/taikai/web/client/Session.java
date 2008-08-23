@@ -15,18 +15,49 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client;
 
-import java.util.List;
+import java.io.Serializable;
+import net.europa13.taikai.web.proxy.CourtProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
- * @author Daniel Wentzel
+ * @author daniel
  */
-public interface TaikaiView extends View {
+public class Session implements Serializable {
+    
+    private TaikaiProxy taikai;
+    private TournamentProxy tournament;
+    private CourtProxy court;
+    
+    public Session() {
+        
+    }
 
-    public void taikaiListUpdated(List<TaikaiProxy> taikaiList);
+    public CourtProxy getCourt() {
+        return court;
+    }
+    
+    public TaikaiProxy getTaikai() {
+        return taikai;
+    }
+    
+    public TournamentProxy getTournament() {
+        return tournament;
+    }
+    
+    public void setCourt(CourtProxy court) {
+        this.court = court;
+    }
+    
+    public void setTaikai(TaikaiProxy taikai) {
+        this.taikai = taikai;
+    }
+    
+    public void setTournament(TournamentProxy tournament) {
+        this.tournament = tournament;
+    }
     
 }

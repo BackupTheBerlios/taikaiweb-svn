@@ -15,18 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client;
 
-import java.util.List;
-import net.europa13.taikai.web.proxy.TaikaiProxy;
+import com.google.gwt.user.client.ui.Panel;
 
 /**
  *
- * @author Daniel Wentzel
+ * @author daniel
  */
-public interface TaikaiView extends View {
+public interface View {
 
-    public void taikaiListUpdated(List<TaikaiProxy> taikaiList);
-    
+    public Panel getPanel();
+    public boolean isActive();
+    public void setActive(boolean active);
 }
