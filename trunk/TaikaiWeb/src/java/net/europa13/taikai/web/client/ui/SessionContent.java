@@ -36,7 +36,7 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  *
  * @author daniel
  */
-public class SessionPanel extends SimplePanel implements TaikaiView {
+public class SessionContent extends Content implements TaikaiView {
     
     private Session session;
     final private ListBox lbTaikai;
@@ -47,9 +47,9 @@ public class SessionPanel extends SimplePanel implements TaikaiView {
     private List<TournamentProxy> tournamentList;
     private List<CourtProxy> courtList;
     
-    private boolean active;
+    private Panel panel = new SimplePanel();
     
-    public SessionPanel(Session session) {
+    public SessionContent(Session session) {
         this.session = session;
         
         Grid grid = new Grid(2, 6);
@@ -83,7 +83,7 @@ public class SessionPanel extends SimplePanel implements TaikaiView {
             }
         });
         grid.setWidget(1, 5, lbCourt);
-        add(grid);
+        panel.add(grid);
     }
     
     private void clearList(ListBox lb) {
@@ -160,16 +160,9 @@ public class SessionPanel extends SimplePanel implements TaikaiView {
         
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
+    @Override
     public void setActive(boolean active) {
-        if (this.active == active) {
-            return;
-        }
-        
-        this.active = active;
+        super.setActive(active);
         
         if (active) {
             Controllers.taikaiControl.addTaikaiView(this);
@@ -181,7 +174,7 @@ public class SessionPanel extends SimplePanel implements TaikaiView {
     }
 
     public Panel getPanel() {
-        return this;
+        return panel;
     }
             
 }

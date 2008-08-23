@@ -15,82 +15,112 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Panel;
 import net.europa13.taikai.web.client.*;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
-public class TaikaiListPanel extends SimplePanel implements TaikaiView {
+public class TaikaiListContent extends Content implements TaikaiView {
 
     private final Grid taikaiGrid;
     private final TaikaiControl control;
-    private boolean active;
+    private final Panel panel = new SimplePanel();
+    private final TaikaiContent taikaiContent = new TaikaiContent(); 
     
-    public TaikaiListPanel() {
-        
+    /**
+     * Constructor.
+     */
+    public TaikaiListContent() {
+
+        setTitle("Evenemang");
+
         this.control = Controllers.taikaiControl;
-        
+
         taikaiGrid = new Grid(1, 4);
-    
+
         taikaiGrid.setWidget(0, 0, new HTML("<h3>Id</h3>"));
         taikaiGrid.setWidget(0, 1, new HTML("<h3>Namn</h3>"));
         taikaiGrid.setWidget(0, 2, new HTML("<h3>Deltagare</h3>"));
         taikaiGrid.setWidget(0, 3, new HTML("<h3>Turneringar</h3>"));
+
+        panel.add(taikaiGrid);
         
-        add(taikaiGrid);
+        createToolbar();
 
     }
-    
-    public boolean isActive() {
-        return active;
+
+    private void createToolbar() {
+
+        Button btnCreateTaikai = new Button("Nytt evenemang...");
+        btnCreateTaikai.addClickListener(new ClickListener() {
+
+            public void onClick(Widget w) {
+                taikaiContent.clear();
+                MainPanel.setContent(taikaiContent);
+            }
+        });
+
+        addControl(btnCreateTaikai);
     }
 
+    /**
+     * 
+     * @return the Panel used to display this content.
+     */
+    public Panel getPanel() {
+        return panel;
+    }
+
+    @Override
     public void setActive(boolean active) {
-        if (this.active == active) {
-            return;
-        }
-        
-        this.active = active;
-        
+        super.setActive(active);
+
         if (active) {
             control.addTaikaiView(this);
-//            setTaikaiList(control.getTaikaiList());
             Controllers.taikaiControl.updateTaikaiList();
         }
         else {
             control.removeTaikaiView(this);
         }
     }
-    
+
     public void taikaiListUpdated(List<TaikaiProxy> taikaiList) {
         setTaikaiList(taikaiList);
     }
-    
+
     protected void setTaikaiList(List<TaikaiProxy> taikaiList) {
         taikaiGrid.resize(taikaiList.size() + 1, 4);
         for (int i = 0; i < taikaiList.size(); ++i) {
-            TaikaiProxy taikai = taikaiList.get(i);
+            final TaikaiProxy taikai = taikaiList.get(i);
+            
+            ClickListener listener = new ClickListener() {
+
+                public void onClick(Widget arg0) {
+                    taikaiContent.setTaikai(taikai);
+                    MainPanel.setContent(taikaiContent);
+                }
+                
+            };
+            
             taikaiGrid.setText(i + 1, 0, String.valueOf(taikai.getId()));
-            taikaiGrid.setText(i + 1, 1, taikai.getName());
+            Hyperlink name = new Hyperlink(taikai.getName(), "editTaikai");
+            name.addClickListener(listener);
+            taikaiGrid.setWidget(i + 1, 1, name);
             taikaiGrid.setText(i + 1, 2, String.valueOf(taikai.getPlayerCount()));
             taikaiGrid.setText(i + 1, 3, String.valueOf(taikai.getTournamentCount()));
         }
     }
-
-    public Panel getPanel() {
-        return this;
-    }
-    
-    
-    
 }

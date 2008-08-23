@@ -27,7 +27,6 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import net.europa13.taikai.web.client.Controllers;
 import net.europa13.taikai.web.client.TaikaiControl;
-import net.europa13.taikai.web.client.TaikaiView;
 import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
@@ -36,58 +35,50 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  *
  * @author daniel
  */
-public class TournamentPanel extends VerticalPanel implements TaikaiView {
+public class TournamentContent extends Content {
 
     private TextBox tbTournamentName;
     private ListBox lbTaikaiList;
     private List<TaikaiProxy> taikaiList;
     private TaikaiControl taikaiControl;
-    private boolean active;
+    private TournamentProxy tournament;
+    
+    private final Panel panel = new VerticalPanel();
 
-    public TournamentPanel() {
+    public TournamentContent() {
         this.taikaiControl = Controllers.taikaiControl;
-        taikaiControl.addTaikaiView(this);
+//        taikaiControl.addTaikaiView(this);
 
         tbTournamentName = new TextBox();
-        add(tbTournamentName);
+        panel.add(tbTournamentName);
 
-        lbTaikaiList = new ListBox();
-        add(lbTaikaiList);
+//        lbTaikaiList = new ListBox();
+//        add(lbTaikaiList);
         
         Button btnSave = new Button("Spara");
         btnSave.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                TournamentProxy tournament = new TournamentProxy();
+                
+                if (tournament == null) {
+                    tournament = new TournamentProxy();
+                }
                 tournament.setTaikai(TaikaiWeb.getSession().getTaikai());
                 tournament.setName(tbTournamentName.getText());
                 Controllers.tournamentControl.storeTournament(tournament);
+                clear();
             }
         });
-        add(btnSave);
+        panel.add(btnSave);
 
 //        taikaiControl = new TaikaiControl();
 //        taikaiControl.addTaikaiView(this);
 //        taikaiControl.updateTaikaiList();
     }
     
-       public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        if (this.active == active) {
-            return;
-        }
-        
-        this.active = active;
-        
-        if (active) {
-            taikaiControl.addTaikaiView(this);
-        }
-        else {
-            taikaiControl.removeTaikaiView(this);
-        }
+    public void clear() {
+        tournament = null;
+        tbTournamentName.setText("");
     }
 
     public void taikaiListUpdated(List<TaikaiProxy> taikaiList) {
@@ -98,6 +89,16 @@ public class TournamentPanel extends VerticalPanel implements TaikaiView {
             updateTaikaiListBox();
         }
 
+    }
+
+    void setTournament(TournamentProxy tournament) {
+        if (tournament == null) {
+            clear();
+        }
+        else {
+            this.tournament = tournament;
+            tbTournamentName.setText(tournament.getName());
+        }
     }
 
     private void updateTaikaiListBox() {
@@ -111,6 +112,6 @@ public class TournamentPanel extends VerticalPanel implements TaikaiView {
     }
 
     public Panel getPanel() {
-        return this;
+        return panel;
     }
 }

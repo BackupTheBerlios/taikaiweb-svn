@@ -45,7 +45,8 @@ public class MainPanel extends VerticalPanel {
     private HorizontalPanel toolBarPanel = new HorizontalPanel();
     private Panel contentPanel;
 //    private Session session;
-    private View currentView;
+    private Content currentContent;
+    private static MainPanel instance = new MainPanel();
 
     public static enum Subsystem {
 
@@ -54,11 +55,15 @@ public class MainPanel extends VerticalPanel {
         ADMIN,
         COURT
     }
+    
+    public static MainPanel getInstance() {
+        return instance;
+    }
 
     /**
      * Constructor.
      */
-    public MainPanel() {
+    private MainPanel() {
 
         setWidth("100%");
 
@@ -119,48 +124,20 @@ public class MainPanel extends VerticalPanel {
         
         //*********************************************************************
         // Session Content
-        Content sessionContent = new Content("Session",
-                new SessionPanel(TaikaiWeb.getSession()));
+        Content sessionContent = new SessionContent(TaikaiWeb.getSession());
         registerContent(sessionContent, Subsystem.SESSION);
 
         //*********************************************************************
         // Taikai Content
-        Content taikaiListContent = new Content("Taikai", new TaikaiListPanel());
+        Content taikaiListContent = new TaikaiListContent();
         registerContent(taikaiListContent, Subsystem.ADMIN);
-        final Content createTaikaiContent = new Content("Skapa Taikai", new CreateTaikaiPanel());
-        
-        Button btnCreateTaikai = new Button("Ny Taikai...");
-        btnCreateTaikai.addClickListener(new ClickListener() {
 
-            public void onClick(Widget arg0) {
-                setContent(createTaikaiContent);
-            }
-        });
-        
-        taikaiListContent.addControl(btnCreateTaikai);
         
         //*********************************************************************
         // Tournament Content
         Content tournamentListContent = 
-                new Content("Turnering", new TournamentListPanel());
+                new TournamentListContent();
         registerContent(tournamentListContent, Subsystem.ADMIN);
-        final Content tournamentContent =
-                new Content("Turnering", new TournamentPanel());
-        
-        Button btnCreateTournament = new Button("Ny Turnering...");
-        btnCreateTournament.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                setContent(tournamentContent);
-            }
-        });
-        
-        tournamentListContent.addControl(btnCreateTournament);
-        
-        
-        
-        
-        setContent(sessionContent);
         
         //*********************************************************************
         // Logger
@@ -183,21 +160,25 @@ public class MainPanel extends VerticalPanel {
      * Sets the currently visible content in the main panel.
      * @param content the content to set as visible.
      */
-    public void setContent(Content content) {
+    public static void setContent(Content content) {
+        instance.setContent(content, instance);
+    }
+    
+    private void setContent(Content content, MainPanel mp) {
         if (contentPanel != null) {
             contentContainerPanel.remove(contentPanel);
             
         }
-        if (currentView != null) {
-            currentView.setActive(false);
+        if (currentContent != null) {
+            currentContent.setActive(false);
         }
 
-        currentView = content.getView();
+        currentContent = content;
         
-        contentPanel = currentView.getPanel();
+        contentPanel = currentContent.getPanel();
         contentPanel.setWidth("100%");
         contentContainerPanel.add(contentPanel, "content");
-        currentView.setActive(true);
+        currentContent.setActive(true);
         
         toolBarPanel.clear();
         for (Widget control : content.getControlList()) {

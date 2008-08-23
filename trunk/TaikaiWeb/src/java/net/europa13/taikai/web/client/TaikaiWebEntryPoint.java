@@ -41,7 +41,7 @@ public class TaikaiWebEntryPoint implements EntryPoint {
         
         
         
-        RootPanel.get().add(new MainPanel());
+        RootPanel.get().add(MainPanel.getInstance());
         
     }
 

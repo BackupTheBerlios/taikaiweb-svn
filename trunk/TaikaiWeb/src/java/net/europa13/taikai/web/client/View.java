@@ -25,7 +25,4 @@ import com.google.gwt.user.client.ui.Panel;
  */
 public interface View {
 
-    public Panel getPanel();
-    public boolean isActive();
-    public void setActive(boolean active);
 }

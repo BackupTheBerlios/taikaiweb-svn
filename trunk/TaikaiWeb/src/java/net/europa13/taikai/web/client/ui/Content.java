@@ -22,27 +22,26 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
-import net.europa13.taikai.web.client.View;
+import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
  * @author Daniel Wentzel
  */
-public class Content {
+public abstract class Content {
 
     private List<Widget> controlList = new ArrayList<Widget>();
-//    private Panel panel;
     private String title;
-    private View view;
+    private boolean active;
     
     public Content() {
         
     }
     
-    public Content(String title, View view) {
-        this.title = title;
-        this.view = view;
-    }
+//    public Content(String title, View view) {
+//        this.title = title;
+//        this.view = view;
+//    }
     
     public void addControl(Widget control) {
         controlList.add(control);
@@ -52,17 +51,25 @@ public class Content {
         return controlList;
     }
     
-    public Panel getPanel() {
-        return view.getPanel();
-    }
+    public abstract Panel getPanel();
     
     public String getTitle() {
         return title;
     }
     
-    public View getView() {
-        return view;
+    public boolean isActive() {
+        return active;
     }
+    
+    public void setActive(boolean active) {
+        if (this.active == active) {
+            return;
+        }
+        
+        this.active = active;
+    }
+    
+//    public abstract View getView();
     
     public void removeControl(Widget control) {
         controlList.remove(control);
@@ -75,9 +82,10 @@ public class Content {
     public void setTitle(String title) {
         this.title = title;
     }
+
     
-    public void setView(View view) {
-        this.view = view;
-    }
+//    public void setView(View view) {
+//        this.view = view;
+//    }
 
 }

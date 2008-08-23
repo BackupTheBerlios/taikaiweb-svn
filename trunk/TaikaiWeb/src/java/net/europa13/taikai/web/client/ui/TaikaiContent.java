@@ -30,7 +30,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.europa13.taikai.web.client.Controllers;
 import net.europa13.taikai.web.client.TaikaiControl;
-import net.europa13.taikai.web.client.View;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
@@ -38,23 +37,24 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  *
  * @author jonatan
  */
-public class CreateTaikaiPanel extends VerticalPanel implements ClickListener, View {
+public class TaikaiContent extends Content implements ClickListener {
     private TaikaiControl control;
     private Grid dataGrid;
     private TextBox tournamentNameTB;
     private TextBox tournamentLocationTB;
     private Button saveTournamentBTN;
     private DisclosurePanel infoPanel;
+
+    private Panel panel = new VerticalPanel();
+    private TaikaiProxy taikai;
     
-    private boolean active;
-    
-    public CreateTaikaiPanel() {
+    public TaikaiContent() {
         this.control = Controllers.taikaiControl;
         
-        add(new HTML("<h2>Edit Taikai</h2>"));
+        panel.add(new HTML("<h2>Edit Taikai</h2>"));
         
         infoPanel = new DisclosurePanel("Information message");
-        add(infoPanel);
+        panel.add(infoPanel);
         
         tournamentNameTB = new TextBox();
         tournamentNameTB.setVisibleLength(20);
@@ -71,10 +71,17 @@ public class CreateTaikaiPanel extends VerticalPanel implements ClickListener, V
         dataGrid.setWidget(2, 1, tournamentLocationTB);
         
         
-        add(dataGrid);
+        panel.add(dataGrid);
         
         saveTournamentBTN = new Button("Save Taikai", this);        
-        add(saveTournamentBTN);
+        panel.add(saveTournamentBTN);
+        
+    }
+    
+    public void clear() {
+        taikai = null;
+        tournamentNameTB.setText("");
+        tournamentLocationTB.setText("");
         
     }
     
@@ -83,31 +90,34 @@ public class CreateTaikaiPanel extends VerticalPanel implements ClickListener, V
         infoPanel.setOpen(true);
 
         // Nytt sätt...
-        TaikaiProxy taikai = new TaikaiProxy();
+        if (taikai == null) {
+            taikai = new TaikaiProxy();
+        }
         taikai.setName(tournamentNameTB.getText());
         control.storeTaikai(taikai);
+        
+        clear();
 
         // control.createTaikai(tournamentNameTB.getText());
         Logger.trace("'Save Taikai' clicked. Taikai name is:" +
                 tournamentNameTB.getText());
     }
 
-    public boolean isActive() {
-        return active;
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
-    public void setActive(boolean active) {
-        if (this.active = active) {
-            return;
-        }
-        
-        this.active = active;
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
     
     public Panel getPanel() {
-        return this;
+        return panel;
+    }
+    
+    
+    void setTaikai(TaikaiProxy taikai) {
+        if (taikai == null) {
+            clear();
+        }
+        else {
+            this.taikai = taikai;
+            tournamentNameTB.setText(taikai.getName());
+        }
     }
     
 }
