@@ -19,6 +19,7 @@ package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -29,7 +30,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.europa13.taikai.web.client.Controllers;
 import net.europa13.taikai.web.client.TaikaiWeb;
-import net.europa13.taikai.web.client.View;
 import net.europa13.taikai.web.client.logging.LogLevel;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.client.logging.PanelHtmlLogTarget;
@@ -42,7 +42,7 @@ public class MainPanel extends VerticalPanel {
 
     private SidePanel sidePanel;
     private HTMLPanel contentContainerPanel;
-    private HorizontalPanel toolBarPanel = new HorizontalPanel();
+    private HorizontalPanel toolbarPanel;
     private Panel contentPanel;
 //    private Session session;
     private Content currentContent;
@@ -68,9 +68,9 @@ public class MainPanel extends VerticalPanel {
         setWidth("100%");
 
         HorizontalPanel topPanel = new HorizontalPanel();
-        topPanel.setWidth("100%");
+//        topPanel.setWidth("100%");
         topPanel.add(new HTML("<h1>TaikaiWeb</h1>"));
-        topPanel.setBorderWidth(1);
+//        topPanel.setBorderWidth(1);
         add(topPanel);
 
         HorizontalPanel middlePanel = new HorizontalPanel();
@@ -82,14 +82,23 @@ public class MainPanel extends VerticalPanel {
         sidePanel.setBorderWidth(1);
         middlePanel.add(sidePanel);
 
-        toolBarPanel.add(new Label("Tools:"));
+        toolbarPanel = new HorizontalPanel();
+        toolbarPanel.setStyleName("taikaiweb-Toolbar");
+        toolbarPanel.add(new Label("Tools:"));
 
         contentContainerPanel =
                 new HTMLPanel("<div id=\"toolbar\"></div><div id=\"content\"></div>");
         contentContainerPanel.setWidth("100%");
         contentContainerPanel.setHeight("100%");
-        contentContainerPanel.add(toolBarPanel, "toolbar");
-        middlePanel.add(contentContainerPanel);
+        contentContainerPanel.add(toolbarPanel, "toolbar");
+
+        DecoratorPanel decorator = new DecoratorPanel();
+        decorator.add(contentContainerPanel);
+        decorator.setWidth("100%");
+        decorator.setHeight("100%");
+//        decorator.set
+//        middlePanel.add(contentContainerPanel);
+        middlePanel.add(decorator);
 
 //        middlePanel.setCellHeight(sidePanel, "100%");
         middlePanel.setCellWidth(sidePanel, "20%");
@@ -140,6 +149,12 @@ public class MainPanel extends VerticalPanel {
         registerContent(tournamentListContent, Subsystem.ADMIN);
         
         //*********************************************************************
+        // Player Content
+        Content playerListContent = 
+                new PlayerListContent();
+        registerContent(playerListContent, Subsystem.ADMIN);
+        
+        //*********************************************************************
         // Logger
         Logger.setTarget(new PanelHtmlLogTarget(logPanelContents));
         Logger.setLevel(LogLevel.TRACE);
@@ -180,9 +195,9 @@ public class MainPanel extends VerticalPanel {
         contentContainerPanel.add(contentPanel, "content");
         currentContent.setActive(true);
         
-        toolBarPanel.clear();
+        toolbarPanel.clear();
         for (Widget control : content.getControlList()) {
-            toolBarPanel.add(control);
+            toolbarPanel.add(control);
         }
     }
 }

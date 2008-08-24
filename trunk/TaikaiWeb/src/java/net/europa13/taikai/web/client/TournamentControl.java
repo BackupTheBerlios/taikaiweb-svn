@@ -26,7 +26,7 @@ public class TournamentControl {
     public TournamentControl() {
     }
 
-    public void addTaikaiView(TournamentView view) {
+    public void addTournamentView(TournamentView view) {
         views.add(view);
     }
 

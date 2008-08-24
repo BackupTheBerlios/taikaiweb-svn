@@ -83,6 +83,10 @@ public class SessionContent extends Content implements TaikaiView {
             }
         });
         grid.setWidget(1, 5, lbCourt);
+        
+        grid.setStyleName("taikaiweb-Table");
+        grid.getRowFormatter().setStyleName(0, "taikaiweb-TableHeader");
+        grid.getCellFormatter().setStyleName(0, 5, "taikaiweb-TableLastColumn");
         panel.add(grid);
     }
     

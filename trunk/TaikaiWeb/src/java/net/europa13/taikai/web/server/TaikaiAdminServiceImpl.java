@@ -41,21 +41,6 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
     @PersistenceUnit
     EntityManagerFactory emf;
 
-    public void createTaikai(TaikaiProxy proxy) {//        EntityManager em = emf.createEntityManager();
-//
-//        try {
-//            Taikai taikai = new Taikai();
-//            taikai.setName(proxy.getName());
-//
-//            em.getTransaction().begin();
-//            em.persist(taikai);
-//            em.getTransaction().commit();
-//        }
-//        finally {
-//            em.close();
-//        }
-    }
-
     public TaikaiProxy getTaikai(int id) {
 
         EntityManager em = emf.createEntityManager();
@@ -144,7 +129,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
 
             List<Object[]> tournamentData = em.createQuery(
                 "SELECT p.id, p.name " +
-                "FROM Player p" +
+                "FROM Player p " +
                 "WHERE p.taikai = :taikai").setParameter("taikai", taikai).getResultList();
 
 
@@ -272,11 +257,11 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
             em.getTransaction().begin();
 
             if (player == null) {
+                player = new Player();
                 Taikai taikai = em.find(Taikai.class, proxy.getTaikai().getId());
                 if (taikai == null) {
                     throw new RuntimeException("no taikai");
                 }
-
 
                 player.setName(proxy.getName());
                 player.setTaikai(taikai);

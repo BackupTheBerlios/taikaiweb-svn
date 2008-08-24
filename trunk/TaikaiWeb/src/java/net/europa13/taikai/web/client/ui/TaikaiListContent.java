@@ -51,11 +51,15 @@ public class TaikaiListContent extends Content implements TaikaiView {
 
         taikaiGrid = new Grid(1, 4);
 
-        taikaiGrid.setWidget(0, 0, new HTML("<h3>Id</h3>"));
-        taikaiGrid.setWidget(0, 1, new HTML("<h3>Namn</h3>"));
-        taikaiGrid.setWidget(0, 2, new HTML("<h3>Deltagare</h3>"));
-        taikaiGrid.setWidget(0, 3, new HTML("<h3>Turneringar</h3>"));
+        taikaiGrid.setText(0, 0, "Id");
+        taikaiGrid.setText(0, 1, "Namn");
+        taikaiGrid.setText(0, 2, "Deltagare");
+        taikaiGrid.setText(0, 3, "Turneringar");
 
+        
+        taikaiGrid.setStyleName("taikaiweb-Table");
+        taikaiGrid.getRowFormatter().setStyleName(0, "taikaiweb-TableHeader");
+        taikaiGrid.getCellFormatter().setStyleName(0, 3, "taikaiweb-TableLastColumn");
         panel.add(taikaiGrid);
         
         createToolbar();

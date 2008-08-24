@@ -13,10 +13,12 @@ public class Controllers {
 
     public final static TaikaiControl taikaiControl;
     public final static TournamentControl tournamentControl;
+    public final static PlayerControl playerControl;
     
     static {
         taikaiControl = new TaikaiControl();
         tournamentControl = new TournamentControl();
+        playerControl = new PlayerControl();
     }
     
 }

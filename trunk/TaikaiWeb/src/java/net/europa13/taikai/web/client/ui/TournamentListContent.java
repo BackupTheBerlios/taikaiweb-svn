@@ -19,6 +19,7 @@ package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -47,11 +48,14 @@ public class TournamentListContent extends Content implements TournamentView {
         
         tournamentGrid = new Grid(1, 4);
     
-        tournamentGrid.setWidget(0, 0, new HTML("<h3>Id</h3>"));
-        tournamentGrid.setWidget(0, 1, new HTML("<h3>Namn</h3>"));
-        tournamentGrid.setWidget(0, 2, new HTML("<h3>Deltagare</h3>"));
-        tournamentGrid.setWidget(0, 3, new HTML(""));
+        tournamentGrid.setText(0, 0, "Id");
+        tournamentGrid.setText(0, 1, "Namn");
+        tournamentGrid.setText(0, 2, "Deltagare");
+        tournamentGrid.setText(0, 3, "");
         
+        tournamentGrid.setStyleName("taikaiweb-Table");
+        tournamentGrid.getRowFormatter().setStyleName(0, "taikaiweb-TableHeader");
+        tournamentGrid.getCellFormatter().setStyleName(0, 3, "taikaiweb-TableLastColumn");
         panel.add(tournamentGrid);
         
         createToolbar();
@@ -81,26 +85,12 @@ public class TournamentListContent extends Content implements TournamentView {
         super.setActive(active);
         
         if (active) {
-            Controllers.tournamentControl.addTaikaiView(this);
+            Controllers.tournamentControl.addTournamentView(this);
             Controllers.tournamentControl.updateTournamentList();
         }
         else {
             Controllers.tournamentControl.removeTournamentView(this);
         }
-    }
-
-    private static class LinkListener implements ClickListener {
-
-        private TournamentProxy tournament;
-        
-        LinkListener(TournamentProxy tournament) {
-            this.tournament = tournament;
-        }
-        
-        public void onClick(Widget arg0) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-        
     }
     
     protected void setTournamentList(List<TournamentProxy> tournamentList) {
