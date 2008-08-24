@@ -30,7 +30,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import net.europa13.taikai.web.client.Controllers;
 import net.europa13.taikai.web.client.Navigator;
 import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.client.logging.LogLevel;
@@ -147,7 +146,7 @@ public class MainPanel extends HTMLPanel {
         add(logPanel, "bottom");
 
         
-        Controllers.taikaiControl.updateTaikaiList();
+//        Controllers.taikaiControl.updateTaikaiList();
         
         //*********************************************************************
         // Session Content

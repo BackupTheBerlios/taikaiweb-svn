@@ -83,6 +83,35 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
         }
 
     }
+    
+    public TournamentProxy getTournament(int tournamentId) {
+        
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            Object[] tournamentData = (Object[])em.createQuery(
+                "SELECT " +
+                "tmt.id, tmt.name, tmt.taikai " +
+                "FROM Tournament tmt " +
+                "WHERE tmt.id = :tournamentId")
+                .setParameter("tournamentId", tournamentId)
+                .getSingleResult();
+            
+            TournamentProxy proxy = new TournamentProxy();
+            proxy.setId((Integer)tournamentData[0]);
+            proxy.setName((String)tournamentData[1]);
+            proxy.setTaikaiId(((Taikai)tournamentData[2]).getId());
+            
+            System.out.println("id: " + proxy.getId() + " name: " + proxy.getName() + " taikaiId: " + proxy.getTaikaiId());
+            
+            return proxy;
+            
+        }
+        finally {
+            em.close();
+        }
+        
+    }
 
     @SuppressWarnings(value="unchecked")
     public List<TournamentProxy> getTournaments(TaikaiProxy taikaiProxy) {
@@ -107,6 +136,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
                 TournamentProxy proxy = new TournamentProxy();
                 proxy.setId((Integer) data[0]);
                 proxy.setName((String) data[1]);
+                proxy.setTaikaiId(taikaiProxy.getId());
                 proxies.add(proxy);
             }
 
@@ -117,6 +147,25 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
         }
     }
 
+    public PlayerProxy getPlayer(int playerId) {
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            Player player = em.find(Player.class, playerId);
+            
+            PlayerProxy proxy = new PlayerProxy();
+            proxy.setId(player.getId());
+            proxy.setName(player.getName());
+            proxy.setSurname(player.getSurname());
+            proxy.setTaikaiId(player.getTaikai().getId());
+            
+            return proxy;
+        }
+        finally {
+            em.close();
+        }
+    }
+    
     @SuppressWarnings(value="unchecked")
     public List<PlayerProxy> getPlayers(TaikaiProxy taikaiProxy) {
         EntityManager em = emf.createEntityManager();
@@ -224,7 +273,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
 
             if (tournament == null) {
                 tournament = new Tournament();
-                int taikaiId = proxy.getTaikai().getId();
+                int taikaiId = proxy.getTaikaiId();
                 Taikai taikai = em.find(Taikai.class, taikaiId);
                 if (taikai == null) {
                     throw new RuntimeException("no taikai");
@@ -258,7 +307,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
 
             if (player == null) {
                 player = new Player();
-                Taikai taikai = em.find(Taikai.class, proxy.getTaikai().getId());
+                Taikai taikai = em.find(Taikai.class, proxy.getTaikaiId());
                 if (taikai == null) {
                     throw new RuntimeException("no taikai");
                 }

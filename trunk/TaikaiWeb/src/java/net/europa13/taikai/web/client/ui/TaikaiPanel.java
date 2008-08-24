@@ -24,13 +24,8 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-import net.europa13.taikai.web.client.Controllers;
-import net.europa13.taikai.web.client.TaikaiControl;
-import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
@@ -38,7 +33,7 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  * @author jonatan
  */
 public class TaikaiPanel extends VerticalPanel {
-    private TaikaiControl control;
+
     private Grid dataGrid;
     private TextBox tournamentNameTB;
     private TextBox tournamentLocationTB;
@@ -49,7 +44,6 @@ public class TaikaiPanel extends VerticalPanel {
     private TaikaiProxy taikai;
     
     public TaikaiPanel() {
-        this.control = Controllers.taikaiControl;
         
         add(new HTML("<h2>Edit Taikai</h2>"));
         
@@ -82,6 +76,17 @@ public class TaikaiPanel extends VerticalPanel {
         saveTournamentBTN.addClickListener(listener);
     }
     
+    public TaikaiProxy getTaikai() {
+        TaikaiProxy newTaikai = new TaikaiProxy();
+        
+        if (taikai != null) {
+            newTaikai.setId(taikai.getId());
+        }
+        
+        newTaikai.setName(tournamentNameTB.getText());
+        return newTaikai;
+    }  
+    
     public void removeSaveListener(ClickListener listener) {
         saveTournamentBTN.removeClickListener(listener);
     }
@@ -92,40 +97,9 @@ public class TaikaiPanel extends VerticalPanel {
         tournamentLocationTB.setText("");
         
     }
-    
-//    public void onClick(Widget source) {
-//        infoPanel.setContent(new Label("The Taikai was updated"));
-//        infoPanel.setOpen(true);
-//
-//        // Nytt sätt...
-//        if (taikai == null) {
-//            taikai = new TaikaiProxy();
-//        }
-//        taikai.setName(tournamentNameTB.getText());
-//        control.storeTaikai(taikai);
-//        
-//        reset();
-//
-//        // control.createTaikai(tournamentNameTB.getText());
-//        Logger.trace("'Save Taikai' clicked. Taikai name is:" +
-//                tournamentNameTB.getText());
-//    }
+  
 
-    public TaikaiProxy getTaikai() {
-        TaikaiProxy newTaikai = new TaikaiProxy();
-        
-        if (taikai != null) {
-            newTaikai.setId(taikai.getId());
-        }
-        
-        newTaikai.setName(tournamentNameTB.getText());
-        return newTaikai;
-    }
-    
-//    public Panel getPanel() {
-//        return panel;
-//    }
-    
+      
     
     void setTaikai(TaikaiProxy taikai) {
         if (taikai == null) {

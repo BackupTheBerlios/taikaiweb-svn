@@ -17,18 +17,20 @@
  */
 package net.europa13.taikai.web.client.ui;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
-import net.europa13.taikai.web.client.Controllers;
-import net.europa13.taikai.web.client.PlayerView;
+import net.europa13.taikai.web.client.CustomCallback;
+import net.europa13.taikai.web.client.TaikaiAdminService;
+import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
+import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 
@@ -36,29 +38,30 @@ import net.europa13.taikai.web.proxy.PlayerProxy;
  *
  * @author daniel
  */
-public class PlayerListContent extends Content implements PlayerView {
+public class PlayerListContent extends Content {
 
-    private final Panel panel = new SimplePanel();
-    private final Grid playerGrid;
-    private final PlayerContent playerContent = new PlayerContent();
+    private final SimplePanel panel = new SimplePanel();
+    private final PlayerTable playerTable;
+    private final PlayerPanel playerPanel;
+    private TaikaiAdminServiceAsync taikaiService =
+        GWT.create(TaikaiAdminService.class);
+    private List<PlayerProxy> playerList;
 
     public PlayerListContent() {
 
         setTitle("Deltagare");
 
-        playerGrid = new Grid(1, 4);
-        playerGrid.setText(0, 0, "Id");
-        playerGrid.setText(0, 1, "Förnamn");
-        playerGrid.setText(0, 2, "Efternamn");
-        playerGrid.setText(0, 3, "Incheckad");
-
-        playerGrid.setStyleName("taikaiweb-Table");
-        playerGrid.getRowFormatter().setStyleName(0, "taikaiweb-TableHeader");
-
-        playerGrid.getCellFormatter().setStyleName(0, 3, "taikaiweb-TableLastColumn");
-        panel.add(playerGrid);
-
         createToolbar();
+
+        playerTable = new PlayerTable();
+        playerTable.addTableListener(new TableListener() {
+            public void onCellClicked(SourcesTableEvents sender, int row, int col) {
+                PlayerProxy player = playerList.get(row - 1);
+                History.newItem("players/" + player.getId());
+            }
+        });
+
+        playerPanel = new PlayerPanel();
     }
 
     private void createToolbar() {
@@ -66,7 +69,7 @@ public class PlayerListContent extends Content implements PlayerView {
         btnNewPlayer.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                MainPanel.setContent(playerContent);
+                History.newItem("players/new");
             }
         });
 
@@ -83,54 +86,59 @@ public class PlayerListContent extends Content implements PlayerView {
         super.setActive(active);
 
         if (active) {
-            Controllers.playerControl.addPlayerView(this);
-            Controllers.playerControl.updatePlayerList();
+            updatePlayerList();
         }
         else {
-            Controllers.playerControl.removePlayerView(this);
         }
     }
 
-    protected void setPlayerList(List<PlayerProxy> playerList) {
-        int columnCount = playerGrid.getColumnCount();
+    public void storePlayer(PlayerProxy player) {
+        taikaiService.storePlayer(player, new CustomCallback() {
 
-        int playerCount = playerList.size();
-        playerGrid.resize(playerCount + 1, columnCount);
+            public void onSuccess(Object nothing) {
+                updatePlayerList();
+            }
+        });
+    }
 
-        for (int i = 0; i < playerCount; ++i) {
-            final PlayerProxy player = playerList.get(i);
+    public void updatePlayerList() {
+        if (TaikaiWeb.getSession().getTaikai() == null) {
+            Logger.warn("Inget evenemang aktiverat. Listan över deltagare" +
+                "kan inte hämtas.");
+            return;
+        }
+        taikaiService.getPlayers(TaikaiWeb.getSession().getTaikai(),
+            new CustomCallback<List<PlayerProxy>>() {
 
-            ClickListener listener = new ClickListener() {
-
-                public void onClick(Widget arg0) {
-                    playerContent.setPlayer(player);
-                    MainPanel.setContent(playerContent);
+                public void onSuccess(List<PlayerProxy> playerList) {
+//                Logger.trace("TournamentControl.updateTournamentList.onSuccess()");
+                    PlayerListContent.this.playerList = playerList;
+                    playerTable.setPlayerList(playerList);
                 }
-            };
-
-            playerGrid.setText(i + 1, 0, String.valueOf(player.getId()));
-            Hyperlink name = new Hyperlink(player.getName(), "editPlayer");
-            name.addClickListener(listener);
-            playerGrid.setWidget(i + 1, 1, name);
-            Hyperlink surname = new Hyperlink(player.getSurname(), "editPlayer");
-            surname.addClickListener(listener);
-            playerGrid.setWidget(i + 1, 2, surname);
-
-            CheckBox checkedIn = new CheckBox();
-            checkedIn.setChecked(player.isCheckedIn());
-            checkedIn.setEnabled(false);
-            playerGrid.setWidget(i + 1, 3, checkedIn);
-
-        }
-
-    }
-
-    public void playerListUpdated(List<PlayerProxy> playerList) {
-        setPlayerList(playerList);
+            });
     }
 
     @Override
     public void handleState(String state) {
-        Logger.debug(state);
+        if ("new".equals(state)) {
+            playerPanel.reset();
+            panel.setWidget(playerPanel);
+        }
+        else if (state.isEmpty()) {
+            panel.setWidget(playerTable);
+        }
+        else {
+            int playerId = Integer.parseInt(state);
+            taikaiService.getPlayer(playerId, new CustomCallback<PlayerProxy>() {
+
+                public void onSuccess(PlayerProxy player) {
+                    playerPanel.setPlayer(player);
+                    panel.setWidget(playerPanel);
+                }
+            });
+
+        }
+
+        Logger.debug("Player " + state);
     }
 }

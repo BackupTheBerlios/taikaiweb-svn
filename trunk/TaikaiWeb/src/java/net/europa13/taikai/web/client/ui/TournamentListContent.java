@@ -17,112 +17,139 @@
  */
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
-import net.europa13.taikai.web.client.Controllers;
-import net.europa13.taikai.web.client.TournamentView;
+import net.europa13.taikai.web.client.CustomCallback;
+import net.europa13.taikai.web.client.TaikaiAdminService;
+import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
+import net.europa13.taikai.web.client.TaikaiWeb;
+import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
  * @author daniel
  */
-public class TournamentListContent extends Content implements TournamentView {
+public class TournamentListContent extends Content {
 
-    private final Grid tournamentGrid;
-    private final Panel panel = new SimplePanel();
-    private final TournamentContent tournamentContent = 
-            new TournamentContent();
+//    private final Grid tournamentGrid;
+    private final SimplePanel panel = new SimplePanel();
+    private final TournamentTable tournamentTable;
+    private final TournamentPanel tournamentPanel;
+    private TaikaiAdminServiceAsync taikaiService =
+        GWT.create(TaikaiAdminService.class);
+    private List<TournamentProxy> tournamentList;
 
     public TournamentListContent() {
-        
+
         setTitle("Turneringar");
-        
-        tournamentGrid = new Grid(1, 4);
-    
-        tournamentGrid.setText(0, 0, "Id");
-        tournamentGrid.setText(0, 1, "Namn");
-        tournamentGrid.setText(0, 2, "Deltagare");
-        tournamentGrid.setText(0, 3, "");
-        
-        tournamentGrid.setStyleName("taikaiweb-Table");
-        tournamentGrid.getRowFormatter().setStyleName(0, "taikaiweb-TableHeader");
-        tournamentGrid.getCellFormatter().setStyleName(0, 3, "taikaiweb-TableLastColumn");
-        panel.add(tournamentGrid);
-        
         createToolbar();
+
+        tournamentTable = new TournamentTable();
+        tournamentTable.addTableListener(new TableListener() {
+
+            public void onCellClicked(SourcesTableEvents sender, int row, int col) {
+                TournamentProxy tournament = tournamentList.get(row - 1);
+                History.newItem("tournaments/" + tournament.getId());
+            }
+        });
+
+
+        tournamentPanel = new TournamentPanel();
+        tournamentPanel.addSaveListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                TournamentProxy tournament = tournamentPanel.getTournament();
+                storeTournament(tournament);
+            }
+        });
+
     }
-    
+
     private void createToolbar() {
-//        final Content createTournamentContent = new TournamentContent();
 
         Button btnCreateTaikai = new Button("Ny turnering...");
         btnCreateTaikai.addClickListener(new ClickListener() {
 
             public void onClick(Widget w) {
-                MainPanel.setContent(tournamentContent);
+                History.newItem("tournaments/new");
             }
         });
 
         addControl(btnCreateTaikai);
     }
-    
+
     public Panel getPanel() {
         return panel;
     }
 
-
     @Override
     public void setActive(boolean active) {
         super.setActive(active);
-        
+
         if (active) {
-            Controllers.tournamentControl.addTournamentView(this);
-            Controllers.tournamentControl.updateTournamentList();
+
+            updateTournamentList();
         }
         else {
-            Controllers.tournamentControl.removeTournamentView(this);
         }
     }
-    
-    protected void setTournamentList(List<TournamentProxy> tournamentList) {
-//        Grid tournamentGrid;
-//        Logger.trace("TournamentListPanel.setTournamentList()");
-//        Logger.debug("setTournamentList list.size() = " + tournamentList.size());
-        
-         
-        tournamentGrid.resize(tournamentList.size() + 1, 4);
-        for (int i = 0; i < tournamentList.size(); ++i) {
-            final TournamentProxy tournament = tournamentList.get(i);
-            
-            ClickListener listener = new ClickListener() {
 
-                public void onClick(Widget arg0) {
-                    tournamentContent.setTournament(tournament);
-                    MainPanel.setContent(tournamentContent);
+    private void storeTournament(TournamentProxy proxy) {
+        taikaiService.storeTournament(proxy, new CustomCallback() {
+
+            public void onSuccess(Object nothing) {
+                updateTournamentList();
+            }
+        });
+    }
+
+    private void updateTournamentList() {
+        if (TaikaiWeb.getSession().getTaikai() == null) {
+            Logger.warn("Inget evenemang aktiverat. Listan över turneringar" +
+                "kan inte hämtas.");
+            return;
+        }
+        taikaiService.getTournaments(TaikaiWeb.getSession().getTaikai(),
+            new CustomCallback<List<TournamentProxy>>() {
+
+                public void onSuccess(List<TournamentProxy> tournamentList) {
+                    TournamentListContent.this.tournamentList = tournamentList;
+                    tournamentTable.setTournamentList(tournamentList);
                 }
-            };
-            
-            tournamentGrid.setText(i + 1, 0, String.valueOf(tournament.getId()));
-            Hyperlink name = new Hyperlink(tournament.getName(), "editTournament");
-            name.addClickListener(listener);
-            tournamentGrid.setWidget(i + 1, 1, name);
-//            tournamentGrid.setText(i + 1, 2, String.valueOf(tournament.getPlayerCount()));
-//            tournamentGrid.setText(i + 1, 3, String.valueOf(tournament.getTournamentCount()));
+            });
+    }
+
+    @Override
+    public void handleState(String state) {
+        if ("new".equals(state)) {
+            tournamentPanel.reset();
+            panel.setWidget(tournamentPanel);
         }
-    }
+        else if (state.isEmpty()) {
+            panel.setWidget(tournamentTable);
+        }
+        else {
+            int tournamentId = Integer.parseInt(state);
+            taikaiService.getTournament(tournamentId, new CustomCallback<TournamentProxy>() {
 
-    public void tournamentListUpdated(List<TournamentProxy> tournamentList) {
-//        Logger.trace("TournamentListPanel.tournamentListUpdated()");
-        setTournamentList(tournamentList);
-    }
+                public void onSuccess(TournamentProxy tournament) {
+                    tournamentPanel.setTournament(tournament);
+                    panel.setWidget(tournamentPanel);
+                }
+            });
 
+        }
+
+//        Logger.debug("TaikaiList" + state);
+    }
 }

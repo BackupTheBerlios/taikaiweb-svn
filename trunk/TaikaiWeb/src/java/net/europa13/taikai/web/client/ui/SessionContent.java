@@ -17,6 +17,7 @@
  */
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
@@ -25,9 +26,11 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
-import net.europa13.taikai.web.client.Controllers;
+//import net.europa13.taikai.web.client.Controllers;
+import net.europa13.taikai.web.client.CustomCallback;
 import net.europa13.taikai.web.client.Session;
-import net.europa13.taikai.web.client.TaikaiView;
+import net.europa13.taikai.web.client.TaikaiAdminService;
+import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.proxy.CourtProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
@@ -36,22 +39,22 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  *
  * @author daniel
  */
-public class SessionContent extends Content implements TaikaiView {
-    
+public class SessionContent extends Content {
+
     private Session session;
     final private ListBox lbTaikai;
     final private ListBox lbTournament;
     final private ListBox lbCourt;
-    
     private List<TaikaiProxy> taikaiList;
     private List<TournamentProxy> tournamentList;
     private List<CourtProxy> courtList;
-    
-    private Panel panel = new SimplePanel();
-    
+    private final SimplePanel panel = new SimplePanel();
+    private final TaikaiAdminServiceAsync taikaiService =
+        GWT.create(TaikaiAdminService.class);
+
     public SessionContent(Session session) {
         this.session = session;
-        
+
         Grid grid = new Grid(2, 6);
         grid.setText(0, 1, "Taikai");
         grid.setText(0, 3, "Turnering");
@@ -83,18 +86,18 @@ public class SessionContent extends Content implements TaikaiView {
             }
         });
         grid.setWidget(1, 5, lbCourt);
-        
+
         grid.setStyleName("taikaiweb-Table");
         grid.getRowFormatter().setStyleName(0, "taikaiweb-TableHeader");
         grid.getCellFormatter().setStyleName(0, 5, "taikaiweb-TableLastColumn");
         panel.add(grid);
     }
-    
+
     private void clearList(ListBox lb) {
         lb.clear();
         lb.addItem("-");
     }
-    
+
     private void courtChanged() {
         int courtIndex = lbCourt.getSelectedIndex() - 1;
         if (courtIndex >= 0) {
@@ -105,15 +108,33 @@ public class SessionContent extends Content implements TaikaiView {
             session.setCourt(null);
         }
     }
-    
+
+    public Panel getPanel() {
+        return panel;
+    }
+
     public Session getSession() {
         return session;
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        super.setActive(active);
+
+        if (active) {
+            updateTaikaiList();
+//            Controllers.taikaiControl.addTaikaiView(this);
+//            taikaiListUpdated(Controllers.taikaiControl.getTaikaiList());
+        }
+        else {
+//            Controllers.taikaiControl.removeTaikaiView(this);
+        }
     }
 
     public void setSession(Session session) {
         this.session = session;
     }
-    
+
     private void taikaiChanged() {
         int taikaiIndex = lbTaikai.getSelectedIndex() - 1;
         if (taikaiIndex >= 0) {
@@ -123,9 +144,9 @@ public class SessionContent extends Content implements TaikaiView {
         else {
             session.setTaikai(null);
         }
-            
+
     }
-    
+
     private void tournamentChanged() {
         int tournamentIndex = lbTournament.getSelectedIndex() - 1;
         if (tournamentIndex >= 0) {
@@ -135,10 +156,10 @@ public class SessionContent extends Content implements TaikaiView {
         else {
             session.setTournament(null);
         }
-            
+
     }
-    
-    public void taikaiListUpdated(List<TaikaiProxy> taikaiList) {
+
+    private void setTaikaiList(List<TaikaiProxy> taikaiList) {
 
         if (lbTaikai.getSelectedIndex() - 1 >= 0) {
             int newSelectedIndex = 0;
@@ -161,24 +182,15 @@ public class SessionContent extends Content implements TaikaiView {
                 lbTaikai.addItem(taikai.getName());
             }
         }
-        
+
     }
 
-    @Override
-    public void setActive(boolean active) {
-        super.setActive(active);
-        
-        if (active) {
-            Controllers.taikaiControl.addTaikaiView(this);
-            taikaiListUpdated(Controllers.taikaiControl.getTaikaiList());
-        }
-        else {
-            Controllers.taikaiControl.removeTaikaiView(this);
-        }
-    }
+    private void updateTaikaiList() {
+        taikaiService.getTaikais(new CustomCallback<List<TaikaiProxy>>() {
 
-    public Panel getPanel() {
-        return panel;
+            public void onSuccess(List<TaikaiProxy> taikaiList) {
+                setTaikaiList(taikaiList);
+            }
+        });
     }
-            
 }

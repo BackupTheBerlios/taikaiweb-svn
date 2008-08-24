@@ -27,7 +27,7 @@ public class TournamentProxy implements Serializable {
 
     private int id;
     private String name;
-    private TaikaiProxy taikai;
+    private int taikaiId;
 
     
     public int getId() {
@@ -43,8 +43,8 @@ public class TournamentProxy implements Serializable {
      *
      * @return the value of taikai
      */
-    public TaikaiProxy getTaikai() {
-        return taikai;
+    public int getTaikaiId() {
+        return taikaiId;
     }
 
     public void setId(int id) {
@@ -60,7 +60,7 @@ public class TournamentProxy implements Serializable {
      *
      * @param taikai new value of taikai
      */
-    public void setTaikai(TaikaiProxy taikai) {
-        this.taikai = taikai;
+    public void setTaikaiId(int taikaiId) {
+        this.taikaiId = taikaiId;
     }
 }

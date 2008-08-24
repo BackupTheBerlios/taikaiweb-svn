@@ -29,9 +29,12 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 public interface TaikaiAdminServiceAsync {
 
     public void getTaikai(int id, AsyncCallback callback);
-
     public void getTaikais(AsyncCallback callback);
+    
+    public void getTournament(int tournamentId, AsyncCallback callback);
     public void getTournaments(TaikaiProxy proxy, AsyncCallback callback);
+    
+    public void getPlayer(int playerId, AsyncCallback callback);
     public void getPlayers(TaikaiProxy proxy, AsyncCallback callback);
     public void getPlayers(TournamentProxy proxy, AsyncCallback callback);
     

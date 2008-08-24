@@ -38,11 +38,6 @@ public abstract class Content {
         
     }
     
-//    public Content(String title, View view) {
-//        this.title = title;
-//        this.view = view;
-//    }
-    
     public void addControl(Widget control) {
         controlList.add(control);
     }
@@ -74,23 +69,12 @@ public abstract class Content {
         this.active = active;
     }
     
-//    public abstract View getView();
-    
     public void removeControl(Widget control) {
         controlList.remove(control);
     }
     
-//    public void setPanel(Panel panel) {
-//        this.panel = panel;
-//    }
-    
     public void setTitle(String title) {
         this.title = title;
     }
-
-    
-//    public void setView(View view) {
-//        this.view = view;
-//    }
 
 }
