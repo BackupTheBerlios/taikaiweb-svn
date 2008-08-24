@@ -17,19 +17,39 @@
  */
 package net.europa13.taikai.web.client;
 
+import java.util.HashMap;
+import net.europa13.taikai.web.client.ui.Content;
+
 /**
  *
  * @author daniel
  */
-public class Waiter {
+public class Navigator {
 
-    private boolean waiting = true;
-
-    public void finish() {
-        waiting = false;
+    private static HashMap<String, Content> contentMap =
+            new HashMap<String, Content>();
+    
+    private Navigator() {
+        
     }
-
-    public boolean isWaiting() {
-        return waiting;
+    
+    public static Content getContent(String historyToken) {
+        
+        int pos = historyToken.indexOf('/');
+        int handlerNameEnd = pos == -1 ? historyToken.length() : pos;
+        
+        String handlerName = historyToken.substring(0, handlerNameEnd);
+        Content content = contentMap.get(handlerName);
+        if (content != null) {
+            content.handleState(historyToken.substring(handlerNameEnd + 1));
+        }
+        
+        return content;
+        
     }
+    
+    public static void registerContent(Content content, String historyToken) {
+        contentMap.put(historyToken, content);
+    }
+    
 }

@@ -28,5 +28,7 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
 public interface TaikaiView extends View {
 
     public void taikaiListUpdated(List<TaikaiProxy> taikaiList);
+
+//    public void taikaiLoaded(TaikaiProxy taikai);
     
 }

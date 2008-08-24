@@ -17,16 +17,17 @@
  */
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Panel;
 import net.europa13.taikai.web.client.*;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
+import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
@@ -35,10 +36,13 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  */
 public class TaikaiListContent extends Content implements TaikaiView {
 
-    private final Grid taikaiGrid;
+    
     private final TaikaiControl control;
-    private final Panel panel = new SimplePanel();
-    private final TaikaiContent taikaiContent = new TaikaiContent(); 
+    private Panel panel;
+    private final TaikaiPanel taikaiPanel;
+    
+    private final TaikaiTable taikaiListPanel =
+            new TaikaiTable();
     
     /**
      * Constructor.
@@ -48,32 +52,40 @@ public class TaikaiListContent extends Content implements TaikaiView {
         setTitle("Evenemang");
 
         this.control = Controllers.taikaiControl;
-
-        taikaiGrid = new Grid(1, 4);
-
-        taikaiGrid.setText(0, 0, "Id");
-        taikaiGrid.setText(0, 1, "Namn");
-        taikaiGrid.setText(0, 2, "Deltagare");
-        taikaiGrid.setText(0, 3, "Turneringar");
-
-        
-        taikaiGrid.setStyleName("taikaiweb-Table");
-        taikaiGrid.getRowFormatter().setStyleName(0, "taikaiweb-TableHeader");
-        taikaiGrid.getCellFormatter().setStyleName(0, 3, "taikaiweb-TableLastColumn");
-        panel.add(taikaiGrid);
         
         createToolbar();
+        
+        taikaiListPanel.addTableListener(new TableListener() {
+            public void onCellClicked(SourcesTableEvents sender, int row, int col) {
+                //selectRow(row);
+                TaikaiProxy taikai = control.getTaikai(row - 1);
+                History.newItem("events/" + taikai.getId());
+            }
+        });
+        
+        taikaiPanel = new TaikaiPanel();
+        taikaiPanel.addSaveListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                TaikaiProxy taikai = taikaiPanel.getTaikai();
+                control.storeTaikai(taikai);
+                History.newItem("events");
+            }
+        });
+        
+        panel = taikaiListPanel;
 
     }
-
+    
     private void createToolbar() {
 
         Button btnCreateTaikai = new Button("Nytt evenemang...");
         btnCreateTaikai.addClickListener(new ClickListener() {
 
             public void onClick(Widget w) {
-                taikaiContent.clear();
-                MainPanel.setContent(taikaiContent);
+//                taikaiContent.clear();
+//                MainPanel.setContent(taikaiContent);
+                History.newItem("events/new");
             }
         });
 
@@ -100,31 +112,37 @@ public class TaikaiListContent extends Content implements TaikaiView {
             control.removeTaikaiView(this);
         }
     }
+    
+//    public void taikaiLoaded
 
     public void taikaiListUpdated(List<TaikaiProxy> taikaiList) {
-        setTaikaiList(taikaiList);
+        taikaiListPanel.setTaikaiList(taikaiList);
     }
 
-    protected void setTaikaiList(List<TaikaiProxy> taikaiList) {
-        taikaiGrid.resize(taikaiList.size() + 1, 4);
-        for (int i = 0; i < taikaiList.size(); ++i) {
-            final TaikaiProxy taikai = taikaiList.get(i);
-            
-            ClickListener listener = new ClickListener() {
+    private LoadCallback<TaikaiProxy> loader = new LoadCallback<TaikaiProxy>() {
 
-                public void onClick(Widget arg0) {
-                    taikaiContent.setTaikai(taikai);
-                    MainPanel.setContent(taikaiContent);
-                }
-                
-            };
-            
-            taikaiGrid.setText(i + 1, 0, String.valueOf(taikai.getId()));
-            Hyperlink name = new Hyperlink(taikai.getName(), "editTaikai");
-            name.addClickListener(listener);
-            taikaiGrid.setWidget(i + 1, 1, name);
-            taikaiGrid.setText(i + 1, 2, String.valueOf(taikai.getPlayerCount()));
-            taikaiGrid.setText(i + 1, 3, String.valueOf(taikai.getTournamentCount()));
+        @Override
+        public void objectLoaded(TaikaiProxy object) {
+            taikaiPanel.setTaikai(object);
         }
+        
+    };
+
+    @Override
+    public void handleState(String state) {
+        if ("new".equals(state)) {
+            taikaiPanel.reset();
+            panel = taikaiPanel;
+        }
+        else if (state.isEmpty()) {
+            panel = taikaiListPanel;
+        }
+        else {
+            int taikaiId = Integer.parseInt(state);
+            control.loadTaikai(taikaiId, loader);
+            panel = taikaiPanel;
+        }
+        
+        Logger.debug("TaikaiList" + state);
     }
 }

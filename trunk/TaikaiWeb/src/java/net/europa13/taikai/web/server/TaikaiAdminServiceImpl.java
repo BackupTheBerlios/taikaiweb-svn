@@ -49,7 +49,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
             TaikaiProxy proxy = (TaikaiProxy) em.createQuery(
                 "SELECT " +
                 "NEW net.europa13.taikai.web.proxy.TaikaiProxy(" +
-                "t.id, t.name. COUNT(DISTINCT p), COUNT(DISTINCT tmt)) " +
+                "t.id, t.name, COUNT(DISTINCT p), COUNT(DISTINCT tmt)) " +
                 "FROM Taikai t LEFT JOIN t.players p LEFT JOIN t.tournaments tmt " +
                 "WHERE t.id = :taikaiId GROUP BY t.id, t.name").setParameter("taikaiId", id).getSingleResult();
 

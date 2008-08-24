@@ -1,0 +1,45 @@
+/* 
+Document   : taikaiweb
+Created on : Aug 24, 2008, 4:30:43 PM
+Author     : daniel
+Description:
+Purpose of the stylesheet follows.
+*/
+
+.gwt-DecoratorPanel .middleCenter {
+    height: 100%;
+    width: 100%;
+    vertical-align: top;
+}
+
+.taikaiweb-SelectedLink {
+    background-color: #e3e3e3
+}
+
+.taikaiweb-SelectedRow {
+    background-color: #b2b2b2;
+}
+
+.taikaiweb-Table {
+    border-collapse: collapse;
+}
+
+.taikaiweb-TableHeader {
+    background-color: #e3e3e3;
+    font-weight: bold;
+}
+
+.taikaiweb-TableHeader td {
+    padding: 2px 0 2px 10px;
+    border-top: 1px solid #e3e3e3;
+    border-bottom: 1px solid #e3e3e3;
+}
+
+.taikaiweb-TableLastColumn {
+    width: 100%;
+}
+
+.taikaiweb-Toolbar {
+    background-color: #e3e3e3;
+    width: 100%;
+}

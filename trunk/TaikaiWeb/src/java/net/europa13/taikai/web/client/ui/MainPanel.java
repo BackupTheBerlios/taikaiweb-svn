@@ -17,6 +17,8 @@
  */
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -29,6 +31,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.europa13.taikai.web.client.Controllers;
+import net.europa13.taikai.web.client.Navigator;
 import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.client.logging.LogLevel;
 import net.europa13.taikai.web.client.logging.Logger;
@@ -38,7 +41,7 @@ import net.europa13.taikai.web.client.logging.PanelHtmlLogTarget;
  *
  * @author Daniel Wentzel
  */
-public class MainPanel extends VerticalPanel {
+public class MainPanel extends HTMLPanel {
 
     private SidePanel sidePanel;
     private HTMLPanel contentContainerPanel;
@@ -60,10 +63,25 @@ public class MainPanel extends VerticalPanel {
         return instance;
     }
 
+    
+    private HistoryListener historyListener = new HistoryListener() {
+
+        public void onHistoryChanged(String historyToken) {
+            Content content = Navigator.getContent(historyToken);
+            if (content == null) {
+                return;
+            }
+            setContent(content);
+            Logger.debug("HistoryListener" + historyToken);
+        }
+    };
+    
     /**
      * Constructor.
      */
     private MainPanel() {
+        
+        super("<div id=\"top\"></div>\n<div id=\"middle\"></div>\n<div id=\"bottom\">\n");
 
         setWidth("100%");
 
@@ -71,7 +89,7 @@ public class MainPanel extends VerticalPanel {
 //        topPanel.setWidth("100%");
         topPanel.add(new HTML("<h1>TaikaiWeb</h1>"));
 //        topPanel.setBorderWidth(1);
-        add(topPanel);
+        add(topPanel, "top");
 
         HorizontalPanel middlePanel = new HorizontalPanel();
 
@@ -79,7 +97,7 @@ public class MainPanel extends VerticalPanel {
         sidePanel = new SidePanel(this);
         sidePanel.setWidth("100%");
         sidePanel.setHeight("100%");
-        sidePanel.setBorderWidth(1);
+//        sidePanel.setBorderWidth(1);
         middlePanel.add(sidePanel);
 
         toolbarPanel = new HorizontalPanel();
@@ -107,7 +125,7 @@ public class MainPanel extends VerticalPanel {
         middlePanel.setCellWidth(contentContainerPanel, "100%");
         middlePanel.setWidth("100%");
 
-        add(middlePanel);
+        add(middlePanel, "middle");
 
         VerticalPanel logPanel = new VerticalPanel();
         VerticalPanel logPanelContents = new VerticalPanel();
@@ -126,7 +144,7 @@ public class MainPanel extends VerticalPanel {
         
         logPanel.add(logPanelHeader);
         logPanel.add(logPanelContents);
-        add(logPanel);
+        add(logPanel, "bottom");
 
         
         Controllers.taikaiControl.updateTaikaiList();
@@ -134,30 +152,32 @@ public class MainPanel extends VerticalPanel {
         //*********************************************************************
         // Session Content
         Content sessionContent = new SessionContent(TaikaiWeb.getSession());
-        registerContent(sessionContent, Subsystem.SESSION);
+        registerContent(sessionContent, Subsystem.SESSION, "session");
 
         //*********************************************************************
         // Taikai Content
         Content taikaiListContent = new TaikaiListContent();
-        registerContent(taikaiListContent, Subsystem.ADMIN);
+        registerContent(taikaiListContent, Subsystem.ADMIN, "events");
 
         
         //*********************************************************************
         // Tournament Content
         Content tournamentListContent = 
                 new TournamentListContent();
-        registerContent(tournamentListContent, Subsystem.ADMIN);
+        registerContent(tournamentListContent, Subsystem.ADMIN, "tournaments");
         
         //*********************************************************************
         // Player Content
         Content playerListContent = 
                 new PlayerListContent();
-        registerContent(playerListContent, Subsystem.ADMIN);
+        registerContent(playerListContent, Subsystem.ADMIN, "players");
         
         //*********************************************************************
         // Logger
         Logger.setTarget(new PanelHtmlLogTarget(logPanelContents));
         Logger.setLevel(LogLevel.TRACE);
+        
+        History.addHistoryListener(historyListener);
 
     }
 
@@ -167,8 +187,9 @@ public class MainPanel extends VerticalPanel {
      * @param subsystem the subsystem that specifies where in the sidebar tree
      * to put the content.
      */
-    public void registerContent(Content content, Subsystem subsystem) {
-        sidePanel.registerContent(content, subsystem);
+    public void registerContent(Content content, Subsystem subsystem, String historyToken) {
+        Navigator.registerContent(content, historyToken);
+        sidePanel.registerContent(content, subsystem, historyToken);
     }
 
     /**

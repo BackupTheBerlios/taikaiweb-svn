@@ -38,8 +38,6 @@ public interface TaikaiAdminService extends RemoteService{
     public List<PlayerProxy> getPlayers(TaikaiProxy proxy);
     public List<PlayerProxy> getPlayers(TournamentProxy proxy);
     
-//    public void loadTaikai(in)
-    
     public void storeTaikai(TaikaiProxy proxy);
     public void storeTournament(TournamentProxy proxy);
     public void storePlayer(PlayerProxy proxy);

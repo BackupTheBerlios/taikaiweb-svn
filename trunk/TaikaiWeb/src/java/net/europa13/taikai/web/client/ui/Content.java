@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
-import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.client.logging.Logger;
 
 /**
  *
@@ -55,6 +55,11 @@ public abstract class Content {
     
     public String getTitle() {
         return title;
+    }
+    
+    public void handleState(String state) {
+        Logger.debug(state);
+    
     }
     
     public boolean isActive() {

@@ -42,45 +42,23 @@ public class TaikaiControl {
         views.add(view);
     }
 
-//    public void createTaikai(String name) {
-////        TaikaiProxy proxy = new TaikaiProxy();
-////        proxy.setName(name);
-////
-////        taikaiService.createTaikai(proxy, new AsyncCallback() {
-////
-////            public void onFailure(Throwable t) {
-////                Logger.error(t.getLocalizedMessage());
-////            }
-////
-////            public void onSuccess(Object nothing) {
-////                updateTaikaiList();
-////            }
-////        });
-//
-//    }
-
     protected void fireTaikaiListUpdated() {
         for (TaikaiView view : views) {
             view.taikaiListUpdated(taikaiList);
         }
     }
-
+    
+    public TaikaiProxy getTaikai(int number) {
+        return taikaiList.get(number);
+    }
     
     public List<TaikaiProxy> getTaikaiList() {
         return taikaiList;
     }
-//    public void loadTaikai(int taikaiId, TaikaiView view) {
-//        taikaiService.loadTaikai(taikaiId, new AsyncCallback<TaikaiProxy>() {
-//
-//            public void onFailure(Throwable t) {
-//                Logger.error(t.getLocalizedMessage());
-//            }
-//
-//            public void onSuccess(TaikaiProxy proxy) {
-//                throw new UnsupportedOperationException("Not supported yet.");
-//            }
-//        });
-//    }
+    
+    public void loadTaikai(int taikaiId, LoadCallback<TaikaiProxy> callback) {
+        taikaiService.getTaikai(taikaiId, callback);
+    }
     
     public void removeTaikaiView(TaikaiView view) {
         views.remove(view);

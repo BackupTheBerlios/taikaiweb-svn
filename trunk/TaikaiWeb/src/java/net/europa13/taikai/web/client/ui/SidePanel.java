@@ -15,92 +15,80 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client.ui;
 
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import net.europa13.taikai.web.client.logging.Logger;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  *
  * @author daniel
  */
-public class SidePanel extends VerticalPanel {
-    
+public class SidePanel extends HTMLPanel {
+
     final private MainPanel mainPanel;
-    final private TreeItem session;
-    final private TreeItem sysadmin;
-    final private TreeItem admin;
-    final private TreeItem court;
-    
+    private Widget selectedLink;
+    private ClickListener linkListener = new ClickListener() {
+
+        public void onClick(Widget source) {
+            selectLink(source);
+        }
+    };
+
     public SidePanel(MainPanel mainPanel) {
-        
-        
+
+        super("<div id=\"sidebar_title\"></div>" +
+                "<div id=\"sidebar_session\"></div>" +
+                "<div id=\"sidebar_sysadmin\"></div>" +
+                "<div id=\"sidebar_admin\"></div>" +
+                "<div id=\"sidebar_court\"></div>");
+
         this.mainPanel = mainPanel;
-        add(new HTML("<h2>SidePanel</h2>"));
-        
-        
-        Tree tree = new Tree();
-        
-        tree.addTreeListener(new TreeListener() {
+        add(new HTML("<h2>SidePanel</h2>"), "sidebar_title");
 
-            public void onTreeItemSelected(TreeItem treeItem) {
-//                treeItem.setState(true);
-                Content content = (Content) treeItem.getUserObject();
-                
-                if (content != null) {
-                    SidePanel.this.mainPanel.setContent(content);
-                }
-//                Logger.debug(treeItem.getText() + " selected");
-            }
-
-            public void onTreeItemStateChanged(TreeItem treeItem) {
-//                Logger.debug(treeItem.getText() + " state changed");
-            }
-        });
-        
-        session = new TreeItem("Session");
-        tree.addItem(session);
-        
-        sysadmin = new TreeItem("System");
-        tree.addItem(sysadmin);
-        
-        admin = new TreeItem("Administration");
-        admin.setState(true);
-        tree.addItem(admin);
-        
-        court = new TreeItem("Match");
-        tree.addItem(court);
-     
-        
-        add(tree);
-        
     }
-    
-    public void registerContent(Content content, MainPanel.Subsystem subsystem) {
-        
+
+    public void registerContent(Content content, MainPanel.Subsystem subsystem, String historyToken) {
+
         TreeItem ti = new TreeItem(content.getTitle());
         ti.setUserObject(content);
-        
+
+        Hyperlink link = new Hyperlink(content.getTitle(), historyToken);
+        link.addClickListener(linkListener);
+
         switch (subsystem) {
             case SESSION:
-                session.setUserObject(content);
+//                link = new Hyperlink("Session", historyToken);
+                link.setText("Session");
+                add(link, "sidebar_session");
+//                session.setUserObject(content);
+
                 break;
             case SYSADMIN:
-                sysadmin.addItem(ti);
+                add(link, "sidebar_sysadmin");
+//                sysadmin.addItem(ti);
                 break;
             case ADMIN:
-                admin.addItem(ti);
+                add(link, "sidebar_admin");
+//                admin.addItem(ti);
                 break;
             case COURT:
-                court.addItem(ti);
+                add(link, "sidebar_court");
+//                court.addItem(ti);
                 break;
         }
-        
+
     }
 
+    private void selectLink(Widget link) {
+        if (selectedLink != null) {
+            selectedLink.removeStyleName("taikaiweb-SelectedLink");
+        }
+        selectedLink = link;
+        selectedLink.addStyleName("taikaiweb-SelectedLink");
+    }
 }
