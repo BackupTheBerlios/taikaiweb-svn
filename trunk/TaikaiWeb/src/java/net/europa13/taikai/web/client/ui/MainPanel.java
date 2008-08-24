@@ -71,7 +71,7 @@ public class MainPanel extends HTMLPanel {
                 return;
             }
             setContent(content);
-            Logger.debug("HistoryListener" + historyToken);
+//            Logger.debug("HistoryListener " + historyToken);
         }
     };
     

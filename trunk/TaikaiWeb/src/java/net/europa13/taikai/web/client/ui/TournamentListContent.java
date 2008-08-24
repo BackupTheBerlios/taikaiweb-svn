@@ -68,6 +68,7 @@ public class TournamentListContent extends Content {
         tournamentPanel.addSaveListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
+//                Logger.debug("saveListener");
                 TournamentProxy tournament = tournamentPanel.getTournament();
                 storeTournament(tournament);
             }
@@ -105,6 +106,9 @@ public class TournamentListContent extends Content {
     }
 
     private void storeTournament(TournamentProxy proxy) {
+        
+//        Logger.debug("storeTournament");
+        
         taikaiService.storeTournament(proxy, new CustomCallback() {
 
             public void onSuccess(Object nothing) {
@@ -133,6 +137,7 @@ public class TournamentListContent extends Content {
     public void handleState(String state) {
         if ("new".equals(state)) {
             tournamentPanel.reset();
+            tournamentPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
             panel.setWidget(tournamentPanel);
         }
         else if (state.isEmpty()) {
@@ -144,6 +149,7 @@ public class TournamentListContent extends Content {
 
                 public void onSuccess(TournamentProxy tournament) {
                     tournamentPanel.setTournament(tournament);
+                    tournamentPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
                     panel.setWidget(tournamentPanel);
                 }
             });

@@ -62,6 +62,14 @@ public class PlayerListContent extends Content {
         });
 
         playerPanel = new PlayerPanel();
+        playerPanel.addSaveListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+//                Logger.debug("saveListener");
+                PlayerProxy player = playerPanel.getPlayer();
+                storePlayer(player);
+            }
+        });
     }
 
     private void createToolbar() {
@@ -122,6 +130,7 @@ public class PlayerListContent extends Content {
     public void handleState(String state) {
         if ("new".equals(state)) {
             playerPanel.reset();
+            playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
             panel.setWidget(playerPanel);
         }
         else if (state.isEmpty()) {
@@ -133,6 +142,7 @@ public class PlayerListContent extends Content {
 
                 public void onSuccess(PlayerProxy player) {
                     playerPanel.setPlayer(player);
+                    playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
                     panel.setWidget(playerPanel);
                 }
             });
