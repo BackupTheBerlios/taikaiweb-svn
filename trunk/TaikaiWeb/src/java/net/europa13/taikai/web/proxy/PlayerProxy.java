@@ -25,11 +25,25 @@ import java.io.Serializable;
  * @author daniel
  */
 public class PlayerProxy implements Serializable {
+    
+    private int age;
+    private boolean checkedIn;
     private int id;
     private String name;
+    private int number;
     private String surname;
     private int taikaiId;
-    private boolean checkedIn;
+    
+    
+    public PlayerProxy() {
+        
+    }
+    
+    
+    
+    public int getAge() {
+        return age;
+    }
     
     public int getId() {
         return id;
@@ -37,6 +51,10 @@ public class PlayerProxy implements Serializable {
     
     public String getName() {
         return name;
+    }
+    
+    public int getNumber() {
+        return number;
     }
     
     public String getSurname() {
@@ -56,12 +74,20 @@ public class PlayerProxy implements Serializable {
                   
     }
     
+    public void setAge(int age) {
+        this.age = age;
+    }
+    
     public void setId(int id) {
         this.id = id;
     }
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public void setNumber(int number) {
+        this.number = number;
     }
     
     public void setSurname(String surname) {

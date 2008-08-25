@@ -19,6 +19,7 @@ package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Panel;
@@ -28,6 +29,7 @@ import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import net.europa13.taikai.web.client.CustomCallback;
+import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
@@ -42,51 +44,55 @@ public class TaikaiListContent extends Content {
     private final TaikaiPanel taikaiPanel;
     private final TaikaiTable taikaiTable;
     private final SimplePanel panel;
-
     private TaikaiAdminServiceAsync taikaiService =
         GWT.create(TaikaiAdminService.class);
     private List<TaikaiProxy> taikaiList;
-    
+    private final String historyToken;
+
     /**
      * Constructor.
      */
-    public TaikaiListContent() {
+    public TaikaiListContent(String historyToken) {
+
 
         setTitle("Evenemang");
-        
+
+        this.historyToken = historyToken;
+
         panel = new SimplePanel();
-        
+
         createToolbar();
-        
+
         taikaiTable = new TaikaiTable();
         taikaiTable.addTableListener(new TableListener() {
+
             public void onCellClicked(SourcesTableEvents sender, int row, int col) {
                 TaikaiProxy taikai = taikaiList.get(row - 1);
-                History.newItem("events/" + taikai.getId());
+                History.newItem(TaikaiListContent.this.historyToken + "/" + taikai.getId());
             }
         });
-        
+
         taikaiPanel = new TaikaiPanel();
         taikaiPanel.addSaveListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
                 TaikaiProxy taikai = taikaiPanel.getTaikai();
                 storeTaikai(taikai);
-                
+
             }
         });
 
         panel.setWidget(taikaiTable);
-        
+
     }
-    
+
     private void createToolbar() {
 
         Button btnCreateTaikai = new Button("Nytt evenemang...");
         btnCreateTaikai.addClickListener(new ClickListener() {
 
             public void onClick(Widget w) {
-                History.newItem("events/new");
+                History.newItem(historyToken + "/new");
             }
         });
 
@@ -109,33 +115,32 @@ public class TaikaiListContent extends Content {
             updateTaikaiList();
         }
     }
-    
-    private void storeTaikai(TaikaiProxy proxy) {
-        taikaiService.storeTaikai(proxy, new CustomCallback() {
 
+    private void storeTaikai(final TaikaiProxy proxy) {
+        taikaiService.storeTaikai(proxy, new AsyncCallback() {
+
+            public void onFailure(Throwable t) {
+                Logger.error("Det gick inte att spara evenemang " + proxy.getId() + ".");
+                Logger.debug(t.getLocalizedMessage());
+            }
+            
             public void onSuccess(Object nothing) {
+                Logger.info(proxy.getName() + " sparad.");
                 updateTaikaiList();
-                History.newItem("events");
             }
         });
     }
-    
-//    public void taikaiLoaded
-
-//    public void taikaiListUpdated(List<TaikaiProxy> taikaiList) {
-//        taikaiTable.setTaikaiList(taikaiList);
-//    }
 
     private void updateTaikaiList() {
-        taikaiService.getTaikais(new CustomCallback<List<TaikaiProxy>>() {
+        taikaiService.getTaikais(new CustomCallback<ListResult<TaikaiProxy>>() {
 
-            public void onSuccess(List<TaikaiProxy> taikaiList) {
-                TaikaiListContent.this.taikaiList = taikaiList;
+            public void onSuccess(ListResult<TaikaiProxy> result) {
+                taikaiList = result.getList();
                 taikaiTable.setTaikaiList(taikaiList);
             }
         });
     }
-    
+
     @Override
     public void handleState(String state) {
         if ("new".equals(state)) {
@@ -146,17 +151,26 @@ public class TaikaiListContent extends Content {
             panel.setWidget(taikaiTable);
         }
         else {
-            int taikaiId = Integer.parseInt(state);
-            taikaiService.getTaikai(taikaiId, new CustomCallback<TaikaiProxy>() {
+            try {
+                final int taikaiId = Integer.parseInt(state);
 
-                public void onSuccess(TaikaiProxy taikai) {
-                    taikaiPanel.setTaikai(taikai);
-                    panel.setWidget(taikaiPanel);
-                }
-            });
-            
+                taikaiService.getTaikai(taikaiId, new AsyncCallback<TaikaiProxy>() {
+
+                    public void onFailure(Throwable t) {
+                        Logger.error("Det gick inte att hitta evenemang " + taikaiId + ".");
+                        Logger.debug(t.getLocalizedMessage());
+                    }
+
+                    public void onSuccess(TaikaiProxy taikai) {
+                        taikaiPanel.setTaikai(taikai);
+                        panel.setWidget(taikaiPanel);
+                    }
+                });
+
+            }
+            catch (NumberFormatException ex) {
+                Logger.error(state + " är ett ogiltigt värde för evenemang.");
+            }
         }
-        
-        Logger.debug("TaikaiList" + state);
     }
 }

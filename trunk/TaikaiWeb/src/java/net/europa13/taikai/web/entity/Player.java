@@ -51,6 +51,14 @@ public class Player implements Serializable {
     private boolean checkedIn;
     
 
+    public boolean isCheckedIn() {
+        return checkedIn;
+    }
+    
+    public void setCheckedIn(boolean checkedIn) {
+        this.checkedIn = checkedIn;
+    }
+    
     /**
      * Get the value of surname
      *

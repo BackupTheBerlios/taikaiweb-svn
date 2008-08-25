@@ -47,8 +47,9 @@ public class SidePanel extends HTMLPanel {
                 "<div id=\"sidebar_admin\"></div>" +
                 "<div id=\"sidebar_court\"></div>");
 
+//        setStyleName("taikaiweb-Sidebar");
         this.mainPanel = mainPanel;
-        add(new HTML("<h2>SidePanel</h2>"), "sidebar_title");
+//        add(new HTML("<h2>SidePanel</h2>"), "sidebar_title");
 
     }
 
@@ -59,6 +60,8 @@ public class SidePanel extends HTMLPanel {
 
         Hyperlink link = new Hyperlink(content.getTitle(), historyToken);
         link.addClickListener(linkListener);
+        link.addStyleName("taikaiweb-SidebarLink");
+
 
         switch (subsystem) {
             case SESSION:

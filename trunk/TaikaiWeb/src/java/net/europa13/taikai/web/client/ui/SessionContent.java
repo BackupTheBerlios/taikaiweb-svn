@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 //import net.europa13.taikai.web.client.Controllers;
 import net.europa13.taikai.web.client.CustomCallback;
+import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.Session;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
@@ -186,10 +187,10 @@ public class SessionContent extends Content {
     }
 
     private void updateTaikaiList() {
-        taikaiService.getTaikais(new CustomCallback<List<TaikaiProxy>>() {
+        taikaiService.getTaikais(new CustomCallback<ListResult<TaikaiProxy>>() {
 
-            public void onSuccess(List<TaikaiProxy> taikaiList) {
-                setTaikaiList(taikaiList);
+            public void onSuccess(ListResult<TaikaiProxy> result) {
+                setTaikaiList(result.getList());
             }
         });
     }

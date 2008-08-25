@@ -19,69 +19,85 @@ package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import net.europa13.taikai.web.client.CustomCallback;
+import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.PlayerProxy;
+import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public class PlayerListContent extends Content {
 
     private final SimplePanel panel = new SimplePanel();
     private final PlayerTable playerTable;
     private final PlayerPanel playerPanel;
-    private TaikaiAdminServiceAsync taikaiService =
+    private final TaikaiAdminServiceAsync taikaiService =
         GWT.create(TaikaiAdminService.class);
     private List<PlayerProxy> playerList;
-
-    public PlayerListContent() {
+    private final String historyToken;
+    private final Button btnNewPlayer;
+    private final Button btnImportPlayers;
+    
+    public PlayerListContent(final String historyToken) {
 
         setTitle("Deltagare");
 
-        createToolbar();
+        this.historyToken = historyToken;
 
+        //*********************************************************************
+        // Toolbar
+        btnNewPlayer = new Button("Ny deltagare...", new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                History.newItem(historyToken + "/new");
+            }
+        });
+        addControl(btnNewPlayer);
+
+        btnImportPlayers = new Button("Importera...", new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                History.newItem(historyToken + "/import");
+            }
+        });
+        addControl(btnImportPlayers);
+
+        //*********************************************************************
+        // Table
         playerTable = new PlayerTable();
         playerTable.addTableListener(new TableListener() {
+
             public void onCellClicked(SourcesTableEvents sender, int row, int col) {
                 PlayerProxy player = playerList.get(row - 1);
-                History.newItem("players/" + player.getId());
+                History.newItem(historyToken + "/" + player.getId());
             }
         });
 
+        //*********************************************************************
+        // Panel
         playerPanel = new PlayerPanel();
         playerPanel.addSaveListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-//                Logger.debug("saveListener");
                 PlayerProxy player = playerPanel.getPlayer();
                 storePlayer(player);
             }
         });
-    }
-
-    private void createToolbar() {
-        PushButton btnNewPlayer = new PushButton("Ny deltagare...");
-        btnNewPlayer.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                History.newItem("players/new");
-            }
-        });
-
-        addControl(btnNewPlayer);
     }
 
     @Override
@@ -94,33 +110,52 @@ public class PlayerListContent extends Content {
         super.setActive(active);
 
         if (active) {
+            updateControls();
             updatePlayerList();
         }
-        else {
-        }
+
     }
 
-    public void storePlayer(PlayerProxy player) {
-        taikaiService.storePlayer(player, new CustomCallback() {
+    private void storePlayer(final PlayerProxy proxy) {
+        taikaiService.storePlayer(proxy, new AsyncCallback() {
+
+            public void onFailure(Throwable t) {
+                Logger.error("Det gick inte att spara deltagare " + proxy.getId() + ".");
+                Logger.debug(t.getLocalizedMessage());
+            }
 
             public void onSuccess(Object nothing) {
+                Logger.info(proxy.getName() + " sparad.");
                 updatePlayerList();
             }
         });
     }
 
-    public void updatePlayerList() {
+    private void updateControls() {
+        TaikaiProxy taikai = TaikaiWeb.getSession().getTaikai();
+        
+        if (taikai == null) {
+            btnNewPlayer.setEnabled(false);
+            btnImportPlayers.setEnabled(false);
+        }
+        else {
+            btnNewPlayer.setEnabled(true);
+            btnImportPlayers.setEnabled(true);
+        }
+        
+    }
+
+    private void updatePlayerList() {
         if (TaikaiWeb.getSession().getTaikai() == null) {
-            Logger.warn("Inget evenemang aktiverat. Listan över deltagare" +
+            Logger.warn("Inget evenemang aktiverat. Listan över deltagare " +
                 "kan inte hämtas.");
             return;
         }
         taikaiService.getPlayers(TaikaiWeb.getSession().getTaikai(),
-            new CustomCallback<List<PlayerProxy>>() {
+            new CustomCallback<ListResult<PlayerProxy>>() {
 
-                public void onSuccess(List<PlayerProxy> playerList) {
-//                Logger.trace("TournamentControl.updateTournamentList.onSuccess()");
-                    PlayerListContent.this.playerList = playerList;
+                public void onSuccess(ListResult<PlayerProxy> result) {
+                    playerList = result.getList();
                     playerTable.setPlayerList(playerList);
                 }
             });
@@ -133,22 +168,32 @@ public class PlayerListContent extends Content {
             playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
             panel.setWidget(playerPanel);
         }
+        else if ("import".equals(state)) {
+            Logger.debug("Import är inte implementerad");
+        }
         else if (state.isEmpty()) {
             panel.setWidget(playerTable);
         }
         else {
-            int playerId = Integer.parseInt(state);
-            taikaiService.getPlayer(playerId, new CustomCallback<PlayerProxy>() {
+            try {
+                final int playerId = Integer.parseInt(state);
+                taikaiService.getPlayer(playerId, new AsyncCallback<PlayerProxy>() {
 
-                public void onSuccess(PlayerProxy player) {
-                    playerPanel.setPlayer(player);
-                    playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
-                    panel.setWidget(playerPanel);
-                }
-            });
+                    public void onFailure(Throwable t) {
+                        Logger.error("Det gick inte att hitta deltagare " + playerId + ".");
+                        Logger.debug(t.getLocalizedMessage());
+                    }
 
+                    public void onSuccess(PlayerProxy player) {
+                        playerPanel.setPlayer(player);
+                        playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
+                        panel.setWidget(playerPanel);
+                    }
+                });
+            }
+            catch (NumberFormatException ex) {
+                Logger.error(state + " är ett ogiltigt värde för deltagare.");
+            }
         }
-
-        Logger.debug("Player " + state);
     }
 }

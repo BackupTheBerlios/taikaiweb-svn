@@ -23,6 +23,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
@@ -61,7 +62,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
     }
 
     @SuppressWarnings(value = "unchecked")
-    public List<TaikaiProxy> getTaikais() {
+    public ListResult<TaikaiProxy> getTaikais() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -75,7 +76,9 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
                 "GROUP BY t.id, t.name").getResultList();
 
             proxies.addAll(taikaiData);
-            return proxies;
+
+            ListResult<TaikaiProxy> result = new ListResult(proxies, 0, proxies.size());
+            return result;
 
         }
         finally {
@@ -83,38 +86,36 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
         }
 
     }
-    
+
     public TournamentProxy getTournament(int tournamentId) {
-        
+
         EntityManager em = emf.createEntityManager();
-        
+
         try {
-            Object[] tournamentData = (Object[])em.createQuery(
+            Object[] tournamentData = (Object[]) em.createQuery(
                 "SELECT " +
                 "tmt.id, tmt.name, tmt.taikai " +
                 "FROM Tournament tmt " +
-                "WHERE tmt.id = :tournamentId")
-                .setParameter("tournamentId", tournamentId)
-                .getSingleResult();
-            
+                "WHERE tmt.id = :tournamentId").setParameter("tournamentId", tournamentId).getSingleResult();
+
             TournamentProxy proxy = new TournamentProxy();
-            proxy.setId((Integer)tournamentData[0]);
-            proxy.setName((String)tournamentData[1]);
-            proxy.setTaikaiId(((Taikai)tournamentData[2]).getId());
-            
+            proxy.setId((Integer) tournamentData[0]);
+            proxy.setName((String) tournamentData[1]);
+            proxy.setTaikaiId(((Taikai) tournamentData[2]).getId());
+
             System.out.println("id: " + proxy.getId() + " name: " + proxy.getName() + " taikaiId: " + proxy.getTaikaiId());
-            
+
             return proxy;
-            
+
         }
         finally {
             em.close();
         }
-        
+
     }
 
-    @SuppressWarnings(value="unchecked")
-    public List<TournamentProxy> getTournaments(TaikaiProxy taikaiProxy) {
+    @SuppressWarnings(value = "unchecked")
+    public ListResult<TournamentProxy> getTournaments(TaikaiProxy taikaiProxy) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -128,8 +129,6 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
                 "FROM Tournament tmt " +
                 "WHERE tmt.taikai = :taikai").setParameter("taikai", taikai).getResultList();
 
-//            System.out.println("Tournament count: " + tournamentData.size());
-
             List<TournamentProxy> proxies = new ArrayList<TournamentProxy>();
 
             for (Object[] data : tournamentData) {
@@ -140,7 +139,11 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
                 proxies.add(proxy);
             }
 
-            return proxies;
+            ListResult<TournamentProxy> result = new ListResult<TournamentProxy>(proxies, 0, proxies.size());
+
+
+
+            return result;
         }
         finally {
             em.close();
@@ -149,25 +152,28 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
 
     public PlayerProxy getPlayer(int playerId) {
         EntityManager em = emf.createEntityManager();
-        
+
         try {
             Player player = em.find(Player.class, playerId);
-            
+
             PlayerProxy proxy = new PlayerProxy();
             proxy.setId(player.getId());
             proxy.setName(player.getName());
             proxy.setSurname(player.getSurname());
             proxy.setTaikaiId(player.getTaikai().getId());
-            
+            proxy.setCheckedIn(player.isCheckedIn());
+            proxy.setAge(player.getAge());
+            proxy.setNumber(player.getNumber());
+
             return proxy;
         }
         finally {
             em.close();
         }
     }
-    
-    @SuppressWarnings(value="unchecked")
-    public List<PlayerProxy> getPlayers(TaikaiProxy taikaiProxy) {
+
+    @SuppressWarnings(value = "unchecked")
+    public ListResult<PlayerProxy> getPlayers(TaikaiProxy taikaiProxy) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -177,7 +183,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
             }
 
             List<Object[]> tournamentData = em.createQuery(
-                "SELECT p.id, p.name " +
+                "SELECT p.id, p.name, p.surname, p.checkedIn, p.age " +
                 "FROM Player p " +
                 "WHERE p.taikai = :taikai").setParameter("taikai", taikai).getResultList();
 
@@ -188,10 +194,15 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
                 PlayerProxy proxy = new PlayerProxy();
                 proxy.setId((Integer) data[0]);
                 proxy.setName((String) data[1]);
+                proxy.setSurname((String) data[2]);
+                proxy.setCheckedIn((Boolean) data[3]);
+                proxy.setAge((Integer) data[4]);
                 proxies.add(proxy);
             }
 
-            return proxies;
+            ListResult<PlayerProxy> result = new ListResult<PlayerProxy>(proxies, 0, proxies.size());
+
+            return result;
 
         }
         finally {
@@ -200,8 +211,8 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
 
     }
 
-    @SuppressWarnings(value="unchecked")
-    public List<PlayerProxy> getPlayers(TournamentProxy tournamentProxy) {
+    @SuppressWarnings(value = "unchecked")
+    public ListResult<PlayerProxy> getPlayers(TournamentProxy tournamentProxy) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -224,8 +235,9 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
                 proxy.setName((String) data[1]);
                 proxies.add(proxy);
             }
+            ListResult<PlayerProxy> result = new ListResult<PlayerProxy>(proxies, 0, proxies.size());
 
-            return proxies;
+            return result;
         }
         finally {
             em.close();
@@ -297,6 +309,23 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
         }
     }
 
+    private void playerToProxy(Player player, PlayerProxy proxy) {
+        proxy.setId(player.getId());
+        proxy.setAge(player.getAge());
+        proxy.setCheckedIn(player.isCheckedIn());
+        proxy.setName(player.getName());
+        proxy.setSurname(player.getSurname());
+        proxy.setTaikaiId(player.getTaikai().getId());
+        
+    }
+    
+    private void proxyToPlayer(PlayerProxy proxy, Player player) {
+        player.setAge(proxy.getAge());
+        player.setCheckedIn(proxy.isCheckedIn());
+        player.setName(proxy.getName());
+        player.setSurname(proxy.getSurname());
+    }
+
     public void storePlayer(PlayerProxy proxy) {
         EntityManager em = emf.createEntityManager();
 
@@ -312,14 +341,14 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
                     throw new RuntimeException("no taikai");
                 }
 
-                player.setName(proxy.getName());
+                proxyToPlayer(proxy, player);
+
                 player.setTaikai(taikai);
                 taikai.addPlayer(player);
-
                 em.merge(taikai);
             }
             else {
-                player.setName(proxy.getName());
+                proxyToPlayer(proxy, player);
                 em.merge(player);
             }
 

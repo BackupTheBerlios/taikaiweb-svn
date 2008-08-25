@@ -22,13 +22,8 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-import net.europa13.taikai.web.client.TaikaiWeb;
-import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
@@ -39,9 +34,13 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
 public class PlayerPanel extends VerticalPanel {
 
 //    private final Panel panel = new SimplePanel();
+    private final TextBox tbId;
+    private final TextBox tbTaikaiId;
     private final TextBox tbName;
     private final TextBox tbSurname;
     private final CheckBox cbCheckedIn;
+    private final TextBox tbAge;
+    private final TextBox tbNumber;
     private final Button btnSave;
     private PlayerProxy player;
     private TaikaiProxy taikai;
@@ -50,18 +49,38 @@ public class PlayerPanel extends VerticalPanel {
 
         FlexTable table = new FlexTable();
 
+        int row = 0;
+        
+        tbId = new TextBox();
+        tbId.setEnabled(false);
+        table.setText(row, 0, "Id");
+        table.setWidget(row++, 1, tbId);
+        
+        tbTaikaiId = new TextBox();
+        tbTaikaiId.setEnabled(false);
+        table.setText(row, 0, "TaikaiId");
+        table.setWidget(row++, 1, tbTaikaiId);
+        
         tbName = new TextBox();
-        table.setText(0, 0, "Förnamn");
-        table.setWidget(0, 1, tbName);
+        table.setText(row, 0, "Förnamn");
+        table.setWidget(row++, 1, tbName);
 
         tbSurname = new TextBox();
-        table.setText(1, 0, "Efternamn");
-        table.setWidget(1, 1, tbSurname);
+        table.setText(row, 0, "Efternamn");
+        table.setWidget(row++, 1, tbSurname);
 
         cbCheckedIn = new CheckBox();
-        table.setText(2, 0, "Incheckad");
-        table.setWidget(2, 1, cbCheckedIn);
+        table.setText(row, 0, "Incheckad");
+        table.setWidget(row++, 1, cbCheckedIn);
 
+        tbAge = new TextBox();
+        table.setText(row, 0, "Ålder");
+        table.setWidget(row++, 1, tbAge);
+        
+        tbNumber = new TextBox();
+        tbNumber.setEnabled(false);
+        table.setText(row, 0, "Nummer");
+        table.setWidget(row++, 1, tbNumber);
         
         FlowPanel buttonPanel = new FlowPanel();
         
@@ -91,6 +110,8 @@ public class PlayerPanel extends VerticalPanel {
         newPlayer.setName(tbName.getText());
         newPlayer.setSurname(tbSurname.getText());
         newPlayer.setCheckedIn(cbCheckedIn.isChecked());
+        newPlayer.setAge(Integer.parseInt(tbAge.getText()));
+        newPlayer.setNumber(Integer.parseInt(tbNumber.getText()));
 
         return newPlayer;
     }
@@ -101,9 +122,13 @@ public class PlayerPanel extends VerticalPanel {
 
     public void reset() {
         this.player = null;
+        tbId.setText("");
+        tbTaikaiId.setText("");
         tbName.setText("");
         tbSurname.setText("");
         cbCheckedIn.setChecked(false);
+        tbAge.setText("");
+        tbNumber.setText("");
     }
 
     public void setPlayer(PlayerProxy player) {
@@ -113,9 +138,13 @@ public class PlayerPanel extends VerticalPanel {
         }
 
         this.player = player;
+        tbId.setText(String.valueOf(player.getId()));
+        tbTaikaiId.setText(String.valueOf(player.getTaikaiId()));
         tbName.setText(player.getName());
         tbSurname.setText(player.getSurname());
         cbCheckedIn.setChecked(player.isCheckedIn());
+        tbAge.setText(String.valueOf(player.getAge()));
+        tbNumber.setText(String.valueOf(player.getNumber()));
     }
 
     public void setTaikai(TaikaiProxy taikai) {

@@ -22,6 +22,7 @@ import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -44,7 +45,7 @@ public class MainPanel extends HTMLPanel {
 
     private SidePanel sidePanel;
     private HTMLPanel contentContainerPanel;
-    private HorizontalPanel toolbarPanel;
+    private Panel toolbarPanel;
     private Panel contentPanel;
 //    private Session session;
     private Content currentContent;
@@ -99,7 +100,7 @@ public class MainPanel extends HTMLPanel {
 //        sidePanel.setBorderWidth(1);
         middlePanel.add(sidePanel);
 
-        toolbarPanel = new HorizontalPanel();
+        toolbarPanel = new FlowPanel();
         toolbarPanel.setStyleName("taikaiweb-Toolbar");
         toolbarPanel.add(new Label("Tools:"));
 
@@ -155,20 +156,20 @@ public class MainPanel extends HTMLPanel {
 
         //*********************************************************************
         // Taikai Content
-        Content taikaiListContent = new TaikaiListContent();
+        Content taikaiListContent = new TaikaiListContent("events");
         registerContent(taikaiListContent, Subsystem.ADMIN, "events");
 
         
         //*********************************************************************
         // Tournament Content
         Content tournamentListContent = 
-                new TournamentListContent();
+                new TournamentListContent("tournaments");
         registerContent(tournamentListContent, Subsystem.ADMIN, "tournaments");
         
         //*********************************************************************
         // Player Content
         Content playerListContent = 
-                new PlayerListContent();
+                new PlayerListContent("players");
         registerContent(playerListContent, Subsystem.ADMIN, "players");
         
         //*********************************************************************

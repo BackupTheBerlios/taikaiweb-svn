@@ -6,16 +6,16 @@
             <name>TaikaiWeb</name>
             <minimum-ant-version>1.6</minimum-ant-version>
             <web-module-libraries>
-                <library files="3">
-                    <file>${libs.GWT1.5.0.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
                 <library files="1">
                     <file>${libs.GWT-DEV1.5.0.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library files="1">
                     <file>${libs.GWT-SERVLET1.5.0.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library files="1">
+                    <file>${libs.GWT1.5.0.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>

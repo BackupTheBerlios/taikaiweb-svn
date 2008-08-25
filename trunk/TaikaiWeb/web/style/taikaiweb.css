@@ -12,6 +12,10 @@ Purpose of the stylesheet follows.
     vertical-align: top;
 }
 
+.taikaiweb-SidebarLink {
+    padding: 5px;
+}
+
 .taikaiweb-SelectedLink {
     background-color: #e3e3e3
 }

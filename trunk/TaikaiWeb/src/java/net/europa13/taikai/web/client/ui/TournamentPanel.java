@@ -50,6 +50,7 @@ public class TournamentPanel extends VerticalPanel {
         
         table.setText(0, 0, "Id");
         tbId = new TextBox();
+        tbId.setEnabled(false);
         table.setWidget(0, 1, tbId);
         
         table.setText(1, 0, "Namn");
@@ -58,6 +59,7 @@ public class TournamentPanel extends VerticalPanel {
         
         table.setText(2, 0, "Taikai id");
         tbTaikaiId = new TextBox();
+        tbTaikaiId.setEnabled(false);
         table.setWidget(2, 1, tbTaikaiId);
         
         FlowPanel buttonPanel = new FlowPanel();

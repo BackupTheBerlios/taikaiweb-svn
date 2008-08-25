@@ -53,8 +53,7 @@ public abstract class Content {
     }
     
     public void handleState(String state) {
-        Logger.debug(state);
-    
+//        Logger.debug(state);
     }
     
     public boolean isActive() {
