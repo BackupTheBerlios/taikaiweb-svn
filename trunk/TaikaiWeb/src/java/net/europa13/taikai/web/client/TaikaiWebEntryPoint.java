@@ -19,7 +19,10 @@
 package net.europa13.taikai.web.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.ui.RootPanel;
+import net.europa13.taikai.web.client.ui.Content;
 import net.europa13.taikai.web.client.ui.MainPanel;
 
 /**
@@ -32,6 +35,18 @@ public class TaikaiWebEntryPoint implements EntryPoint {
     public TaikaiWebEntryPoint() {
     }
 
+    private HistoryListener historyListener = new HistoryListener() {
+
+        public void onHistoryChanged(String historyToken) {
+            Content content = Navigator.getContent(historyToken);
+            if (content == null) {
+                return;
+            }
+            MainPanel.setContent(content);
+//            Logger.debug("HistoryListener " + historyToken);
+        }
+    };
+    
     /** 
         The entry point method, called automatically by loading a module
         that declares an implementing class as an entry-point
@@ -42,6 +57,8 @@ public class TaikaiWebEntryPoint implements EntryPoint {
         
         
         RootPanel.get().add(MainPanel.getInstance());
+        History.addHistoryListener(historyListener);
+        historyListener.onHistoryChanged(History.getToken());
         
     }
 

@@ -64,17 +64,7 @@ public class MainPanel extends HTMLPanel {
     }
 
     
-    private HistoryListener historyListener = new HistoryListener() {
-
-        public void onHistoryChanged(String historyToken) {
-            Content content = Navigator.getContent(historyToken);
-            if (content == null) {
-                return;
-            }
-            setContent(content);
-//            Logger.debug("HistoryListener " + historyToken);
-        }
-    };
+    
     
     /**
      * Constructor.
@@ -177,7 +167,7 @@ public class MainPanel extends HTMLPanel {
         Logger.setTarget(new PanelHtmlLogTarget(logPanelContents));
         Logger.setLevel(LogLevel.TRACE);
         
-        History.addHistoryListener(historyListener);
+        
 
     }
 
