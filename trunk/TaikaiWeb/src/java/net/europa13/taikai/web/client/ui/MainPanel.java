@@ -17,25 +17,15 @@
  */
 package net.europa13.taikai.web.client.ui;
 
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.HistoryListener;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import net.europa13.taikai.web.client.Navigator;
-import net.europa13.taikai.web.client.TaikaiWeb;
-import net.europa13.taikai.web.client.logging.LogLevel;
-import net.europa13.taikai.web.client.logging.Logger;
-import net.europa13.taikai.web.client.logging.PanelHtmlLogTarget;
 
 /**
  *
@@ -116,59 +106,7 @@ public class MainPanel extends HTMLPanel {
         middlePanel.setWidth("100%");
 
         add(middlePanel, "middle");
-
-        VerticalPanel logPanel = new VerticalPanel();
-        VerticalPanel logPanelContents = new VerticalPanel();
-        logPanel.setWidth("100%");
-        logPanel.setBorderWidth(1);
-        Button logClearBTN = new Button("Clear Log", new ClickListener() {
-            public void onClick(Widget source) {
-                Logger.clear();
-            }
-        });
         
-        HorizontalPanel logPanelHeader = new HorizontalPanel();
-        logPanelHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-        logPanelHeader.add(new HTML("<h2>Logg</h2>"));
-        logPanelHeader.add(logClearBTN);
-        
-        logPanel.add(logPanelHeader);
-        logPanel.add(logPanelContents);
-        add(logPanel, "bottom");
-
-        
-//        Controllers.taikaiControl.updateTaikaiList();
-        
-        //*********************************************************************
-        // Session Content
-        Content sessionContent = new SessionContent(TaikaiWeb.getSession());
-        registerContent(sessionContent, Subsystem.SESSION, "session");
-
-        //*********************************************************************
-        // Taikai Content
-        Content taikaiListContent = new TaikaiListContent("events");
-        registerContent(taikaiListContent, Subsystem.ADMIN, "events");
-
-        
-        //*********************************************************************
-        // Tournament Content
-        Content tournamentListContent = 
-                new TournamentListContent("tournaments");
-        registerContent(tournamentListContent, Subsystem.ADMIN, "tournaments");
-        
-        //*********************************************************************
-        // Player Content
-        Content playerListContent = 
-                new PlayerListContent("players");
-        registerContent(playerListContent, Subsystem.ADMIN, "players");
-        
-        //*********************************************************************
-        // Logger
-        Logger.setTarget(new PanelHtmlLogTarget(logPanelContents));
-        Logger.setLevel(LogLevel.TRACE);
-        
-        
-
     }
 
     /**

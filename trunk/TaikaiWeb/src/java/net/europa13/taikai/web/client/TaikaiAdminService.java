@@ -19,7 +19,6 @@
 package net.europa13.taikai.web.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
@@ -33,14 +32,8 @@ public interface TaikaiAdminService extends RemoteService{
     public TaikaiProxy getTaikai(int id);
     public ListResult<TaikaiProxy> getTaikais();
     
-    public TournamentProxy getTournament(int tournamentId);
-    public ListResult<TournamentProxy> getTournaments(TaikaiProxy proxy);
-    
-    public PlayerProxy getPlayer(int playerId);
-    public ListResult<PlayerProxy> getPlayers(TaikaiProxy proxy);
-    public ListResult<PlayerProxy> getPlayers(TournamentProxy proxy);
-    
+
+        
     public void storeTaikai(TaikaiProxy proxy);
-    public void storeTournament(TournamentProxy proxy);
-    public void storePlayer(PlayerProxy proxy);
+
 }

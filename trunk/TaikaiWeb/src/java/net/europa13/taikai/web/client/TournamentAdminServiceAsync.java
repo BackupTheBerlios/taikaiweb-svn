@@ -16,26 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.europa13.taikai.web.client;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentProxy;
+
 
 /**
  *
- * @author Daniel Wentzel
+ * @author daniel
  */
-public interface TaikaiAdminServiceAsync {
-
-    public void getTaikai(int id, AsyncCallback callback);
-    public void getTaikais(AsyncCallback callback);
+public interface TournamentAdminServiceAsync {
+    public void getTournament(int tournamentId, AsyncCallback callback);
+    public void getTournaments(TaikaiProxy proxy, AsyncCallback callback);
     
-
-    
-    
-    
-    public void storeTaikai(TaikaiProxy proxy, AsyncCallback callback);
-    
-    
-    
-    
+    public void storeTournament(TournamentProxy proxy, AsyncCallback callback);
 }

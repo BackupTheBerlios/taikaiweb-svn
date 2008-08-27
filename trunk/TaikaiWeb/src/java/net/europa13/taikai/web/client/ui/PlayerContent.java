@@ -30,6 +30,8 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import net.europa13.taikai.web.client.CustomCallback;
 import net.europa13.taikai.web.client.ListResult;
+import net.europa13.taikai.web.client.PlayerAdminService;
+import net.europa13.taikai.web.client.PlayerAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiWeb;
@@ -41,19 +43,21 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  *
  * @author Daniel Wentzel
  */
-public class PlayerListContent extends Content {
+public class PlayerContent extends Content {
 
     private final SimplePanel panel = new SimplePanel();
     private final PlayerTable playerTable;
     private final PlayerPanel playerPanel;
-    private final TaikaiAdminServiceAsync taikaiService =
-        GWT.create(TaikaiAdminService.class);
+    private final PlayerAdminServiceAsync playerService =
+        GWT.create(PlayerAdminService.class);
     private List<PlayerProxy> playerList;
     private final String historyToken;
     private final Button btnNewPlayer;
     private final Button btnImportPlayers;
     
-    public PlayerListContent(final String historyToken) {
+    private String state;
+    
+    public PlayerContent(final String historyToken) {
 
         setTitle("Deltagare");
 
@@ -117,7 +121,7 @@ public class PlayerListContent extends Content {
     }
 
     private void storePlayer(final PlayerProxy proxy) {
-        taikaiService.storePlayer(proxy, new AsyncCallback() {
+        playerService.storePlayer(proxy, new AsyncCallback() {
 
             public void onFailure(Throwable t) {
                 Logger.error("Det gick inte att spara deltagare " + proxy.getId() + ".");
@@ -143,6 +147,13 @@ public class PlayerListContent extends Content {
             btnImportPlayers.setEnabled(true);
         }
         
+        if ("details".equals(state)) {
+            btnImportPlayers.setVisible(false);
+        }
+        else {
+            btnImportPlayers.setVisible(true);
+        }
+        
     }
 
     private void updatePlayerList() {
@@ -151,7 +162,7 @@ public class PlayerListContent extends Content {
                 "kan inte hämtas.");
             return;
         }
-        taikaiService.getPlayers(TaikaiWeb.getSession().getTaikai(),
+        playerService.getPlayers(TaikaiWeb.getSession().getTaikai(),
             new CustomCallback<ListResult<PlayerProxy>>() {
 
                 public void onSuccess(ListResult<PlayerProxy> result) {
@@ -162,22 +173,26 @@ public class PlayerListContent extends Content {
     }
 
     @Override
-    public void handleState(String state) {
-        if ("new".equals(state)) {
+    public void handleState(String stateToken) {
+        if ("new".equals(stateToken)) {
+            state = "details";
+            
             playerPanel.reset();
             playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
             panel.setWidget(playerPanel);
         }
-        else if ("import".equals(state)) {
+        else if ("import".equals(stateToken)) {
+            state = "import";
             Logger.debug("Import är inte implementerad");
         }
-        else if (state.isEmpty()) {
+        else if (stateToken.isEmpty()) {
+            state = "list";
             panel.setWidget(playerTable);
         }
         else {
             try {
-                final int playerId = Integer.parseInt(state);
-                taikaiService.getPlayer(playerId, new AsyncCallback<PlayerProxy>() {
+                final int playerId = Integer.parseInt(stateToken);
+                playerService.getPlayer(playerId, new AsyncCallback<PlayerProxy>() {
 
                     public void onFailure(Throwable t) {
                         Logger.error("Det gick inte att hitta deltagare " + playerId + ".");
@@ -185,6 +200,8 @@ public class PlayerListContent extends Content {
                     }
 
                     public void onSuccess(PlayerProxy player) {
+                        state = "details";
+                        
                         playerPanel.setPlayer(player);
                         playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
                         panel.setWidget(playerPanel);
@@ -192,7 +209,7 @@ public class PlayerListContent extends Content {
                 });
             }
             catch (NumberFormatException ex) {
-                Logger.error(state + " är ett ogiltigt värde för deltagare.");
+                Logger.error(stateToken + " är ett ogiltigt värde för deltagare.");
             }
         }
     }

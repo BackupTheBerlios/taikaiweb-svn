@@ -4,9 +4,25 @@
         <servlet-name>TaikaiAdminService</servlet-name>
         <servlet-class>net.europa13.taikai.web.server.TaikaiAdminServiceImpl</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>PlayerAdminService</servlet-name>
+        <servlet-class>net.europa13.taikai.web.server.PlayerAdminServiceImpl</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>TournamentAdminService</servlet-name>
+        <servlet-class>net.europa13.taikai.web.server.TournamentAdminServiceImpl</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>TaikaiAdminService</servlet-name>
         <url-pattern>/net.europa13.taikai.web.TaikaiWeb/taikaiadminservice</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PlayerAdminService</servlet-name>
+        <url-pattern>/net.europa13.taikai.web.TaikaiWeb/playeradminservice</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TournamentAdminService</servlet-name>
+        <url-pattern>/net.europa13.taikai.web.TaikaiWeb/tournamentadminservice</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

@@ -18,6 +18,7 @@
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
@@ -141,9 +142,11 @@ public class SessionContent extends Content {
         if (taikaiIndex >= 0) {
             TaikaiProxy taikai = taikaiList.get(taikaiIndex);
             session.setTaikai(taikai);
+            Cookies.setCookie("taikaiId", String.valueOf(taikai.getId()));
         }
         else {
             session.setTaikai(null);
+            Cookies.removeCookie("taikaiId");
         }
 
     }
@@ -162,14 +165,14 @@ public class SessionContent extends Content {
 
     private void setTaikaiList(List<TaikaiProxy> taikaiList) {
 
-        if (lbTaikai.getSelectedIndex() - 1 >= 0) {
+        if (session.getTaikai() != null) {
             int newSelectedIndex = 0;
-            TaikaiProxy selectedTaikai = this.taikaiList.get(lbTaikai.getSelectedIndex() - 1);
+//            TaikaiProxy selectedTaikai = this.taikaiList.get(lbTaikai.getSelectedIndex() - 1);
             this.taikaiList = new ArrayList<TaikaiProxy>(taikaiList);
             clearList(lbTaikai);
             for (int i = 0; i < this.taikaiList.size(); ++i) {
                 TaikaiProxy taikai = this.taikaiList.get(i);
-                if (taikai.getId() == selectedTaikai.getId()) {
+                if (taikai.getId() == session.getTaikai().getId()) {
                     newSelectedIndex = i + 1;
                 }
                 lbTaikai.addItem(taikai.getName());

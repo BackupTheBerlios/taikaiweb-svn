@@ -22,19 +22,19 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.server.rpc.UnexpectedException;
 import java.util.List;
 import net.europa13.taikai.web.client.CustomCallback;
 import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiWeb;
+import net.europa13.taikai.web.client.TournamentAdminService;
+import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
@@ -43,19 +43,21 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  *
  * @author daniel
  */
-public class TournamentListContent extends Content {
+public class TournamentContent extends Content {
 
 //    private final Grid tournamentGrid;
     private final SimplePanel panel = new SimplePanel();
     private final TournamentTable tournamentTable;
     private final TournamentPanel tournamentPanel;
-    private final TaikaiAdminServiceAsync taikaiService =
-        GWT.create(TaikaiAdminService.class);
+    private final TournamentAdminServiceAsync tournamentService =
+        GWT.create(TournamentAdminService.class);
     private List<TournamentProxy> tournamentList;
     private final String historyToken;
     private final Button btnNewTournament;
 
-    public TournamentListContent(final String historyToken) {
+    
+    
+    public TournamentContent(final String historyToken) {
 
         setTitle("Turneringar");
 
@@ -114,7 +116,7 @@ public class TournamentListContent extends Content {
 
     private void storeTournament(final TournamentProxy proxy) {
 
-        taikaiService.storeTournament(proxy, new AsyncCallback() {
+        tournamentService.storeTournament(proxy, new AsyncCallback() {
 
             public void onFailure(Throwable t) {
                 Logger.error("Det gick inte att spara turnering " + proxy.getId() + ".");
@@ -137,6 +139,7 @@ public class TournamentListContent extends Content {
         else {
             btnNewTournament.setEnabled(true);
         }
+        
     }
 
     private void updateTournamentList() {
@@ -145,7 +148,7 @@ public class TournamentListContent extends Content {
                 "kan inte hämtas.");
             return;
         }
-        taikaiService.getTournaments(TaikaiWeb.getSession().getTaikai(),
+        tournamentService.getTournaments(TaikaiWeb.getSession().getTaikai(),
             new CustomCallback<ListResult<TournamentProxy>>() {
 
                 public void onSuccess(ListResult<TournamentProxy> result) {
@@ -168,7 +171,7 @@ public class TournamentListContent extends Content {
         else {
             try {
                 final int tournamentId = Integer.parseInt(state);
-                taikaiService.getTournament(tournamentId, new AsyncCallback<TournamentProxy>() {
+                tournamentService.getTournament(tournamentId, new AsyncCallback<TournamentProxy>() {
 
                     public void onFailure(Throwable t) {
                         Logger.error("Det gick inte att hitta turnering " + tournamentId + ".");

@@ -17,25 +17,24 @@
  */
 package net.europa13.taikai.web.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
- * @author Daniel Wentzel
+ * @author daniel
  */
-public interface TaikaiAdminServiceAsync {
+@RemoteServiceRelativePath("playeradminservice")
+public interface PlayerAdminService extends RemoteService {
 
-    public void getTaikai(int id, AsyncCallback callback);
-    public void getTaikais(AsyncCallback callback);
-    
+    public PlayerProxy getPlayer(int playerId);
 
-    
-    
-    
-    public void storeTaikai(TaikaiProxy proxy, AsyncCallback callback);
-    
-    
-    
-    
+    public ListResult<PlayerProxy> getPlayers(TaikaiProxy proxy);
+
+    public ListResult<PlayerProxy> getPlayers(TournamentProxy proxy);
+
+    public void storePlayer(PlayerProxy proxy);
 }

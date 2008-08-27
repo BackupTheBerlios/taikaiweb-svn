@@ -86,6 +86,10 @@ public class Tournament implements Serializable {
         return pools;
     }
     
+    public Taikai getTaikai() {
+        return taikai;
+    }
+    
     public Tree getTree() {
         return tree;
     }
