@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.entity;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Entity;
@@ -27,49 +28,60 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Version;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "getUncheckedPlayers",
+    query = "SELECT p FROM Taikai t JOIN t.players p WHERE p.checkedIn = FALSE")
+})
 public class Tournament implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String name;
-    
+    private Integer poolSize;
+    private boolean preferringLargerPools;
+    @Version
+    private Timestamp lastUpdate;
     @ManyToOne
     private Taikai taikai;
-
     @OneToMany
     private List<Player> players;
-    
     @ManyToMany
 //    @MapKey(name="SEEDNO")
     private Map<Integer, Player> seededPlayers;
-    
     @OneToOne
     private Tree tree;
-    
-    @OneToOne
-    private TournamentSeed tournamentSeed;
-    
+//    @OneToOne
+//    private TournamentSeed tournamentSeed;
     @OneToMany
     private List<Pool> pools;
+
+    public Tournament() {
+//        tournamentSeed = new TournamentSeed();
+        seededPlayers = new HashMap<Integer, Player>();
+    }
     
     public void addPlayer(Player player) {
         players.add(player);
     }
-    
+
     public void draw() {
         // Generate pools
         // Generate tree
     }
-    
+
     public Integer getId() {
         return id;
     }
@@ -77,39 +89,61 @@ public class Tournament implements Serializable {
     public String getName() {
         return name;
     }
-    
+
     public List<Player> getPlayers() {
         return players;
     }
-    
+
     public List<Pool> getPools() {
         return pools;
     }
-    
+
+    public int getPoolSize() {
+        return poolSize;
+    }
+
+    public Player getSeededPlayer(int seed) {
+//        return tournamentSeed.getPlayer(seed);
+        return seededPlayers.get(seed);
+    }
+
     public Taikai getTaikai() {
         return taikai;
     }
-    
+
     public Tree getTree() {
         return tree;
     }
-    
+
+    public boolean isPreferringLargerPools() {
+        return preferringLargerPools;
+    }
+
     public void removePlayer(Player player) {
         players.remove(player);
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public void setPlayerSeed(Player player, int seed) {
-        tournamentSeed.setPlayerSeed(player, seed);
+//        tournamentSeed.setPlayerSeed(player, seed);
+        seededPlayers.put(seed, player);
     }
-    
+
+    public void setPoolSize(int poolSize) {
+        this.poolSize = poolSize;
+    }
+
+    public void setPreferringLargerPools(boolean preferringLargerPools) {
+        this.preferringLargerPools = preferringLargerPools;
+    }
+
     public void setTaikai(Taikai taikai) {
         this.taikai = taikai;
     }
@@ -138,5 +172,4 @@ public class Tournament implements Serializable {
     public String toString() {
         return "net.europa13.taikai.entity.Tournament[id=" + id + "]";
     }
-
 }

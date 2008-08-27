@@ -35,9 +35,13 @@ import net.europa13.taikai.web.client.PlayerAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiWeb;
+import net.europa13.taikai.web.client.TournamentAdminService;
+import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
@@ -50,6 +54,8 @@ public class PlayerContent extends Content {
     private final PlayerPanel playerPanel;
     private final PlayerAdminServiceAsync playerService =
         GWT.create(PlayerAdminService.class);
+    private final TournamentAdminServiceAsync tournamentService = 
+        GWT.create(TournamentAdminService.class);
     private List<PlayerProxy> playerList;
     private final String historyToken;
     private final Button btnNewPlayer;
@@ -98,7 +104,7 @@ public class PlayerContent extends Content {
         playerPanel.addSaveListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                PlayerProxy player = playerPanel.getPlayer();
+                PlayerDetails player = playerPanel.getPlayer();
                 storePlayer(player);
             }
         });
@@ -120,16 +126,16 @@ public class PlayerContent extends Content {
 
     }
 
-    private void storePlayer(final PlayerProxy proxy) {
-        playerService.storePlayer(proxy, new AsyncCallback() {
+    private void storePlayer(final PlayerDetails details) {
+        playerService.storePlayer(details, new AsyncCallback() {
 
             public void onFailure(Throwable t) {
-                Logger.error("Det gick inte att spara deltagare " + proxy.getId() + ".");
+                Logger.error("Det gick inte att spara deltagare " + details.getId() + ".");
                 Logger.debug(t.getLocalizedMessage());
             }
 
             public void onSuccess(Object nothing) {
-                Logger.info(proxy.getName() + " sparad.");
+                Logger.info(details.getName() + " sparad.");
                 updatePlayerList();
             }
         });
@@ -174,6 +180,26 @@ public class PlayerContent extends Content {
 
     @Override
     public void handleState(String stateToken) {
+        
+        tournamentService.getTournaments(TaikaiWeb.getSession().getTaikai(), new AsyncCallback<List<TournamentProxy>>() {
+
+            public void onFailure(Throwable arg0) {
+                Logger.error("Fel i player handle state.");
+                //throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void onSuccess(List<TournamentProxy> tournaments) {
+                Logger.info("Rätt i player handle state.");
+                if (tournaments == null) {
+                    Logger.warn("tournamnets == null");
+                }
+                playerPanel.setTournamentList(tournaments);
+            }
+        });
+        
+        
+//        playerPanel.setTournamentList();
+        
         if ("new".equals(stateToken)) {
             state = "details";
             
@@ -192,14 +218,14 @@ public class PlayerContent extends Content {
         else {
             try {
                 final int playerId = Integer.parseInt(stateToken);
-                playerService.getPlayer(playerId, new AsyncCallback<PlayerProxy>() {
+                playerService.getPlayer(playerId, new AsyncCallback<PlayerDetails>() {
 
                     public void onFailure(Throwable t) {
                         Logger.error("Det gick inte att hitta deltagare " + playerId + ".");
                         Logger.debug(t.getLocalizedMessage());
                     }
 
-                    public void onSuccess(PlayerProxy player) {
+                    public void onSuccess(PlayerDetails player) {
                         state = "details";
                         
                         playerPanel.setPlayer(player);

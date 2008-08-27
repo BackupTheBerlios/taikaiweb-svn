@@ -23,7 +23,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import javax.persistence.Query;
 import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.PlayerAdminService;
 import net.europa13.taikai.web.entity.Player;
@@ -63,17 +62,17 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
 
         return proxies;
     }
-
+    
     public PlayerProxy getPlayer(int playerId) {
         EntityManager em = emf.createEntityManager();
 
         try {
             Player player = em.find(Player.class, playerId);
 
-            PlayerProxy proxy = new PlayerProxy();
-            entityToProxy(player, proxy);
+            PlayerDetails details = new PlayerDetails();
+            EntityToDetails.player(player, details, em);
 
-            return proxy;
+            return details;
         }
         finally {
             em.close();
@@ -134,47 +133,31 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
 
     }
 
-    private void entityToProxy(Player entity, PlayerProxy proxy) {
-        proxy.setAge(entity.getAge());
-        proxy.setCheckedIn(entity.isCheckedIn());
-        proxy.setId(entity.getId());
-        proxy.setName(entity.getName());
-        proxy.setNumber(entity.getNumber());
-        proxy.setSurname(entity.getSurname());
-        proxy.setTaikaiId(entity.getTaikai().getId());
+    
 
-    }
-
-    private void proxyToEntity(PlayerProxy proxy, Player entity) {
-        entity.setAge(proxy.getAge());
-        entity.setCheckedIn(proxy.isCheckedIn());
-        entity.setName(proxy.getName());
-        entity.setSurname(proxy.getSurname());
-    }
-
-    public void storePlayer(PlayerProxy proxy) {
+    public void storePlayer(PlayerDetails details) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            Player player = em.find(Player.class, proxy.getId());
+            Player player = em.find(Player.class, details.getId());
 
             em.getTransaction().begin();
 
             if (player == null) {
                 player = new Player();
-                Taikai taikai = em.find(Taikai.class, proxy.getTaikaiId());
+                Taikai taikai = em.find(Taikai.class, details.getTaikaiId());
                 if (taikai == null) {
                     throw new RuntimeException("no taikai");
                 }
 
-                proxyToEntity(proxy, player);
+                DetailsToEntity.player(details, player, em);
 
                 player.setTaikai(taikai);
                 taikai.addPlayer(player);
                 em.merge(taikai);
             }
             else {
-                proxyToEntity(proxy, player);
+                DetailsToEntity.player(details, player, em);
                 em.merge(player);
             }
 

@@ -17,12 +17,14 @@
  */
 package net.europa13.taikai.web.entity;
 
+import net.europa13.taikai.web.proxy.Grade;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import net.europa13.taikai.web.proxy.Gender;
 
 /**
  *
@@ -44,7 +46,7 @@ public class Player implements Serializable {
     private String surname;
     private int age;
     private Grade grade;
-    private Sex sex;
+    private Gender gender;
     private Integer number;
     @ManyToOne
     private Taikai taikai;
@@ -90,8 +92,8 @@ public class Player implements Serializable {
      *
      * @return the value of sex
      */
-    public Sex getSex() {
-        return sex;
+    public Gender getGender() {
+        return gender;
     }
 
     /**
@@ -99,8 +101,8 @@ public class Player implements Serializable {
      *
      * @param sex new value of sex
      */
-    public void setSex(Sex sex) {
-        this.sex = sex;
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     /**

@@ -18,7 +18,7 @@
 package net.europa13.taikai.web.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
-import net.europa13.taikai.web.proxy.TournamentProxy;
+import net.europa13.taikai.web.proxy.TournamentDetails;
 
 
 /**
@@ -29,5 +29,5 @@ public interface TournamentAdminServiceAsync {
     public void getTournament(int tournamentId, AsyncCallback callback);
     public void getTournaments(TaikaiProxy proxy, AsyncCallback callback);
     
-    public void storeTournament(TournamentProxy proxy, AsyncCallback callback);
+    public void storeTournament(TournamentDetails details, AsyncCallback callback);
 }

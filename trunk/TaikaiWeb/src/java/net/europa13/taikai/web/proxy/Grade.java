@@ -15,28 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.europa13.taikai.web.proxy;
 
-import java.util.List;
+package net.europa13.taikai.web.proxy;
 
 /**
  *
  * @author daniel
  */
-public class PlayerDetails extends PlayerProxy {
-    
-    private List<TournamentDetails> tournaments;
-    
-    public void addTournament(TournamentDetails tournament) {
-        tournaments.add(tournament);
-    }
-    
-    public List<TournamentDetails> getTournaments() {
-        return tournaments;
-    }
+public enum Grade {
 
-    public void removeTournament(TournamentDetails tournament) {
-        tournaments.remove(tournament);
-    }
-    
+    Kyu10,
+    Kyu9,
+    Kyu8,
+    Kyu7,
+    Kyu6,
+    Kyu5,
+    Kyu4,
+    Kyu3,
+    Kyu2,
+    Kyu1,
+    Dan1,
+    Dan2,
+    Dan3,
+    Dan4,
+    Dan5,
+    Dan6,
+    Dan7,
+    Dan8,
+    Dan9,
+    Dan10
+        
 }

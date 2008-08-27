@@ -21,6 +21,7 @@ package net.europa13.taikai.web.entity;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -28,6 +29,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 /**
@@ -42,7 +45,10 @@ public class Taikai implements Serializable {
     private Integer id;    
     private int playerNumber = 1;
     private String name;
-    
+    @Temporal(value=TemporalType.DATE)
+    private Date startDate;
+    @Temporal(value=TemporalType.DATE)
+    private Date endDate;
     @Version
     private Timestamp lastUpdate;
     
@@ -74,6 +80,10 @@ public class Taikai implements Serializable {
         tournament.setTaikai(this);
     }
     
+    public Date getEndDate() {
+        return endDate;
+    }
+    
     public Integer getId() {
         return id;
     }
@@ -85,6 +95,10 @@ public class Taikai implements Serializable {
     
     public List<Player> getPlayers() {
         return new ArrayList<Player>(players);
+    }
+    
+    public Date getStartDate() {
+        return startDate;
     }
     
     public List<Tournament> getTournaments() {

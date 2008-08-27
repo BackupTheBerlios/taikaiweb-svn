@@ -30,13 +30,12 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import net.europa13.taikai.web.client.CustomCallback;
 import net.europa13.taikai.web.client.ListResult;
-import net.europa13.taikai.web.client.TaikaiAdminService;
-import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.client.TournamentAdminService;
 import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
@@ -92,7 +91,7 @@ public class TournamentContent extends Content {
         tournamentPanel.addSaveListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                TournamentProxy tournament = tournamentPanel.getTournament();
+                TournamentDetails tournament = tournamentPanel.getTournament();
                 storeTournament(tournament);
             }
         });
@@ -114,17 +113,17 @@ public class TournamentContent extends Content {
         }
     }
 
-    private void storeTournament(final TournamentProxy proxy) {
+    private void storeTournament(final TournamentDetails details) {
 
-        tournamentService.storeTournament(proxy, new AsyncCallback() {
+        tournamentService.storeTournament(details, new AsyncCallback() {
 
             public void onFailure(Throwable t) {
-                Logger.error("Det gick inte att spara turnering " + proxy.getId() + ".");
+                Logger.error("Det gick inte att spara turnering " + details.getId() + ".");
                 Logger.debug(t.getLocalizedMessage());
             }
 
             public void onSuccess(Object nothing) {
-                Logger.info(proxy.getName() + " sparad.");
+                Logger.info(details.getName() + " sparad.");
                 updateTournamentList();
             }
         });
@@ -171,14 +170,14 @@ public class TournamentContent extends Content {
         else {
             try {
                 final int tournamentId = Integer.parseInt(state);
-                tournamentService.getTournament(tournamentId, new AsyncCallback<TournamentProxy>() {
+                tournamentService.getTournament(tournamentId, new AsyncCallback<TournamentDetails>() {
 
                     public void onFailure(Throwable t) {
                         Logger.error("Det gick inte att hitta turnering " + tournamentId + ".");
                         Logger.debug(t.getLocalizedMessage());
                     }
 
-                    public void onSuccess(TournamentProxy tournament) {
+                    public void onSuccess(TournamentDetails tournament) {
                         tournamentPanel.setTournament(tournament);
                         tournamentPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
                         panel.setWidget(tournamentPanel);

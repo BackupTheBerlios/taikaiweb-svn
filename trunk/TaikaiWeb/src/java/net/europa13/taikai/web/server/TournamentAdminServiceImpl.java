@@ -27,6 +27,7 @@ import net.europa13.taikai.web.client.TournamentAdminService;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
@@ -57,22 +58,15 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
         return proxies;
     }
     
-    private void entityToProxy(Tournament entity, TournamentProxy proxy) {
-        proxy.setId(entity.getId());
-        proxy.setName(entity.getName());
-        proxy.setTaikaiId(entity.getTaikai().getId());
-
-    }
-    
-    public TournamentProxy getTournament(int tournamentId) {
+    public TournamentDetails getTournament(int tournamentId) {
 
         EntityManager em = emf.createEntityManager();
 
         try {
             Tournament tournament = em.find(Tournament.class, tournamentId);
             
-            TournamentProxy proxy = new TournamentProxy();
-            entityToProxy(tournament, proxy);
+            TournamentDetails proxy = new TournamentDetails();
+            EntityToDetails.tournament(tournament, proxy, em);
             
             return proxy;
         }
@@ -103,6 +97,7 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
         }
     }
     
+    @SuppressWarnings(value="unchecked")
     private ListResult<TournamentProxy> getTournaments(EntityManager em, String query, Object owner) {
         List<Object[]> data =
             em.createQuery(query).
@@ -113,27 +108,26 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
         return result;
     }
     
-    private void proxyToEntity(TournamentProxy proxy, Tournament entity) {
-        entity.setName(proxy.getName());
-    }
     
-    public void storeTournament(TournamentProxy proxy) {
+    
+    public void storeTournament(TournamentDetails details) {
 
         EntityManager em = emf.createEntityManager();
         try {
 
-            Tournament tournament = em.find(Tournament.class, proxy.getId());
+            Tournament tournament = em.find(Tournament.class, details.getId());
 
             em.getTransaction().begin();
 
             if (tournament == null) {
                 tournament = new Tournament();
-                int taikaiId = proxy.getTaikaiId();
+                int taikaiId = details.getTaikaiId();
                 Taikai taikai = em.find(Taikai.class, taikaiId);
                 if (taikai == null) {
                     throw new RuntimeException("no taikai");
                 }
-                proxyToEntity(proxy, tournament);
+//                detailsToEntity(details, tournament);
+                DetailsToEntity.tournament(details, tournament, em);
                 
                 tournament.setTaikai(taikai);
                 taikai.addTournament(tournament);
@@ -141,7 +135,7 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
                 em.merge(taikai);
             }
             else {
-                proxyToEntity(proxy, tournament);
+                DetailsToEntity.tournament(details, tournament, em);
                 
                 em.merge(tournament);
             }

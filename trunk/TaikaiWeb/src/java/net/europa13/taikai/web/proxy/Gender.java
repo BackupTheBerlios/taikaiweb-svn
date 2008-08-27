@@ -15,34 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package net.europa13.taikai.web.entity;
+package net.europa13.taikai.web.proxy;
 
 /**
  *
  * @author daniel
  */
-public enum Grade {
+public enum Gender {
 
-    Kyu10,
-    Kyu9,
-    Kyu8,
-    Kyu7,
-    Kyu6,
-    Kyu5,
-    Kyu4,
-    Kyu3,
-    Kyu2,
-    Kyu1,
-    Dan1,
-    Dan2,
-    Dan3,
-    Dan4,
-    Dan5,
-    Dan6,
-    Dan7,
-    Dan8,
-    Dan9,
-    Dan10
-        
+    FEMALE,
+    MALE
 }

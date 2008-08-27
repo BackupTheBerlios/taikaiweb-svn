@@ -41,6 +41,13 @@ public class TournamentSeed implements Serializable {
     @OneToMany
     private List<Player> players = new ArrayList<Player>(4);
     
+    public TournamentSeed() {
+        players.add(null);
+        players.add(null);
+        players.add(null);
+        players.add(null);
+    }
+    
     public Long getId() {
         return id;
     }

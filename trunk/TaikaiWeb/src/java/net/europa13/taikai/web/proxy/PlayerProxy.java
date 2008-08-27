@@ -28,6 +28,8 @@ public class PlayerProxy implements Serializable {
     
     private int age;
     private boolean checkedIn;
+    private Gender gender;
+    private Grade grade;
     private int id;
     private String name;
     private int number;
@@ -45,6 +47,14 @@ public class PlayerProxy implements Serializable {
         return age;
     }
     
+    public Gender getGender() {
+        return gender;
+    }
+    
+    public Grade getGrade() {
+        return grade;
+    }
+    
     public int getId() {
         return id;
     }
@@ -56,7 +66,7 @@ public class PlayerProxy implements Serializable {
     public int getNumber() {
         return number;
     }
-    
+
     public String getSurname() {
         return surname;
     }
@@ -69,13 +79,23 @@ public class PlayerProxy implements Serializable {
         return checkedIn;
     }
     
+    
+    
+    public void setAge(int age) {
+        this.age = age;
+    }
+    
     public void setCheckedIn(boolean checkedIn) {
         this.checkedIn = checkedIn;
                   
     }
     
-    public void setAge(int age) {
-        this.age = age;
+    public void setGender(Gender sex) {
+        this.gender = gender;
+    }
+    
+    public void setGrade(Grade grade) {
+        this.grade = grade;
     }
     
     public void setId(int id) {
@@ -89,6 +109,8 @@ public class PlayerProxy implements Serializable {
     public void setNumber(int number) {
         this.number = number;
     }
+    
+    
     
     public void setSurname(String surname) {
         this.surname = surname;

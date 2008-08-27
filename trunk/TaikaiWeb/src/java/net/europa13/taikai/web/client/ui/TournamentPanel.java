@@ -23,8 +23,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
@@ -40,7 +40,7 @@ public class TournamentPanel extends VerticalPanel {
 //    private final ListBox lbTaikaiList;
 //    private List<TaikaiProxy> taikaiList;
     private TaikaiProxy taikai;
-    private TournamentProxy tournament;
+    private TournamentDetails tournament;
     
 //    private final Panel panel = new VerticalPanel();
 
@@ -79,8 +79,8 @@ public class TournamentPanel extends VerticalPanel {
         btnSave.addClickListener(listener);
     }
     
-    public TournamentProxy getTournament() {
-        TournamentProxy newTournament = new TournamentProxy();
+    public TournamentDetails getTournament() {
+        TournamentDetails newTournament = new TournamentDetails();
         
         if (tournament != null) {
             newTournament.setId(tournament.getId());
@@ -106,7 +106,7 @@ public class TournamentPanel extends VerticalPanel {
         this.taikai = taikai;
     }
 
-    public void setTournament(TournamentProxy tournament) {
+    public void setTournament(TournamentDetails tournament) {
         if (tournament == null) {
             reset();
         }

@@ -18,6 +18,7 @@
 package net.europa13.taikai.web.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
@@ -34,5 +35,5 @@ public interface PlayerAdminServiceAsync {
 
     public void getPlayers(TournamentProxy proxy, AsyncCallback callback);
 
-    public void storePlayer(PlayerProxy proxy, AsyncCallback callback);
+    public void storePlayer(PlayerDetails details, AsyncCallback callback);
 }

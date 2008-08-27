@@ -26,8 +26,11 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import net.europa13.taikai.web.proxy.PlayerProxy;
+import java.util.List;
+import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
@@ -44,12 +47,13 @@ public class PlayerPanel extends VerticalPanel {
     private final TextBox tbAge;
     private final TextBox tbNumber;
     private final Button btnSave;
-    private PlayerProxy player;
+    private PlayerDetails player;
     private TaikaiProxy taikai;
     private final RadioButton rbSexMale;
     private final RadioButton rbSexFemale;
     private final ListBox lbGrade;
     
+    private List<TournamentProxy> tournaments;
 
     public PlayerPanel() {
 
@@ -141,18 +145,19 @@ public class PlayerPanel extends VerticalPanel {
         btnSave.addClickListener(listener);
     }
 
-    public PlayerProxy getPlayer() {
-        PlayerProxy newPlayer = new PlayerProxy();
+    public PlayerDetails getPlayer() {
+        PlayerDetails newPlayer = new PlayerDetails();
 
         if (player != null) {
             newPlayer.setId(player.getId());
+            newPlayer.setNumber(player.getNumber());
         }
         newPlayer.setTaikaiId(taikai.getId());
         newPlayer.setName(tbName.getText());
         newPlayer.setSurname(tbSurname.getText());
         newPlayer.setCheckedIn(cbCheckedIn.isChecked());
         newPlayer.setAge(Integer.parseInt(tbAge.getText()));
-        newPlayer.setNumber(Integer.parseInt(tbNumber.getText()));
+//        newPlayer.setNumber(Integer.parseInt(tbNumber.getText()));
 
         return newPlayer;
     }
@@ -172,7 +177,7 @@ public class PlayerPanel extends VerticalPanel {
         tbNumber.setText("");
     }
 
-    public void setPlayer(PlayerProxy player) {
+    public void setPlayer(PlayerDetails player) {
         if (player == null) {
             reset();
             return;
@@ -190,5 +195,11 @@ public class PlayerPanel extends VerticalPanel {
 
     public void setTaikai(TaikaiProxy taikai) {
         this.taikai = taikai;
+    }
+    
+    public void setTournamentList(List<TournamentProxy> tournaments) {
+//        Logger.info("setTournaments");
+        this.tournaments = tournaments;
+        
     }
 }

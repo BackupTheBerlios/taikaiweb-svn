@@ -28,7 +28,6 @@ public class TournamentProxy implements Serializable {
     private int id;
     private String name;
     private int taikaiId;
-
     
     public int getId() {
         return id;
