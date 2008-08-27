@@ -22,6 +22,8 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import net.europa13.taikai.web.proxy.PlayerProxy;
@@ -44,6 +46,10 @@ public class PlayerPanel extends VerticalPanel {
     private final Button btnSave;
     private PlayerProxy player;
     private TaikaiProxy taikai;
+    private final RadioButton rbSexMale;
+    private final RadioButton rbSexFemale;
+    private final ListBox lbGrade;
+    
 
     public PlayerPanel() {
 
@@ -81,6 +87,41 @@ public class PlayerPanel extends VerticalPanel {
         tbNumber.setEnabled(false);
         table.setText(row, 0, "Nummer");
         table.setWidget(row++, 1, tbNumber);
+        
+        row = 0;
+        rbSexMale = new RadioButton("rgSex", "Man");
+        rbSexFemale = new RadioButton("rgSex", "Kvinna");
+        rbSexMale.setChecked(true);
+        table.setText(row, 2, "Kön");
+        table.setWidget(row, 3, rbSexMale);
+        table.setWidget(row++, 4, rbSexFemale);
+        
+        lbGrade = new ListBox();
+        lbGrade.addItem("4 kyu");
+        lbGrade.addItem("3 kyu");
+        lbGrade.addItem("2 kyu");
+        lbGrade.addItem("1 kyu");
+        lbGrade.addItem("1 dan");
+        lbGrade.addItem("2 dan");
+        lbGrade.addItem("3 dan");
+        lbGrade.addItem("4 dan");
+        lbGrade.addItem("5 dan");
+        lbGrade.addItem("6 dan");
+        lbGrade.setVisibleItemCount(1);
+        lbGrade.setItemSelected(4, true);
+        table.setText(row, 2, "Grad");
+        table.setWidget(row++, 3, lbGrade);
+        
+        row = 0;
+        
+        FlexTable activeTournamentsTable = new FlexTable();
+        int attRow = 0;
+        ListBox lbTournaments = new ListBox();
+        
+        activeTournamentsTable.setText(attRow, 0, "Aktiv i turnering");
+        activeTournamentsTable.setWidget(attRow, 1, lbTournaments);
+        
+        table.setWidget(row++, 4, activeTournamentsTable);
         
         FlowPanel buttonPanel = new FlowPanel();
         

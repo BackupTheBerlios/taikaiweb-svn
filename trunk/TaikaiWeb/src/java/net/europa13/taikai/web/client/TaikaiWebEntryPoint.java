@@ -103,7 +103,7 @@ public class TaikaiWebEntryPoint implements EntryPoint {
         VerticalPanel logPanelContents = new VerticalPanel();
         logPanel.setWidth("100%");
         logPanel.setBorderWidth(1);
-        Button logClearBTN = new Button("Clear Log", new ClickListener() {
+        Button logClearBTN = new Button("Töm logg", new ClickListener() {
 
             public void onClick(Widget source) {
                 Logger.clear();
