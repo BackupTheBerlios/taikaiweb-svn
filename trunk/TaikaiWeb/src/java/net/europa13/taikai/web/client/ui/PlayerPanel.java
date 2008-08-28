@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.PlayerDetails;
@@ -49,15 +50,22 @@ public class PlayerPanel extends VerticalPanel {
     private final Button btnSave;
     private PlayerDetails player;
     private TaikaiProxy taikai;
-    private final RadioButton rbSexMale;
-    private final RadioButton rbSexFemale;
+    private final RadioButton rbGenderMale;
+    private final RadioButton rbGenderFemale;
     private final ListBox lbGrade;
+    private final Button btnAddTournamentConnection;
+    private int btnAddTournamentConnectionRow;
+    private int btnAddTournamentConnectionCol;
+    private FlexTable activeTournamentsTable;
+    private FlexTable table;
+    private int attRow;
+    private int nbrTournamentConnections = 0;
     
     private List<TournamentProxy> tournaments;
 
     public PlayerPanel() {
 
-        FlexTable table = new FlexTable();
+        table = new FlexTable();
 
         int row = 0;
         
@@ -93,12 +101,12 @@ public class PlayerPanel extends VerticalPanel {
         table.setWidget(row++, 1, tbNumber);
         
         row = 0;
-        rbSexMale = new RadioButton("rgSex", "Man");
-        rbSexFemale = new RadioButton("rgSex", "Kvinna");
-        rbSexMale.setChecked(true);
+        rbGenderMale = new RadioButton("rgGender", "Man");
+        rbGenderFemale = new RadioButton("rgGender", "Kvinna");
+        rbGenderMale.setChecked(true);
         table.setText(row, 2, "Kön");
-        table.setWidget(row, 3, rbSexMale);
-        table.setWidget(row++, 4, rbSexFemale);
+        table.setWidget(row, 3, rbGenderMale);
+        table.setWidget(row++, 4, rbGenderFemale);
         
         lbGrade = new ListBox();
         lbGrade.addItem("4 kyu");
@@ -116,16 +124,34 @@ public class PlayerPanel extends VerticalPanel {
         table.setText(row, 2, "Grad");
         table.setWidget(row++, 3, lbGrade);
         
+        
+        
         row = 0;
         
-        FlexTable activeTournamentsTable = new FlexTable();
-        int attRow = 0;
+        activeTournamentsTable = new FlexTable();
+        attRow = 0;
         ListBox lbTournaments = new ListBox();
         
         activeTournamentsTable.setText(attRow, 0, "Aktiv i turnering");
-        activeTournamentsTable.setWidget(attRow, 1, lbTournaments);
+        activeTournamentsTable.setWidget(attRow++, 1, lbTournaments);
+//        addTournamentConnection();
+        nbrTournamentConnections++;
         
-        table.setWidget(row++, 4, activeTournamentsTable);
+        table.setWidget(row, 5, activeTournamentsTable);
+        row++;
+        
+        btnAddTournamentConnection = new Button("En till turnering");
+        table.setWidget(row, 5, btnAddTournamentConnection);
+        btnAddTournamentConnectionRow = row;
+        btnAddTournamentConnectionCol = 5;
+        row++;
+        btnAddTournamentConnection.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                addTournamentConnection();
+            }
+        });
+        
         
         FlowPanel buttonPanel = new FlowPanel();
         
@@ -139,6 +165,25 @@ public class PlayerPanel extends VerticalPanel {
         add(table);
 
 
+    }
+    
+    private void addTournamentConnection() {
+//        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
+//        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
+//        table.setWidget(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol, new ListBox());
+//        Logger.debug("Ny ListBox på rad " + btnAddTournamentConnectionRow
+//                + ", kolumn " + btnAddTournamentConnectionCol);
+//        btnAddTournamentConnectionRow++;
+        
+        nbrTournamentConnections++;
+        table.insertCell(activeTournamentsTable.getRowCount(), 4);
+        activeTournamentsTable.setWidget(activeTournamentsTable.getRowCount(),
+                                         1,
+                                         new ListBox());
+        table.getFlexCellFormatter().setRowSpan(btnAddTournamentConnectionRow - 1,
+                                                btnAddTournamentConnectionCol,
+                                                nbrTournamentConnections);
+        
     }
 
     public void addSaveListener(ClickListener listener) {

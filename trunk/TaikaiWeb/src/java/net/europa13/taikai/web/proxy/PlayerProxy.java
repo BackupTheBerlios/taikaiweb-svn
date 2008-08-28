@@ -90,7 +90,7 @@ public class PlayerProxy implements Serializable {
                   
     }
     
-    public void setGender(Gender sex) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
     
