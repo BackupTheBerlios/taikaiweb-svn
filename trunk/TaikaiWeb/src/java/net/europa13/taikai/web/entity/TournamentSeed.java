@@ -15,84 +15,90 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  *
  * @author daniel
  */
 @Entity
+@Table(name = "TournamentSeed", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"seedNumber", "tournamentId"})
+})
 public class TournamentSeed implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
+    @Column(name = "seedNumber", nullable = false)
+    private int seedNumber;
+    @ManyToOne
+    @JoinColumn(name = "tournamentId", nullable = false)
+    private Tournament tournament;
+    @ManyToOne
+    @JoinColumn(name = "playerId", nullable = false)
+    private Player player;
 
-    @OneToMany
-    private List<Player> players = new ArrayList<Player>(4);
-    
     public TournamentSeed() {
-        players.add(null);
-        players.add(null);
-        players.add(null);
-        players.add(null);
-    }
-    
-    public Long getId() {
-        return id;
     }
 
-    public Player getPlayer(int seed) {
-        if (seed < 0 || seed > 3) {
-            throw new IllegalArgumentException();
-        }
-        return players.get(seed);
+    public int getSeedNumber() {
+        return seedNumber;
     }
-    
-    public void setId(Long id) {
-        this.id = id;
+
+    public Tournament getTournament() {
+        return tournament;
     }
-    
-    public void setPlayerSeed(Player player, int seed) {
-        if (seed < 0 || seed > 3) {
-            throw new IllegalArgumentException();
-        }
-        players.set(seed, player);
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setSeedNumber(int seedNumber) {
+        this.seedNumber = seedNumber;
+    }
+
+    public void setTournament(Tournament tournament) {
+        this.tournament = tournament;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TournamentSeed)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        TournamentSeed other = (TournamentSeed) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TournamentSeed other = (TournamentSeed) obj;
+        if (this.seedNumber != other.seedNumber) {
+            return false;
+        }
+        if (this.tournament != other.tournament && (this.tournament == null || !this.tournament.equals(other.tournament))) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString() {
-        return "net.europa13.taikai.entity.TournamentSeed[id=" + id + "]";
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + this.seedNumber;
+        hash = 97 * hash + (this.tournament != null ? this.tournament.hashCode() : 0);
+        return hash;
     }
-
 }

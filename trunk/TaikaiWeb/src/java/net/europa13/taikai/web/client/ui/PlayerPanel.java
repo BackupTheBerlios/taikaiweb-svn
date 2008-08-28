@@ -243,7 +243,7 @@ public class PlayerPanel extends VerticalPanel {
     }
 
     public void setTournamentList(List<TournamentProxy> tournaments) {
-        Logger.info("setTournaments size = " + tournaments.size());
+//        Logger.info("setTournaments size = " + tournaments.size());
         this.tournaments = tournaments;
 //        throw new RuntimeException(String.valueOf(tournaments));
         lbTournaments.clear();

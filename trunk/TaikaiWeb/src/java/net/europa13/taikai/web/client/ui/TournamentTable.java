@@ -31,6 +31,8 @@ public class TournamentTable extends Grid {
 
         int columnCount = getColumnCount();
         
+        CellFormatter formatter = getCellFormatter();
+        
         resize(tournamentList.size() + 1, columnCount);
         for (int i = 0; i < tournamentList.size(); ++i) {
             final TournamentProxy tournament = tournamentList.get(i);
@@ -47,6 +49,7 @@ public class TournamentTable extends Grid {
 //            Hyperlink name = new Hyperlink(tournament.getName(), "editTournament");
 //            name.addClickListener(listener);
             setText(i + 1, 1, tournament.getName());
+            formatter.setWordWrap(i + 1, 1, false);
 //            tournamentGrid.setText(i + 1, 2, String.valueOf(tournament.getPlayerCount()));
 //            tournamentGrid.setText(i + 1, 3, String.valueOf(tournament.getTournamentCount()));
         }

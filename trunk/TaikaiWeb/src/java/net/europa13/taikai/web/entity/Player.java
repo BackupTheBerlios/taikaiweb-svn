@@ -33,14 +33,9 @@ import net.europa13.taikai.web.proxy.Gender;
 @Entity
 public class Player implements Serializable {
 
-    public static enum Sex {
-
-        FEMALE,
-        MALE
-    }
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private String surname;

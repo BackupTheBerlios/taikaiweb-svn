@@ -22,16 +22,20 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 /**
@@ -39,6 +43,10 @@ import javax.persistence.Version;
  * @author Daniel Wentzel
  */
 @Entity
+@Table(name = "Tournament",
+uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name", "taikaiId"})
+})
 @NamedQueries({
     @NamedQuery(name = "getUncheckedPlayers",
     query = "SELECT p FROM Taikai t JOIN t.players p WHERE p.checkedIn = FALSE")
@@ -47,21 +55,27 @@ public class Tournament implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "poolSize")
     private Integer poolSize;
+    @Column(name = "preferringLargerPools")
     private boolean preferringLargerPools;
     @Version
+    @Column(name = "lastUpdate")
     private Timestamp lastUpdate;
     @ManyToOne
+    @JoinColumn(name = "taikaiId")
     private Taikai taikai;
     @OneToMany
     private List<Player> players;
-    @ManyToMany
-//    @MapKey(name="SEEDNO")
-    private Map<Integer, Player> seededPlayers;
+    @OneToMany(mappedBy = "tournament")
+    private List<TournamentSeed> tournamentSeeds;
     @OneToOne
+    @JoinColumn(name = "treeId")
     private Tree tree;
 //    @OneToOne
 //    private TournamentSeed tournamentSeed;
@@ -69,10 +83,8 @@ public class Tournament implements Serializable {
     private List<Pool> pools;
 
     public Tournament() {
-//        tournamentSeed = new TournamentSeed();
-        seededPlayers = new HashMap<Integer, Player>();
     }
-    
+
     public void addPlayer(Player player) {
         players.add(player);
     }
@@ -104,7 +116,7 @@ public class Tournament implements Serializable {
 
     public Player getSeededPlayer(int seed) {
 //        return tournamentSeed.getPlayer(seed);
-        return seededPlayers.get(seed);
+        return null;
     }
 
     public Taikai getTaikai() {
@@ -133,7 +145,7 @@ public class Tournament implements Serializable {
 
     public void setPlayerSeed(Player player, int seed) {
 //        tournamentSeed.setPlayerSeed(player, seed);
-        seededPlayers.put(seed, player);
+//        seededPlayers.put(seed, player);
     }
 
     public void setPoolSize(int poolSize) {

@@ -23,6 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -32,10 +33,12 @@ import javax.persistence.Id;
 public class Court implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     private String name;
+    @ManyToOne
+    private Taikai taikai;
 
     /**
      * Get the value of name
@@ -45,7 +48,19 @@ public class Court implements Serializable {
     public String getName() {
         return name;
     }
+    
+    public Long getId() {
+        return id;
+    }
+    
+    public Taikai getTaikai() {
+        return taikai;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     /**
      * Set the value of name
      *
@@ -55,15 +70,10 @@ public class Court implements Serializable {
         this.name = name;
     }
 
+    public void setTaikai(Taikai taikai) {
+        this.taikai = taikai;
+    }
     
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;

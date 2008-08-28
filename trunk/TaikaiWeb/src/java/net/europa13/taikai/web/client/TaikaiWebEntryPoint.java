@@ -20,10 +20,8 @@ package net.europa13.taikai.web.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
-import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -58,7 +56,6 @@ public class TaikaiWebEntryPoint implements EntryPoint {
                 return;
             }
             MainPanel.setContent(content);
-//            Logger.debug("HistoryListener " + historyToken);
         }
     };
 
@@ -66,16 +63,7 @@ public class TaikaiWebEntryPoint implements EntryPoint {
     public TaikaiWebEntryPoint() {
     }
 
-    /** 
-    The entry point method, called automatically by loading a module
-    that declares an implementing class as an entry-point
-     */
-    public void onModuleLoad() {
-
-
-
-        RootPanel.get().add(MainPanel.getInstance());
-
+    private void initContentHandlers() {
         //*********************************************************************
         // Session Content
         Content sessionContent = new SessionContent(TaikaiWeb.getSession());
@@ -98,8 +86,9 @@ public class TaikaiWebEntryPoint implements EntryPoint {
         Content playerListContent =
             new PlayerContent("players");
         MainPanel.getInstance().registerContent(playerListContent, MainPanel.Subsystem.ADMIN, "players");
+    }
 
-
+    private void initLogger() {
         //*********************************************************************
         // Logger
         VerticalPanel logPanel = new VerticalPanel();
@@ -119,56 +108,60 @@ public class TaikaiWebEntryPoint implements EntryPoint {
 
         logPanel.add(logPanelHeader);
         logPanel.add(logPanelContents);
-        RootPanel.get().add(logPanel);
+        RootPanel.get("root_bottom").add(logPanel);
 
 
         Logger.setTarget(new PanelHtmlLogTarget(logPanelContents));
         Logger.setLevel(LogLevel.TRACE);
+    }
 
+    private void initState() {
         //*********************************************************************
         // Restore application state from cookies.
         final String taikaiCookie = Cookies.getCookie("taikaiId");
         if (taikaiCookie != null) {
-            
-            final ServiceWaiter waiter = new ServiceWaiter();
-            
+
+//            final ServiceWaiter waiter = new ServiceWaiter();
+
             TaikaiAdminServiceAsync service =
                 GWT.create(TaikaiAdminService.class);
             service.getTaikai(Integer.parseInt(taikaiCookie), new AsyncCallback<TaikaiProxy>() {
 
                 public void onFailure(Throwable arg0) {
                     Logger.error("Evenemang " + taikaiCookie + " kan inte laddas in.");
-                    waiter.stop();
+                    start();
+                    //                    waiter.stop();
                 }
 
                 public void onSuccess(TaikaiProxy taikai) {
                     TaikaiWeb.getSession().setTaikai(taikai);
-                    waiter.stop();
+                    start();
+//                    waiter.stop();
                 }
             });
-            
-            DeferredCommand.addCommand(waiter);
+
+//            DeferredCommand.addCommand(waiter);
         }
+    }
+
+    /** 
+    The entry point method, called automatically by loading a module
+    that declares an implementing class as an entry-point
+     */
+    public void onModuleLoad() {
+
+        initLogger();
+        initContentHandlers();
+        initState();
+        
+    }
+
+    private void start() {
+        RootPanel.get("root_top").add(MainPanel.getInstance());
 
         History.addHistoryListener(historyListener);
         historyListener.onHistoryChanged(History.getToken());
     }
+
 }
 
-class ServiceWaiter implements IncrementalCommand {
-
-    private boolean waiting = true;
-    
-    public boolean execute() {
-        Logger.info("Waiting...");
-        return waiting;
-    }
-    
-    public void reset() {
-        waiting = true;
-    }
-    
-    public void stop() {
-        waiting = false;
-    }
-}

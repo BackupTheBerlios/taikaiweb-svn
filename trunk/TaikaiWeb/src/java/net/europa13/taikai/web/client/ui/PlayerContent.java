@@ -179,8 +179,6 @@ public class PlayerContent extends Content {
     @Override
     public void handleState(String stateToken) {
         
-        
-        
         tournamentService.getTournaments(TaikaiWeb.getSession().getTaikai(), new AsyncCallback<ListResult<TournamentProxy>>() {
 
             public void onFailure(Throwable arg0) {
@@ -190,15 +188,10 @@ public class PlayerContent extends Content {
 
             public void onSuccess(ListResult<TournamentProxy> result) {
                 Logger.info("Rätt i player handle state.");
-//                if (result == null) {
-//                    Logger.warn("tournamnets == null");
-//                }
                 playerPanel.setTournamentList(result.getList());
             }
         });
         
-        
-//        playerPanel.setTournamentList();
         
         if ("new".equals(stateToken)) {
             state = "details";
@@ -239,4 +232,8 @@ public class PlayerContent extends Content {
             }
         }
     }
+    
+//    private void preparePlayerPanel() {
+//        
+//    }
 }

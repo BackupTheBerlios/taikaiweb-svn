@@ -51,11 +51,11 @@ public class EntityToDetails {
         details.setId(entity.getId());
         details.setName(entity.getName());
 
-        for (int i = 0; i < 4; ++i) {
-            PlayerDetails playerDetails = new PlayerDetails();
-            EntityToDetails.player(entity.getSeededPlayer(i), playerDetails, em);
-            details.setPlayerSeed(i, playerDetails);
-        }
+//        for (int i = 0; i < 4; ++i) {
+//            PlayerDetails playerDetails = new PlayerDetails();
+//            EntityToDetails.player(entity.getSeededPlayer(i), playerDetails, em);
+//            details.setPlayerSeed(i, playerDetails);
+//        }
 
         details.setTaikaiId(entity.getTaikai().getId());
 

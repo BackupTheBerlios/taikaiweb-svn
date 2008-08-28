@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.entity;
 
 import java.io.Serializable;
@@ -24,13 +23,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 /**
@@ -38,73 +40,74 @@ import javax.persistence.Version;
  * @author daniel
  */
 @Entity
+@Table(name = "Taikai")
 public class Taikai implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;    
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "playerNumber")
     private int playerNumber = 1;
+    @Column(name="name", nullable=false, unique = true)
     private String name;
-    @Temporal(value=TemporalType.DATE)
+    @Temporal(value = TemporalType.DATE)
+    @Column(name="startDate")
     private Date startDate;
-    @Temporal(value=TemporalType.DATE)
+    @Temporal(value = TemporalType.DATE)
+    @Column(name = "endDate")
     private Date endDate;
     @Version
+    @Column(name = "lastUpdate")
     private Timestamp lastUpdate;
-    
-   
-    @OneToMany(mappedBy = "taikai", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "taikai", cascade = CascadeType.ALL)
     private List<Tournament> tournaments = new ArrayList<Tournament>();
-    
-    @OneToMany
-    (mappedBy = "taikai", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "taikai", cascade = CascadeType.ALL)
     private List<Player> players;
-    
-    @OneToMany
-    (cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "taikai", cascade = CascadeType.ALL)
     private List<Court> courts;
-    
+
     public void addCourt(Court court) {
         courts.add(court);
     }
-    
+
     public void addPlayer(Player player) {
         player.setNumber(playerNumber++);
         player.setTaikai(this);
         players.add(player);
-        
+
     }
-    
+
     public void addTournament(Tournament tournament) {
         tournaments.add(tournament);
         tournament.setTaikai(this);
     }
-    
+
     public Date getEndDate() {
         return endDate;
     }
-    
+
     public Integer getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
-    
+
     public List<Player> getPlayers() {
         return new ArrayList<Player>(players);
     }
-    
+
     public Date getStartDate() {
         return startDate;
     }
-    
+
     public List<Tournament> getTournaments() {
         return new ArrayList<Tournament>(tournaments);
     }
-    
+
     public void removePlayer(Player player) {
         players.remove(player);
         player.setTaikai(null);
@@ -114,7 +117,7 @@ public class Taikai implements Serializable {
         tournaments.remove(tournament);
         tournament.setTaikai(null);
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -122,7 +125,7 @@ public class Taikai implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -145,16 +148,15 @@ public class Taikai implements Serializable {
 
     @Override
     public String toString() {
-        
+
         StringBuilder taikai = new StringBuilder();
         taikai.append("Taikai: ").append(id).append(", ").append(name);
-        
+
 //        for (Tournament tournament : tournaments) {
 //            taikai.append(" ").append(tournament.toString()).append("\n");
 //        }
 
         return taikai.toString();
-        //        return "net.europa13.taikai.entity.Taikai[id=" + id + "]";
+    //        return "net.europa13.taikai.entity.Taikai[id=" + id + "]";
     }
-
 }
