@@ -32,8 +32,6 @@ import net.europa13.taikai.web.client.CustomCallback;
 import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.PlayerAdminService;
 import net.europa13.taikai.web.client.PlayerAdminServiceAsync;
-import net.europa13.taikai.web.client.TaikaiAdminService;
-import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.client.TournamentAdminService;
 import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
@@ -181,19 +179,21 @@ public class PlayerContent extends Content {
     @Override
     public void handleState(String stateToken) {
         
-        tournamentService.getTournaments(TaikaiWeb.getSession().getTaikai(), new AsyncCallback<List<TournamentProxy>>() {
+        
+        
+        tournamentService.getTournaments(TaikaiWeb.getSession().getTaikai(), new AsyncCallback<ListResult<TournamentProxy>>() {
 
             public void onFailure(Throwable arg0) {
                 Logger.error("Fel i player handle state.");
                 //throw new UnsupportedOperationException("Not supported yet.");
             }
 
-            public void onSuccess(List<TournamentProxy> tournaments) {
+            public void onSuccess(ListResult<TournamentProxy> result) {
                 Logger.info("Rätt i player handle state.");
-                if (tournaments == null) {
-                    Logger.warn("tournamnets == null");
-                }
-                playerPanel.setTournamentList(tournaments);
+//                if (result == null) {
+//                    Logger.warn("tournamnets == null");
+//                }
+                playerPanel.setTournamentList(result.getList());
             }
         });
         

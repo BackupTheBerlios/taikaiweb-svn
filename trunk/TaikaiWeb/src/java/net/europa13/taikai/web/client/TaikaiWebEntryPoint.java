@@ -20,8 +20,10 @@ package net.europa13.taikai.web.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -44,13 +46,10 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public class TaikaiWebEntryPoint implements EntryPoint {
 
-    /** Creates a new instance of TaikaiWebEntryPoint */
-    public TaikaiWebEntryPoint() {
-    }
     private HistoryListener historyListener = new HistoryListener() {
 
         public void onHistoryChanged(String historyToken) {
@@ -63,13 +62,17 @@ public class TaikaiWebEntryPoint implements EntryPoint {
         }
     };
 
+    /** Creates a new instance of TaikaiWebEntryPoint */
+    public TaikaiWebEntryPoint() {
+    }
+
     /** 
     The entry point method, called automatically by loading a module
     that declares an implementing class as an entry-point
      */
     public void onModuleLoad() {
 
-        
+
 
         RootPanel.get().add(MainPanel.getInstance());
 
@@ -123,24 +126,49 @@ public class TaikaiWebEntryPoint implements EntryPoint {
         Logger.setLevel(LogLevel.TRACE);
 
         //*********************************************************************
-        // Cookies
+        // Restore application state from cookies.
         final String taikaiCookie = Cookies.getCookie("taikaiId");
         if (taikaiCookie != null) {
+            
+            final ServiceWaiter waiter = new ServiceWaiter();
+            
             TaikaiAdminServiceAsync service =
                 GWT.create(TaikaiAdminService.class);
             service.getTaikai(Integer.parseInt(taikaiCookie), new AsyncCallback<TaikaiProxy>() {
 
                 public void onFailure(Throwable arg0) {
                     Logger.error("Evenemang " + taikaiCookie + " kan inte laddas in.");
+                    waiter.stop();
                 }
 
                 public void onSuccess(TaikaiProxy taikai) {
                     TaikaiWeb.getSession().setTaikai(taikai);
+                    waiter.stop();
                 }
             });
+            
+            DeferredCommand.addCommand(waiter);
         }
-        
+
         History.addHistoryListener(historyListener);
         historyListener.onHistoryChanged(History.getToken());
+    }
+}
+
+class ServiceWaiter implements IncrementalCommand {
+
+    private boolean waiting = true;
+    
+    public boolean execute() {
+        Logger.info("Waiting...");
+        return waiting;
+    }
+    
+    public void reset() {
+        waiting = true;
+    }
+    
+    public void stop() {
+        waiting = false;
     }
 }

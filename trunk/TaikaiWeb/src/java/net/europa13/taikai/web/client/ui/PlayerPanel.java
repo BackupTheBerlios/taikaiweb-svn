@@ -60,7 +60,7 @@ public class PlayerPanel extends VerticalPanel {
     private FlexTable table;
     private int attRow;
     private int nbrTournamentConnections = 0;
-    
+    private final ListBox lbTournaments;
     private List<TournamentProxy> tournaments;
 
     public PlayerPanel() {
@@ -68,17 +68,17 @@ public class PlayerPanel extends VerticalPanel {
         table = new FlexTable();
 
         int row = 0;
-        
+
         tbId = new TextBox();
         tbId.setEnabled(false);
         table.setText(row, 0, "Id");
         table.setWidget(row++, 1, tbId);
-        
+
         tbTaikaiId = new TextBox();
         tbTaikaiId.setEnabled(false);
         table.setText(row, 0, "TaikaiId");
         table.setWidget(row++, 1, tbTaikaiId);
-        
+
         tbName = new TextBox();
         table.setText(row, 0, "Förnamn");
         table.setWidget(row++, 1, tbName);
@@ -94,12 +94,12 @@ public class PlayerPanel extends VerticalPanel {
         tbAge = new TextBox();
         table.setText(row, 0, "Ålder");
         table.setWidget(row++, 1, tbAge);
-        
+
         tbNumber = new TextBox();
         tbNumber.setEnabled(false);
         table.setText(row, 0, "Nummer");
         table.setWidget(row++, 1, tbNumber);
-        
+
         row = 0;
         rbGenderMale = new RadioButton("rgGender", "Man");
         rbGenderFemale = new RadioButton("rgGender", "Kvinna");
@@ -107,7 +107,7 @@ public class PlayerPanel extends VerticalPanel {
         table.setText(row, 2, "Kön");
         table.setWidget(row, 3, rbGenderMale);
         table.setWidget(row++, 4, rbGenderFemale);
-        
+
         lbGrade = new ListBox();
         lbGrade.addItem("4 kyu");
         lbGrade.addItem("3 kyu");
@@ -123,23 +123,23 @@ public class PlayerPanel extends VerticalPanel {
         lbGrade.setItemSelected(4, true);
         table.setText(row, 2, "Grad");
         table.setWidget(row++, 3, lbGrade);
-        
-        
-        
+
+
+
         row = 0;
-        
+
         activeTournamentsTable = new FlexTable();
         attRow = 0;
-        ListBox lbTournaments = new ListBox();
-        
+        lbTournaments = new ListBox();
+
         activeTournamentsTable.setText(attRow, 0, "Aktiv i turnering");
         activeTournamentsTable.setWidget(attRow++, 1, lbTournaments);
 //        addTournamentConnection();
         nbrTournamentConnections++;
-        
+
         table.setWidget(row, 5, activeTournamentsTable);
         row++;
-        
+
         btnAddTournamentConnection = new Button("En till turnering");
         table.setWidget(row, 5, btnAddTournamentConnection);
         btnAddTournamentConnectionRow = row;
@@ -151,10 +151,10 @@ public class PlayerPanel extends VerticalPanel {
                 addTournamentConnection();
             }
         });
-        
-        
+
+
         FlowPanel buttonPanel = new FlowPanel();
-        
+
         btnSave = new Button("Spara");
         buttonPanel.add(btnSave);
 
@@ -166,7 +166,7 @@ public class PlayerPanel extends VerticalPanel {
 
 
     }
-    
+
     private void addTournamentConnection() {
 //        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
 //        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
@@ -174,16 +174,16 @@ public class PlayerPanel extends VerticalPanel {
 //        Logger.debug("Ny ListBox på rad " + btnAddTournamentConnectionRow
 //                + ", kolumn " + btnAddTournamentConnectionCol);
 //        btnAddTournamentConnectionRow++;
-        
+
         nbrTournamentConnections++;
         table.insertCell(activeTournamentsTable.getRowCount(), 4);
         activeTournamentsTable.setWidget(activeTournamentsTable.getRowCount(),
-                                         1,
-                                         new ListBox());
+            1,
+            new ListBox());
         table.getFlexCellFormatter().setRowSpan(btnAddTournamentConnectionRow - 1,
-                                                btnAddTournamentConnectionCol,
-                                                nbrTournamentConnections);
-        
+            btnAddTournamentConnectionCol,
+            nbrTournamentConnections);
+
     }
 
     public void addSaveListener(ClickListener listener) {
@@ -241,10 +241,15 @@ public class PlayerPanel extends VerticalPanel {
     public void setTaikai(TaikaiProxy taikai) {
         this.taikai = taikai;
     }
-    
+
     public void setTournamentList(List<TournamentProxy> tournaments) {
-//        Logger.info("setTournaments");
+        Logger.info("setTournaments size = " + tournaments.size());
         this.tournaments = tournaments;
-        
+//        throw new RuntimeException(String.valueOf(tournaments));
+        lbTournaments.clear();
+        for (TournamentProxy tournament : tournaments) {
+            lbTournaments.addItem(tournament.getName(), String.valueOf(tournament.getId()));
+        }
+
     }
 }
