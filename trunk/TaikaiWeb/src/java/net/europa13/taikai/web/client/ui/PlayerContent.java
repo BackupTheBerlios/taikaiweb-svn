@@ -188,7 +188,7 @@ public class PlayerContent extends Content {
 
             public void onSuccess(ListResult<TournamentProxy> result) {
                 Logger.info("Rätt i player handle state.");
-                playerPanel.setTournamentList(result.getList());
+                playerPanel.getActiveTournamentsTable().setTournamentList(result.getList());
             }
         });
         

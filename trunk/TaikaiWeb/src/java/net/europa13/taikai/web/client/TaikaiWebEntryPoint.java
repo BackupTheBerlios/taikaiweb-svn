@@ -152,7 +152,8 @@ public class TaikaiWebEntryPoint implements EntryPoint {
 
         initLogger();
         initContentHandlers();
-        initState();
+//        initState();
+        start();
         
     }
 

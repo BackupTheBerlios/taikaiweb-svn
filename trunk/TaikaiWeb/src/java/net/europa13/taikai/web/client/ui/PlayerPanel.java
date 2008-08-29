@@ -53,15 +53,9 @@ public class PlayerPanel extends VerticalPanel {
     private final RadioButton rbGenderMale;
     private final RadioButton rbGenderFemale;
     private final ListBox lbGrade;
-    private final Button btnAddTournamentConnection;
-    private int btnAddTournamentConnectionRow;
-    private int btnAddTournamentConnectionCol;
-    private FlexTable activeTournamentsTable;
+    private PlayerTournamentsList activeTournamentsTable;
+
     private FlexTable table;
-    private int attRow;
-    private int nbrTournamentConnections = 0;
-    private final ListBox lbTournaments;
-    private List<TournamentProxy> tournaments;
 
     public PlayerPanel() {
 
@@ -128,29 +122,12 @@ public class PlayerPanel extends VerticalPanel {
 
         row = 0;
 
-        activeTournamentsTable = new FlexTable();
-        attRow = 0;
-        lbTournaments = new ListBox();
+        activeTournamentsTable = new PlayerTournamentsList();
+        table.setText(row, 4, "Aktiv i turnering");
+        table.setWidget(row++, 5, activeTournamentsTable);
 
-        activeTournamentsTable.setText(attRow, 0, "Aktiv i turnering");
-        activeTournamentsTable.setWidget(attRow++, 1, lbTournaments);
-//        addTournamentConnection();
-        nbrTournamentConnections++;
 
-        table.setWidget(row, 5, activeTournamentsTable);
-        row++;
-
-        btnAddTournamentConnection = new Button("En till turnering");
-        table.setWidget(row, 5, btnAddTournamentConnection);
-        btnAddTournamentConnectionRow = row;
-        btnAddTournamentConnectionCol = 5;
-        row++;
-        btnAddTournamentConnection.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                addTournamentConnection();
-            }
-        });
+        
 
 
         FlowPanel buttonPanel = new FlowPanel();
@@ -167,24 +144,7 @@ public class PlayerPanel extends VerticalPanel {
 
     }
 
-    private void addTournamentConnection() {
-//        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
-//        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
-//        table.setWidget(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol, new ListBox());
-//        Logger.debug("Ny ListBox på rad " + btnAddTournamentConnectionRow
-//                + ", kolumn " + btnAddTournamentConnectionCol);
-//        btnAddTournamentConnectionRow++;
 
-        nbrTournamentConnections++;
-        table.insertCell(activeTournamentsTable.getRowCount(), 4);
-        activeTournamentsTable.setWidget(activeTournamentsTable.getRowCount(),
-            1,
-            new ListBox());
-        table.getFlexCellFormatter().setRowSpan(btnAddTournamentConnectionRow - 1,
-            btnAddTournamentConnectionCol,
-            nbrTournamentConnections);
-
-    }
 
     public void addSaveListener(ClickListener listener) {
         btnSave.addClickListener(listener);
@@ -236,20 +196,14 @@ public class PlayerPanel extends VerticalPanel {
         cbCheckedIn.setChecked(player.isCheckedIn());
         tbAge.setText(String.valueOf(player.getAge()));
         tbNumber.setText(String.valueOf(player.getNumber()));
+        // ska fylla i att rätt antal aktiva turneringar finns
     }
 
     public void setTaikai(TaikaiProxy taikai) {
         this.taikai = taikai;
     }
 
-    public void setTournamentList(List<TournamentProxy> tournaments) {
-//        Logger.info("setTournaments size = " + tournaments.size());
-        this.tournaments = tournaments;
-//        throw new RuntimeException(String.valueOf(tournaments));
-        lbTournaments.clear();
-        for (TournamentProxy tournament : tournaments) {
-            lbTournaments.addItem(tournament.getName(), String.valueOf(tournament.getId()));
-        }
-
+    public PlayerTournamentsList getActiveTournamentsTable() {
+        return activeTournamentsTable;
     }
 }
