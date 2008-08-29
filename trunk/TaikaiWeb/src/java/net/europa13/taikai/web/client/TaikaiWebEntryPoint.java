@@ -121,6 +121,13 @@ public class TaikaiWebEntryPoint implements EntryPoint {
         final String taikaiCookie = Cookies.getCookie("taikaiId");
         if (taikaiCookie != null) {
 
+//            try {
+//                Integer i = Integer.parseInt(taikaiCookie);
+//            }
+//            catch (NumberFormatException ex) {
+//                Logger.debug(ex.getMessage());
+//            }
+                    
 //            final ServiceWaiter waiter = new ServiceWaiter();
 
             TaikaiAdminServiceAsync service =
@@ -129,18 +136,21 @@ public class TaikaiWebEntryPoint implements EntryPoint {
 
                 public void onFailure(Throwable arg0) {
                     Logger.error("Evenemang " + taikaiCookie + " kan inte laddas in.");
-                    start();
+                    start("session");
                     //                    waiter.stop();
                 }
 
                 public void onSuccess(TaikaiProxy taikai) {
                     TaikaiWeb.getSession().setTaikai(taikai);
-                    start();
+                    start(History.getToken());
 //                    waiter.stop();
                 }
             });
 
 //            DeferredCommand.addCommand(waiter);
+        }
+        else {
+            start("session");
         }
     }
 
@@ -152,16 +162,18 @@ public class TaikaiWebEntryPoint implements EntryPoint {
 
         initLogger();
         initContentHandlers();
-//        initState();
-        start();
+        initState();
+//        start();
         
     }
 
-    private void start() {
+    private void start(String historyToken) {
+        
+        
         RootPanel.get("root_top").add(MainPanel.getInstance());
 
         History.addHistoryListener(historyListener);
-        historyListener.onHistoryChanged(History.getToken());
+        historyListener.onHistoryChanged(historyToken);
     }
 
 }
