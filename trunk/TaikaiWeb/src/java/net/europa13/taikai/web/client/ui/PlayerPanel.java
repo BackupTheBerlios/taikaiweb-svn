@@ -26,7 +26,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.PlayerDetails;
@@ -88,21 +87,28 @@ public class PlayerPanel extends VerticalPanel {
         tbAge = new TextBox();
         table.setText(row, 0, "Ålder");
         table.setWidget(row++, 1, tbAge);
-
-        tbNumber = new TextBox();
-        tbNumber.setEnabled(false);
-        table.setText(row, 0, "Nummer");
-        table.setWidget(row++, 1, tbNumber);
-
-        row = 0;
+        
+        int ggrow = 0;
+        int ggcol = 0;
+        FlowPanel genderPanel = new FlowPanel();
         rbGenderMale = new RadioButton("rgGender", "Man");
         rbGenderFemale = new RadioButton("rgGender", "Kvinna");
         rbGenderMale.setChecked(true);
-        table.setText(row, 2, "Kön");
-        table.setWidget(row, 3, rbGenderMale);
-        table.setWidget(row++, 4, rbGenderFemale);
+        genderPanel.add(rbGenderMale);
+        genderPanel.add(rbGenderFemale);
+        table.setText(row, ggcol, "Kön");
+//        table.setWidget(row, ggcol + 1, rbGenderMale);
+//        table.setWidget(row++, ggcol + 2, rbGenderFemale);
 
+        table.setWidget(row++, ggcol + 1, genderPanel);
+        
         lbGrade = new ListBox();
+        lbGrade.addItem("10 kyu");
+        lbGrade.addItem("9 kyu");
+        lbGrade.addItem("8 kyu");
+        lbGrade.addItem("7 kyu");
+        lbGrade.addItem("6 kyu");
+        lbGrade.addItem("5 kyu");
         lbGrade.addItem("4 kyu");
         lbGrade.addItem("3 kyu");
         lbGrade.addItem("2 kyu");
@@ -113,21 +119,31 @@ public class PlayerPanel extends VerticalPanel {
         lbGrade.addItem("4 dan");
         lbGrade.addItem("5 dan");
         lbGrade.addItem("6 dan");
+        lbGrade.addItem("7 dan");
+        lbGrade.addItem("8 dan");
+        lbGrade.addItem("9 dan");
+        lbGrade.addItem("10 dan");
+        
         lbGrade.setVisibleItemCount(1);
-        lbGrade.setItemSelected(4, true);
-        table.setText(row, 2, "Grad");
-        table.setWidget(row++, 3, lbGrade);
+        lbGrade.setItemSelected(10, true);
+        table.setText(row, ggcol, "Grad");
+        table.setWidget(row++, ggcol + 1, lbGrade);
 
-
-
-        row = 0;
-
-        activeTournamentsTable = new PlayerTournamentsList();
-        table.setText(row, 4, "Aktiv i turnering");
-        table.setWidget(row++, 5, activeTournamentsTable);
-
+        tbNumber = new TextBox();
+        tbNumber.setEnabled(false);
+        table.setText(row, 0, "Nummer");
+        table.setWidget(row++, 1, tbNumber);
 
         
+
+
+
+        int ttrow = 0;
+        int ttcol = ggcol + 3;
+
+        activeTournamentsTable = new PlayerTournamentsList();
+        table.setText(ttrow, ttcol, "Aktiv i turnering");
+        table.setWidget(ttrow, ttcol + 1, activeTournamentsTable);
 
 
         FlowPanel buttonPanel = new FlowPanel();
@@ -139,6 +155,8 @@ public class PlayerPanel extends VerticalPanel {
         table.setWidget(buttonRow, 0, buttonPanel);
         table.getFlexCellFormatter().setColSpan(buttonRow, 0, table.getCellCount(0));
 
+        table.getFlexCellFormatter().setRowSpan(ttrow, ttcol + 1, row);
+        table.getFlexCellFormatter().setVerticalAlignment(ttrow, ttcol + 1, ALIGN_TOP);
         add(table);
 
 
@@ -162,6 +180,12 @@ public class PlayerPanel extends VerticalPanel {
         newPlayer.setSurname(tbSurname.getText());
         newPlayer.setCheckedIn(cbCheckedIn.isChecked());
         newPlayer.setAge(Integer.parseInt(tbAge.getText()));
+        
+        List<TournamentProxy> tournaments = activeTournamentsTable.getSelectedTournaments();
+        
+        for (TournamentProxy tournament : tournaments) {
+            Logger.debug("Tournament name = " + tournament.getName());
+        }
 //        newPlayer.setNumber(Integer.parseInt(tbNumber.getText()));
 
         return newPlayer;
