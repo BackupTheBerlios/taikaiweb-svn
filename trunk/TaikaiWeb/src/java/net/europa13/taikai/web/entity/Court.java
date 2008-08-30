@@ -34,7 +34,7 @@ public class Court implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     
     private String name;
     @ManyToOne
@@ -49,7 +49,7 @@ public class Court implements Serializable {
         return name;
     }
     
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
     
@@ -57,7 +57,7 @@ public class Court implements Serializable {
         return taikai;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     

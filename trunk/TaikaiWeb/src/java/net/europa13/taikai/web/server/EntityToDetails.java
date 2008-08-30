@@ -17,6 +17,8 @@
  */
 package net.europa13.taikai.web.server;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
@@ -25,6 +27,7 @@ import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiDetails;
 import net.europa13.taikai.web.proxy.TournamentDetails;
+import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
@@ -42,6 +45,25 @@ public class EntityToDetails {
         details.setNumber(entity.getNumber());
         details.setSurname(entity.getSurname());
         details.setTaikaiId(entity.getTaikai().getId());
+        
+//        System.out.println("Before getting tournaments");
+        
+        // Felaktigt cast, det här blir ju inte TournamentProxies...
+        List<Tournament> tournaments =
+            em.createNamedQuery("getTournamentsForPlayer").setParameter("player", entity).getResultList();
+        
+//        System.out.println("After getting tournaments. Tournaments size = " + tournaments.size());
+        
+        List<TournamentProxy> tournamentProxies = 
+            new ArrayList<TournamentProxy>();
+        
+        for (Tournament tournament : tournaments) {
+            TournamentDetails td = new TournamentDetails();
+            tournament(tournament, td, em);
+            tournamentProxies.add(td);
+        }
+        details.setTournaments(tournamentProxies);
+        
     }
 
     public static void taikai(Taikai entity, TaikaiDetails details, EntityManager em) {

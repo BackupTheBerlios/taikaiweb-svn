@@ -34,7 +34,7 @@ public class Tree implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     @OneToOne
     protected TreeNode rootNode;
 
@@ -56,11 +56,11 @@ public class Tree implements Serializable {
         this.rootNode = rootNode;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

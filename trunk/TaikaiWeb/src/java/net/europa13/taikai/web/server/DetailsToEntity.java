@@ -17,14 +17,16 @@
  */
 package net.europa13.taikai.web.server;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
 import net.europa13.taikai.web.proxy.PlayerDetails;
-import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiDetails;
 import net.europa13.taikai.web.proxy.TournamentDetails;
+import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
@@ -39,6 +41,58 @@ public class DetailsToEntity {
         entity.setGrade(details.getGrade());
         entity.setName(details.getName());
         entity.setSurname(details.getSurname());
+
+        List<Tournament> tournaments =
+            em.createNamedQuery("getTournamentsForPlayer").setParameter("player", entity).getResultList();
+        List<TournamentProxy> tournamentProxies = details.getTournaments();
+
+        List<Tournament> addedTournaments = new ArrayList<Tournament>();
+        List<Tournament> removedTournaments = new ArrayList<Tournament>();
+
+        for (TournamentProxy tournamentProxy : tournamentProxies) {
+            boolean added = true;
+            
+            for (Tournament tournament : tournaments) {
+                if (tournament.getId().equals(tournamentProxy.getId())) {
+                    added = false;
+                    break;
+                }
+            }
+            
+            if (added) {
+                Tournament tournament = em.find(Tournament.class, tournamentProxy.getId());
+                System.out.println("Tournament added: " + tournament.getName());
+                addedTournaments.add(tournament);
+            }
+        }
+
+        for (Tournament tournament : tournaments) {
+            boolean removed = true;
+            
+            for (TournamentProxy tournamentProxy : tournamentProxies) {
+                if (tournament.getId().equals(tournamentProxy.getId())) {
+                    removed = false;
+                    break;
+                }
+            }
+            
+            if (removed) {
+                System.out.println("Tournament removed: " + tournament.getName());
+                removedTournaments.add(tournament);
+            }
+        }
+
+
+        for (Tournament tournament : addedTournaments) {
+            tournament.addPlayer(entity);
+            em.merge(tournament);
+        }
+        
+        for (Tournament tournament : removedTournaments) {
+            tournament.removePlayer(entity);
+            em.merge(tournament);
+        }
+
     }
 
     public static void taikai(TaikaiDetails details, Taikai entity, EntityManager em) {

@@ -17,6 +17,7 @@
  */
 package net.europa13.taikai.web.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,19 +25,32 @@ import java.util.List;
  * @author daniel
  */
 public class PlayerDetails extends PlayerProxy {
-    
-    private List<TournamentDetails> tournaments;
-    
-    public void addTournament(TournamentDetails tournament) {
-        tournaments.add(tournament);
-    }
-    
-    public List<TournamentDetails> getTournaments() {
+
+    private List<TournamentProxy> tournaments;
+//    private ArrayList<TournamentProxy> addedTournaments =
+//        new ArrayList<TournamentProxy>();
+//    private ArrayList<TournamentProxy> removedTournaments =
+//        new ArrayList<TournamentProxy>();
+    //= new ArrayList<TournamentProxy>();
+//    public void addTournament(TournamentProxy tournament) {
+//        if (!tournaments.contains(tournament)) {
+//            addedTournaments.add(tournament);
+//            removedTournaments.remove(tournament);
+//        }
+//    }
+
+    public List<TournamentProxy> getTournaments() {
         return tournaments;
     }
 
-    public void removeTournament(TournamentDetails tournament) {
-        tournaments.remove(tournament);
+    public void setTournaments(List<TournamentProxy> tournaments) {
+        this.tournaments = new ArrayList<TournamentProxy>(tournaments);
     }
-    
+
+//    public void removeTournament(TournamentProxy tournament) {
+//        if (tournaments.contains(tournaments)) {
+//            addedTournaments.remove(tournament);
+//            removedTournaments.add(tournament);
+//        }
+//    }
 }

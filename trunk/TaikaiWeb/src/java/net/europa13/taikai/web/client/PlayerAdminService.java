@@ -31,7 +31,7 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 @RemoteServiceRelativePath("playeradminservice")
 public interface PlayerAdminService extends RemoteService {
 
-    public PlayerProxy getPlayer(int playerId);
+    public PlayerDetails getPlayer(int playerId);
 
     public ListResult<PlayerProxy> getPlayers(TaikaiProxy proxy);
 

@@ -63,7 +63,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
         return proxies;
     }
     
-    public PlayerProxy getPlayer(int playerId) {
+    public PlayerDetails getPlayer(int playerId) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -72,6 +72,10 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
             PlayerDetails details = new PlayerDetails();
             EntityToDetails.player(player, details, em);
 
+            System.out.println("name = " + player.getName() + " surname = " + player.getSurname());
+            System.out.println("name = " + details.getName() + " surname = " + details.getSurname());
+            
+            
             return details;
         }
         finally {
@@ -163,8 +167,18 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
 
             em.getTransaction().commit();
         }
+        catch (Exception ex) {
+            System.out.println("Exception: rollback!");
+            ex.printStackTrace();
+            em.getTransaction().rollback();
+        }
+//        catch (RuntimeException ex) {
+//            em.getTransaction().rollback();
+//        }
         finally {
+            em.clear();
             em.close();
+            
         }
     }
 }

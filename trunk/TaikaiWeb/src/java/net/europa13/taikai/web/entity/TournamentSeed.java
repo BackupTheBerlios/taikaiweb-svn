@@ -39,7 +39,7 @@ public class TournamentSeed implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Column(name = "id")
-    private Long id;
+    private Integer id;
     @Column(name = "seedNumber", nullable = false)
     private int seedNumber;
     @ManyToOne

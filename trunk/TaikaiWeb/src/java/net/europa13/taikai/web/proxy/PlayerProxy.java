@@ -30,7 +30,7 @@ public class PlayerProxy implements Serializable {
     private boolean checkedIn;
     private Gender gender;
     private Grade grade;
-    private int id;
+    private int id = 0;
     private String name;
     private int number;
     private String surname;

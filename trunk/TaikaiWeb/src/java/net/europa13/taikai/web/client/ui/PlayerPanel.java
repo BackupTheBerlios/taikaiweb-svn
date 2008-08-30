@@ -28,6 +28,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.List;
 import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.proxy.Gender;
+import net.europa13.taikai.web.proxy.Grade;
 import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
@@ -51,7 +53,7 @@ public class PlayerPanel extends VerticalPanel {
     private TaikaiProxy taikai;
     private final RadioButton rbGenderMale;
     private final RadioButton rbGenderFemale;
-    private final ListBox lbGrade;
+    private final GradeSelector lbGrade;
     private PlayerTournamentsList activeTournamentsTable;
 
     private FlexTable table;
@@ -102,30 +104,11 @@ public class PlayerPanel extends VerticalPanel {
 
         table.setWidget(row++, ggcol + 1, genderPanel);
         
-        lbGrade = new ListBox();
-        lbGrade.addItem("10 kyu");
-        lbGrade.addItem("9 kyu");
-        lbGrade.addItem("8 kyu");
-        lbGrade.addItem("7 kyu");
-        lbGrade.addItem("6 kyu");
-        lbGrade.addItem("5 kyu");
-        lbGrade.addItem("4 kyu");
-        lbGrade.addItem("3 kyu");
-        lbGrade.addItem("2 kyu");
-        lbGrade.addItem("1 kyu");
-        lbGrade.addItem("1 dan");
-        lbGrade.addItem("2 dan");
-        lbGrade.addItem("3 dan");
-        lbGrade.addItem("4 dan");
-        lbGrade.addItem("5 dan");
-        lbGrade.addItem("6 dan");
-        lbGrade.addItem("7 dan");
-        lbGrade.addItem("8 dan");
-        lbGrade.addItem("9 dan");
-        lbGrade.addItem("10 dan");
+        lbGrade = new GradeSelector();
+        lbGrade.setSelectedGrade(Grade.Dan1);
         
-        lbGrade.setVisibleItemCount(1);
-        lbGrade.setItemSelected(10, true);
+//        lbGrade.setVisibleItemCount(1);
+//        lbGrade.setItemSelected(10, true);
         table.setText(row, ggcol, "Grad");
         table.setWidget(row++, ggcol + 1, lbGrade);
 
@@ -181,12 +164,17 @@ public class PlayerPanel extends VerticalPanel {
         newPlayer.setCheckedIn(cbCheckedIn.isChecked());
         newPlayer.setAge(Integer.parseInt(tbAge.getText()));
         
+        Gender gender = rbGenderMale.isChecked() ? Gender.MALE : Gender.FEMALE;
+        newPlayer.setGender(gender);
+        
+        newPlayer.setGrade(lbGrade.getSelectedGrade());
+        
         List<TournamentProxy> tournaments = activeTournamentsTable.getSelectedTournaments();
         
-        for (TournamentProxy tournament : tournaments) {
+        newPlayer.setTournaments(tournaments);
+        for (TournamentProxy tournament : newPlayer.getTournaments()) {
             Logger.debug("Tournament name = " + tournament.getName());
         }
-//        newPlayer.setNumber(Integer.parseInt(tbNumber.getText()));
 
         return newPlayer;
     }
@@ -204,6 +192,10 @@ public class PlayerPanel extends VerticalPanel {
         cbCheckedIn.setChecked(false);
         tbAge.setText("");
         tbNumber.setText("");
+        rbGenderMale.setChecked(true);
+        rbGenderFemale.setChecked(false);
+        lbGrade.setSelectedGrade(Grade.Dan1);
+        activeTournamentsTable.reset();
     }
 
     public void setPlayer(PlayerDetails player) {
@@ -220,14 +212,26 @@ public class PlayerPanel extends VerticalPanel {
         cbCheckedIn.setChecked(player.isCheckedIn());
         tbAge.setText(String.valueOf(player.getAge()));
         tbNumber.setText(String.valueOf(player.getNumber()));
-        // ska fylla i att rätt antal aktiva turneringar finns
+        
+        if (Gender.FEMALE.equals(player.getGender())) {
+            rbGenderFemale.setChecked(true);
+            rbGenderMale.setChecked(false);
+        }
+        else {
+            rbGenderFemale.setChecked(false);
+            rbGenderMale.setChecked(true);
+        }
+        
+        lbGrade.setSelectedGrade(player.getGrade());
+        activeTournamentsTable.setSelectedTournaments(player.getTournaments());
     }
 
     public void setTaikai(TaikaiProxy taikai) {
         this.taikai = taikai;
     }
 
-    public PlayerTournamentsList getActiveTournamentsTable() {
-        return activeTournamentsTable;
+    public void setTournamentList(List<? extends TournamentProxy> tournaments) {
+        activeTournamentsTable.setTournamentList(tournaments);
     }
+
 }

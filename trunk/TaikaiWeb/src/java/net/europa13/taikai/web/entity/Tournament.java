@@ -19,9 +19,7 @@ package net.europa13.taikai.web.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -49,7 +47,9 @@ uniqueConstraints = {
 })
 @NamedQueries({
     @NamedQuery(name = "getUncheckedPlayers",
-    query = "SELECT p FROM Taikai t JOIN t.players p WHERE p.checkedIn = FALSE")
+    query = "SELECT p FROM Taikai t JOIN t.players p WHERE p.checkedIn = FALSE"),
+    @NamedQuery(name = "getTournamentsForPlayer",
+    query = "SELECT t FROM Tournament t JOIN t.players p WHERE p = :player")
 })
 public class Tournament implements Serializable {
 
@@ -70,15 +70,13 @@ public class Tournament implements Serializable {
     @ManyToOne
     @JoinColumn(name = "taikaiId")
     private Taikai taikai;
-    @OneToMany
+    @ManyToMany
     private List<Player> players;
     @OneToMany(mappedBy = "tournament")
     private List<TournamentSeed> tournamentSeeds;
     @OneToOne
     @JoinColumn(name = "treeId")
     private Tree tree;
-//    @OneToOne
-//    private TournamentSeed tournamentSeed;
     @OneToMany
     private List<Pool> pools;
 

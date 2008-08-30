@@ -19,11 +19,16 @@ package net.europa13.taikai.web.entity;
 
 import net.europa13.taikai.web.proxy.Grade;
 import java.io.Serializable;
+import java.sql.Timestamp;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import net.europa13.taikai.web.proxy.Gender;
 
 /**
@@ -31,31 +36,43 @@ import net.europa13.taikai.web.proxy.Gender;
  * @author daniel
  */
 @Entity
+@Table(name = "Player")
 public class Player implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "surname", nullable = false)
     private String surname;
+    @Column(name = "age", nullable = false)
     private int age;
+    @Column(name = "grade")
     private Grade grade;
+    @Column(name = "gender")
     private Gender gender;
+    @Column(name = "number")
     private Integer number;
     @ManyToOne
+    @JoinColumn(name = "taikaiId")
     private Taikai taikai;
+    @Column(name = "checkedIn")
     private boolean checkedIn;
-    
+    @Version
+    @Column(name ="lastUpdate")
+    private Timestamp lastUpdate;
 
     public boolean isCheckedIn() {
         return checkedIn;
     }
-    
+
     public void setCheckedIn(boolean checkedIn) {
         this.checkedIn = checkedIn;
     }
-    
+
     /**
      * Get the value of surname
      *

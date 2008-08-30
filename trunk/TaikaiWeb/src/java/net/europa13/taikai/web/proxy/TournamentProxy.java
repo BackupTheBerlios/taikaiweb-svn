@@ -25,7 +25,7 @@ import java.io.Serializable;
  */
 public class TournamentProxy implements Serializable {
 
-    private int id;
+    private int id = 0;
     private String name;
     private int taikaiId;
     

@@ -35,7 +35,7 @@ public class PlayerTournamentsList extends FlexTable {
 
     private Button btnAddTournamentConnection;
 //    private List<TournamentProxy> selectedTournaments;
-    private List<TournamentProxy> tournaments;
+    private List<? extends TournamentProxy> tournaments;
     private List<ListBox> tournamentControls = new ArrayList<ListBox>();
 
     PlayerTournamentsList() {
@@ -55,8 +55,8 @@ public class PlayerTournamentsList extends FlexTable {
     private void addTournamentConnection() {
         addTournamentConnection(-1);
     }
-    
-    private void addTournamentConnection(int selectedTournament) {
+
+    private void addTournamentConnection(long selectedTournament) {
 //        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
 //        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
 //        table.setWidget(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol, new ListBox());
@@ -73,9 +73,7 @@ public class PlayerTournamentsList extends FlexTable {
 //        if (nbrTournaments > 0) {
         Button drbtn = new Button("Ta bort");
         drbtn.addClickListener(new ClickListener() {
-            
 //            private int row = nbrTournaments;
-
             public void onClick(Widget button) {
                 int rowToRemove = -1;
                 for (int i = 0; i < getRowCount(); i++) {
@@ -103,14 +101,14 @@ public class PlayerTournamentsList extends FlexTable {
     }
 
     public List<TournamentProxy> getSelectedTournaments() {
-        
+
         List<TournamentProxy> selectedTournaments = new ArrayList<TournamentProxy>();
-        
+
         for (ListBox control : tournamentControls) {
             TournamentProxy tournament = tournaments.get(control.getSelectedIndex());
             selectedTournaments.add(tournament);
         }
-        
+
         return selectedTournaments;
     }
 
@@ -118,9 +116,9 @@ public class PlayerTournamentsList extends FlexTable {
         removeRow(row);
         tournamentControls.remove(row);
     }
-    
-    private void reset() {
-        while(!tournamentControls.isEmpty()) {
+
+    public void reset() {
+        while (!tournamentControls.isEmpty()) {
             removeRow(0);
             tournamentControls.remove(0);
         }
@@ -130,44 +128,49 @@ public class PlayerTournamentsList extends FlexTable {
         setControlData(control, -1);
     }
 
-    private void setControlData(ListBox control, int selectedIndex) {
+    private void setControlData(ListBox control, long selectedId) {
         control.clear();
 
         for (int i = 0; i < tournaments.size(); ++i) {
             TournamentProxy tournament = tournaments.get(i);
-            control.addItem(tournament.getName(), String.valueOf(i));
+            control.addItem(tournament.getName(), String.valueOf(tournament.getId()));
+            if (tournament.getId() == selectedId) {
+                control.setSelectedIndex(i);
+            }
         }
 
-        if (selectedIndex >= 0 && selectedIndex < tournaments.size()) {
-            control.setSelectedIndex(selectedIndex);
-        }
     }
 
-    public void setSelectedTournaments(List<TournamentProxy> selectedTournaments) {
-        
-        reset();
-        
-        if (!tournaments.containsAll(selectedTournaments)) {
-            Logger.debug("PlayerTournamentList.setSelectedTournaments: selectedTournaments innehåller " +
-                "turneringar som inte finns i tournaments.");
+    public void setSelectedTournaments(List<? extends TournamentProxy> selectedTournaments) {
+
+        if (selectedTournaments == null) {
+            Logger.debug(PlayerTournamentsList.class.getName() + ".setSelectedTournaments: selectedTournaments == null");
             return;
         }
         
+        reset();
+
+//        if (!tournaments.containsAll(selectedTournaments)) {
+//            Logger.debug("PlayerTournamentList.setSelectedTournaments: selectedTournaments innehåller " +
+//                "turneringar som inte finns i tournaments.");
+//            return;
+//        }
+
         for (TournamentProxy tournament : selectedTournaments) {
 //            if (tournaments.contains(tournament))
-            int index = tournaments.indexOf(tournament);
-            addTournamentConnection(index);
+//            int index = tournaments.indexOf(tournament);
+            addTournamentConnection(tournament.getId());
         }
 
     }
 
-    public void setTournamentList(List<TournamentProxy> tournaments) {
+    public void setTournamentList(List<? extends TournamentProxy> tournaments) {
 //        Logger.info("setTournaments size = " + tournaments.size());
         this.tournaments = tournaments;
 
         for (ListBox control : tournamentControls) {
             setControlData(control, control.getSelectedIndex());
         }
-        
+
     }
 }
