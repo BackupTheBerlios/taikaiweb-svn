@@ -18,6 +18,7 @@
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ListBox;
@@ -37,6 +38,8 @@ public class PlayerTournamentsList extends FlexTable {
 //    private List<TournamentProxy> selectedTournaments;
     private List<? extends TournamentProxy> tournaments;
     private List<ListBox> tournamentControls = new ArrayList<ListBox>();
+    private List<ListBox> seedControls = new ArrayList<ListBox>();
+    private List<ListBox> activateSeedControls = new ArrayList<ListBox>();
 
     PlayerTournamentsList() {
 
@@ -57,19 +60,21 @@ public class PlayerTournamentsList extends FlexTable {
     }
 
     private void addTournamentConnection(long selectedTournament) {
-//        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
-//        table.insertCell(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol);
-//        table.setWidget(btnAddTournamentConnectionRow, btnAddTournamentConnectionCol, new ListBox());
-//        Logger.debug("Ny ListBox på rad " + btnAddTournamentConnectionRow
-//                + ", kolumn " + btnAddTournamentConnectionCol);
-//        btnAddTournamentConnectionRow++;
 
-//        nbrTournamentConnections++;
-        final int nbrTournaments = tournamentControls.size(); //nbr of rows minus the button
-        ListBox control = new ListBox();
-        setControlData(control, selectedTournament);
-        tournamentControls.add(control);
-        setWidget(nbrTournaments, 0, control);
+//        final int nbrTournaments = tournamentControls.size();
+        final int nbrTournaments = sizeConsitencyCheck();
+        ListBox tournamentControl = new ListBox();
+        CheckBox activateSeedControl = new CheckBox("Seeda");
+        ListBox seedControl = new ListBox();
+        setTournamentControlData(tournamentControl, selectedTournament);
+        setActivateSeedControlData(activateSeedControl, selectedTournament);
+        setSeedControlData(seedControl, selectedTournament);
+        tournamentControls.add(tournamentControl);
+        activateSeedControls.add(tournamentControl);
+        seedControls.add(tournamentControl);
+        setWidget(nbrTournaments, 0, tournamentControl);
+        setWidget(nbrTournaments, 1, activateSeedControl);
+        setWidget(nbrTournaments, 2, seedControl);
 //        if (nbrTournaments > 0) {
         Button drbtn = new Button("Ta bort");
         drbtn.addClickListener(new ClickListener() {
@@ -77,7 +82,7 @@ public class PlayerTournamentsList extends FlexTable {
             public void onClick(Widget button) {
                 int rowToRemove = -1;
                 for (int i = 0; i < getRowCount(); i++) {
-                    if (button.equals(getWidget(i, 1))) {
+                    if (button.equals(getWidget(i, 3))) {
                         rowToRemove = i;
                         break;
                     }
@@ -90,16 +95,14 @@ public class PlayerTournamentsList extends FlexTable {
         });
 //        }
 
-//        Logger.debug("Lägger till TournamentConnection på rad " + nbrTournaments);
-        setWidget(nbrTournaments, 1, drbtn);
+        setWidget(nbrTournaments, 3, drbtn);
         setWidget(nbrTournaments + 1, 0, btnAddTournamentConnection);
 
-//        table.getFlexCellFormatter().setRowSpan(btnAddTournamentConnectionRow - 1,
-//                btnAddTournamentConnectionCol,
-//                nbrTournamentConnections);
 
     }
 
+    
+    
     public List<TournamentProxy> getSelectedTournaments() {
 
         List<TournamentProxy> selectedTournaments = new ArrayList<TournamentProxy>();
@@ -113,22 +116,24 @@ public class PlayerTournamentsList extends FlexTable {
     }
 
     private void removeTournamentConnection(int row) {
+        Logger.debug("Tar bort rad " + row);
         removeRow(row);
         tournamentControls.remove(row);
+        activateSeedControls.remove(row);
+        seedControls.remove(row);
     }
 
     public void reset() {
         while (!tournamentControls.isEmpty()) {
-            removeRow(0);
-            tournamentControls.remove(0);
+            removeTournamentConnection(0);
         }
     }
 
     private void setControlData(ListBox control) {
-        setControlData(control, -1);
+        setTournamentControlData(control, -1);
     }
 
-    private void setControlData(ListBox control, long selectedId) {
+    private void setTournamentControlData(ListBox control, long selectedId) {
         control.clear();
 
         for (int i = 0; i < tournaments.size(); ++i) {
@@ -138,9 +143,40 @@ public class PlayerTournamentsList extends FlexTable {
                 control.setSelectedIndex(i);
             }
         }
-
     }
 
+    private void setActivateSeedControlData(CheckBox control, long selectedId) {
+//        control.clear();
+//
+//        for (int i = 0; i < tournaments.size(); ++i) {
+//            TournamentProxy tournament = tournaments.get(i);
+//            control.addItem(tournament.getName(), String.valueOf(tournament.getId()));
+//            if (tournament.getId() == selectedId) {
+//                control.setSelectedIndex(i);
+//            }
+//        }
+    }
+    
+        private void setSeedControlData(ListBox control, long selectedId) {
+//        control.clear();
+//
+//        for (int i = 0; i < tournaments.size(); ++i) {
+//            TournamentProxy tournament = tournaments.get(i);
+//            control.addItem(tournament.getName(), String.valueOf(tournament.getId()));
+//            if (tournament.getId() == selectedId) {
+//                control.setSelectedIndex(i);
+//            }
+//        }
+            
+           
+            // Temporary solution, data should be acquired from database
+            control.addItem("1");
+            control.addItem("2");
+            control.addItem("3");
+            control.addItem("4");
+    }
+    
+    
     public void setSelectedTournaments(List<? extends TournamentProxy> selectedTournaments) {
 
         if (selectedTournaments == null) {
@@ -169,8 +205,20 @@ public class PlayerTournamentsList extends FlexTable {
         this.tournaments = tournaments;
 
         for (ListBox control : tournamentControls) {
-            setControlData(control, control.getSelectedIndex());
+            setTournamentControlData(control, control.getSelectedIndex());
         }
 
+    }
+
+    private int sizeConsitencyCheck() {
+        int result = -1;
+        if ((tournamentControls.size() == activateSeedControls.size()) &&
+            (activateSeedControls.size() == seedControls.size())) {
+            result = tournamentControls.size();
+        }
+        if (result < 0) {
+            Logger.error("Inkonsekvent liststorlek i PlayerTournamentList");
+        }
+        return result;
     }
 }
