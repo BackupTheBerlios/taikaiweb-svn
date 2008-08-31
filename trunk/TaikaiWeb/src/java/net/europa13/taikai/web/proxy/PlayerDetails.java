@@ -27,17 +27,6 @@ import java.util.List;
 public class PlayerDetails extends PlayerProxy {
 
     private List<TournamentProxy> tournaments;
-//    private ArrayList<TournamentProxy> addedTournaments =
-//        new ArrayList<TournamentProxy>();
-//    private ArrayList<TournamentProxy> removedTournaments =
-//        new ArrayList<TournamentProxy>();
-    //= new ArrayList<TournamentProxy>();
-//    public void addTournament(TournamentProxy tournament) {
-//        if (!tournaments.contains(tournament)) {
-//            addedTournaments.add(tournament);
-//            removedTournaments.remove(tournament);
-//        }
-//    }
 
     public List<TournamentProxy> getTournaments() {
         return tournaments;
@@ -47,10 +36,4 @@ public class PlayerDetails extends PlayerProxy {
         this.tournaments = new ArrayList<TournamentProxy>(tournaments);
     }
 
-//    public void removeTournament(TournamentProxy tournament) {
-//        if (tournaments.contains(tournaments)) {
-//            addedTournaments.remove(tournament);
-//            removedTournaments.add(tournament);
-//        }
-//    }
 }

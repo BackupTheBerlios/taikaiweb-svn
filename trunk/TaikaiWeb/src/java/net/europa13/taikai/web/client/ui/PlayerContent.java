@@ -52,15 +52,14 @@ public class PlayerContent extends Content {
     private final PlayerPanel playerPanel;
     private final PlayerAdminServiceAsync playerService =
         GWT.create(PlayerAdminService.class);
-    private final TournamentAdminServiceAsync tournamentService = 
+    private final TournamentAdminServiceAsync tournamentService =
         GWT.create(TournamentAdminService.class);
     private List<PlayerProxy> playerList;
     private final String historyToken;
     private final Button btnNewPlayer;
     private final Button btnImportPlayers;
-    
     private String state;
-    
+
     public PlayerContent(final String historyToken) {
 
         setTitle("Deltagare");
@@ -141,7 +140,7 @@ public class PlayerContent extends Content {
 
     private void updateControls() {
         TaikaiProxy taikai = TaikaiWeb.getSession().getTaikai();
-        
+
         if (taikai == null) {
             btnNewPlayer.setEnabled(false);
             btnImportPlayers.setEnabled(false);
@@ -150,14 +149,14 @@ public class PlayerContent extends Content {
             btnNewPlayer.setEnabled(true);
             btnImportPlayers.setEnabled(true);
         }
-        
+
         if ("details".equals(state)) {
             btnImportPlayers.setVisible(false);
         }
         else {
             btnImportPlayers.setVisible(true);
         }
-        
+
     }
 
     private void updatePlayerList() {
@@ -176,29 +175,61 @@ public class PlayerContent extends Content {
             });
     }
 
-    @Override
-    public void handleState(String stateToken) {
-        
+    private void openPlayerPanel() {
+        openPlayerPanel(0);
+    }
+
+    private void openPlayerPanel(final int playerId) {
+
+        playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
+
         tournamentService.getTournaments(TaikaiWeb.getSession().getTaikai(), new AsyncCallback<ListResult<TournamentProxy>>() {
 
-            public void onFailure(Throwable arg0) {
-                Logger.error("Fel i player handle state.");
-                //throw new UnsupportedOperationException("Not supported yet.");
+            public void onFailure(Throwable t) {
+                Logger.debug("Misslyckades med att hämta listor i openPlayerPanel.");
+                Logger.debug(t.getLocalizedMessage());
+            //throw new UnsupportedOperationException("Not supported yet.");
             }
 
             public void onSuccess(ListResult<TournamentProxy> result) {
-                Logger.info("Rätt i player handle state.");
+                Logger.debug("Hämtade listor i openPlayerPanel.");
                 playerPanel.setTournamentList(result.getList());
+                setPlayerPanelPlayer(playerId);
             }
         });
-        
-        
-        if ("new".equals(stateToken)) {
-            state = "details";
-            
+    }
+
+    private void setPlayerPanelPlayer(final int playerId) {
+
+        if (playerId == 0) {
             playerPanel.reset();
-            playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
             panel.setWidget(playerPanel);
+            state = "details";
+        }
+        else {
+            playerService.getPlayer(playerId, new AsyncCallback<PlayerDetails>() {
+
+                public void onFailure(Throwable t) {
+                    Logger.debug("Misslyckades med att hämta deltagare " + playerId + " i setPlayerPanelPlayer.");
+                    Logger.debug(t.getLocalizedMessage());
+                }
+
+                public void onSuccess(PlayerDetails player) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+                    playerPanel.setPlayer(player);
+//                playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
+                    panel.setWidget(playerPanel);
+                    state = "details";
+                }
+            });
+        }
+    }
+//    private AsyncCallback<ListResult<TournamentProxy>> 
+    @Override
+    public void handleState(String stateToken) {
+
+        if ("new".equals(stateToken)) {
+            openPlayerPanel();
         }
         else if ("import".equals(stateToken)) {
             state = "import";
@@ -211,29 +242,13 @@ public class PlayerContent extends Content {
         else {
             try {
                 final int playerId = Integer.parseInt(stateToken);
-                playerService.getPlayer(playerId, new AsyncCallback<PlayerDetails>() {
-
-                    public void onFailure(Throwable t) {
-                        Logger.error("Det gick inte att hitta deltagare " + playerId + ".");
-                        Logger.debug(t.getLocalizedMessage());
-                    }
-
-                    public void onSuccess(PlayerDetails player) {
-                        state = "details";
-                        
-                        playerPanel.setPlayer(player);
-                        playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
-                        panel.setWidget(playerPanel);
-                    }
-                });
+                openPlayerPanel(playerId);
             }
             catch (NumberFormatException ex) {
                 Logger.error(stateToken + " är ett ogiltigt värde för deltagare.");
             }
         }
-    }
-    
-//    private void preparePlayerPanel() {
+    }//    private void preparePlayerPanel() {
 //        
 //    }
 }

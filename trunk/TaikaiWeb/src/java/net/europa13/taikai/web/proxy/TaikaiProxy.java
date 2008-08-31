@@ -25,7 +25,7 @@ import java.io.Serializable;
  */
 public class TaikaiProxy implements Serializable {
 
-    private int id;
+    private int id = 0;
     private String name;
     private int playerCount;
     private int tournamentCount;
