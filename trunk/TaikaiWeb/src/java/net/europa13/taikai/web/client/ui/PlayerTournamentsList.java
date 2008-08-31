@@ -52,6 +52,7 @@ public class PlayerTournamentsList extends FlexTable {
         });
 
         setWidget(0, 0, btnAddTournamentConnection);
+        getFlexCellFormatter().setColSpan(0, 0, 2);
 //        addTournamentConnection();
     }
 
@@ -72,9 +73,31 @@ public class PlayerTournamentsList extends FlexTable {
         tournamentControls.add(tournamentControl);
         activateSeedControls.add(tournamentControl);
         seedControls.add(tournamentControl);
-        setWidget(nbrTournaments, 0, tournamentControl);
-        setWidget(nbrTournaments, 1, activateSeedControl);
-        setWidget(nbrTournaments, 2, seedControl);
+                
+        activateSeedControl.addClickListener(new ClickListener() {
+//            private int row = nbrTournaments;
+            public void onClick(Widget checkBox) {
+                Logger.debug("Klickade på checkBox");
+                int rowToChange = -1;
+                for (int i = 0; i < getRowCount(); i++) {
+                    if (checkBox.equals(getWidget(i, 1))) {
+                        rowToChange = i;
+                        break;
+                    }
+                }
+                Logger.debug("rowToChange="+rowToChange);
+                if (rowToChange >= 0) {
+                    Widget w = getWidget(rowToChange, 2);
+                    if (w instanceof ListBox) {
+                        Logger.debug("Ändrar Enabled på rad " + rowToChange +
+                                     " kolumn 2");
+                        ((CheckBox)w).setVisible(false);
+                    }
+                }
+//                removeTournamentConnection(row);
+            }
+        });
+        
 //        if (nbrTournaments > 0) {
         Button drbtn = new Button("Ta bort");
         drbtn.addClickListener(new ClickListener() {
@@ -95,8 +118,12 @@ public class PlayerTournamentsList extends FlexTable {
         });
 //        }
 
+        setWidget(nbrTournaments, 0, tournamentControl);
+        setWidget(nbrTournaments, 1, activateSeedControl);
+        setWidget(nbrTournaments, 2, seedControl);
         setWidget(nbrTournaments, 3, drbtn);
         setWidget(nbrTournaments + 1, 0, btnAddTournamentConnection);
+        getFlexCellFormatter().setColSpan(nbrTournaments + 1, 0, 2);
 
 
     }
