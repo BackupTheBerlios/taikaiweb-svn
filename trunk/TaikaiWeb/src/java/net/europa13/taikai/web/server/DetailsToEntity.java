@@ -23,10 +23,12 @@ import javax.persistence.EntityManager;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
+import net.europa13.taikai.web.entity.TournamentSeed;
 import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.TaikaiDetails;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
+import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 
 /**
  *
@@ -42,6 +44,8 @@ public class DetailsToEntity {
         entity.setName(details.getName());
         entity.setSurname(details.getSurname());
 
+        //*********************************************************************
+        // Added and removed tournaments
         List<Tournament> tournaments =
             em.createNamedQuery("getTournamentsForPlayer").setParameter("player", entity).getResultList();
         List<TournamentProxy> tournamentProxies = details.getTournaments();
@@ -51,14 +55,14 @@ public class DetailsToEntity {
 
         for (TournamentProxy tournamentProxy : tournamentProxies) {
             boolean added = true;
-            
+
             for (Tournament tournament : tournaments) {
                 if (tournament.getId().equals(tournamentProxy.getId())) {
                     added = false;
                     break;
                 }
             }
-            
+
             if (added) {
                 Tournament tournament = em.find(Tournament.class, tournamentProxy.getId());
                 System.out.println("Tournament added: " + tournament.getName());
@@ -68,14 +72,14 @@ public class DetailsToEntity {
 
         for (Tournament tournament : tournaments) {
             boolean removed = true;
-            
+
             for (TournamentProxy tournamentProxy : tournamentProxies) {
                 if (tournament.getId().equals(tournamentProxy.getId())) {
                     removed = false;
                     break;
                 }
             }
-            
+
             if (removed) {
                 System.out.println("Tournament removed: " + tournament.getName());
                 removedTournaments.add(tournament);
@@ -87,12 +91,84 @@ public class DetailsToEntity {
             tournament.addPlayer(entity);
             em.merge(tournament);
         }
-        
+
         for (Tournament tournament : removedTournaments) {
             tournament.removePlayer(entity);
             em.merge(tournament);
         }
 
+        //*********************************************************************
+        // Added and removed seeds
+        List<TournamentSeed> tournamentSeeds =
+            em.createNamedQuery("getTournamentSeedsForPlayer").setParameter("player", entity).getResultList();
+        
+        System.out.println("Number of tournamentSeeds for " + entity.getName() + ": " + tournamentSeeds.size());
+        
+        List<TournamentSeedProxy> tournamentSeedProxies = details.getSeeds();
+        System.out.println("Number of tournamentSeedProxies for " + details.getName() + ": " + tournamentSeedProxies.size());
+        
+        List<TournamentSeed> addedSeeds =
+            new ArrayList<TournamentSeed>();
+        List<TournamentSeed> removedSeeds =
+            new ArrayList<TournamentSeed>();
+        
+        for (TournamentSeedProxy seedProxy : tournamentSeedProxies) {
+            boolean added = true;
+
+            for (TournamentSeed seed : tournamentSeeds) {
+                if (seed.getTournament().getId().equals(seedProxy.getTournament().getId()) &&
+                    seed.getSeedNumber() == seedProxy.getSeedNumber() &&
+                    seed.getPlayer().getId().equals(seedProxy.getPlayer().getId())) {
+                    added = false;
+                    break;
+                }
+            }
+
+            if (added) {
+                TournamentSeed seed = em.find(TournamentSeed.class, seedProxy.getId());
+                if (seed == null) {
+                    seed = new TournamentSeed();
+                }
+                Tournament tournament = em.find(Tournament.class, seedProxy.getTournament().getId());
+                seed.setTournament(tournament);
+                seed.setPlayer(entity);
+                seed.setSeedNumber(seedProxy.getSeedNumber());
+                System.out.println("Tournament seed added: " + seed.getTournament().getName() + ": " + seed.getPlayer().getName() + " " + seed.getSeedNumber());
+                addedSeeds.add(seed);
+            }
+        }
+
+        for (TournamentSeed seed : tournamentSeeds) {
+            boolean removed = true;
+
+            for (TournamentSeedProxy seedProxy : tournamentSeedProxies) {
+                if (seed.getTournament().getId().equals(seedProxy.getTournament().getId()) &&
+                    seed.getSeedNumber() == seedProxy.getSeedNumber() &&
+                    seed.getPlayer().getId().equals(seedProxy.getPlayer().getId())) {
+                    removed = false;
+                    break;
+                }
+            }
+
+            if (removed) {
+                System.out.println("Tournament seed removed: " + seed.getTournament().getName() + ": " + seed.getPlayer().getName() + " " + seed.getSeedNumber());
+                removedSeeds.add(seed);
+            }
+        }
+        
+        for (TournamentSeed seed : removedSeeds) {
+            seed.getTournament().removeSeed(seed);
+            em.remove(seed);
+        }
+        
+        em.flush();
+        
+        for (TournamentSeed seed : addedSeeds) {
+            seed.getTournament().addSeed(seed);
+        }
+
+        
+        
     }
 
     public static void taikai(TaikaiDetails details, Taikai entity, EntityManager em) {

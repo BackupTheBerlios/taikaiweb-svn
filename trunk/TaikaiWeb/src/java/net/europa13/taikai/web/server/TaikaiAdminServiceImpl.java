@@ -25,12 +25,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.TaikaiAdminService;
-import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
-import net.europa13.taikai.web.entity.Tournament;
-import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
-import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *

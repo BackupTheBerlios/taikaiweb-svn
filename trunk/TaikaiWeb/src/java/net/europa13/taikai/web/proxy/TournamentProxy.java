@@ -62,4 +62,31 @@ public class TournamentProxy implements Serializable {
     public void setTaikaiId(int taikaiId) {
         this.taikaiId = taikaiId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TournamentProxy other = (TournamentProxy) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 19 * hash + this.id;
+        return hash;
+    }
+    
+    
 }

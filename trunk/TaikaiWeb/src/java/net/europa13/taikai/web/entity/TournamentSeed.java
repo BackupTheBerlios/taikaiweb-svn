@@ -20,9 +20,13 @@ package net.europa13.taikai.web.entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -32,13 +36,19 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "TournamentSeed", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"seedNumber", "tournamentId"})
+    @UniqueConstraint(columnNames = {"seedNumber", "tournamentId"}),
+    @UniqueConstraint(columnNames= {"tournamentId", "playerId"})
+})
+@NamedQueries({
+    @NamedQuery(name = "getTournamentSeedsForPlayer",
+    query = "SELECT ts FROM TournamentSeed ts JOIN ts.player p WHERE p = :player")
 })
 public class TournamentSeed implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "seedNumber", nullable = false)
     private int seedNumber;
@@ -50,6 +60,10 @@ public class TournamentSeed implements Serializable {
     private Player player;
 
     public TournamentSeed() {
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public int getSeedNumber() {
@@ -97,8 +111,12 @@ public class TournamentSeed implements Serializable {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 97 * hash + this.seedNumber;
-        hash = 97 * hash + (this.tournament != null ? this.tournament.hashCode() : 0);
+        hash = 79 * hash + this.seedNumber;
+        hash = 79 * hash + (this.tournament != null ? this.tournament.hashCode() : 0);
         return hash;
     }
+
+    
+
+    
 }

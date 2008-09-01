@@ -193,16 +193,22 @@ public class PlayerContent extends Content {
 
             public void onSuccess(ListResult<TournamentProxy> result) {
                 Logger.debug("Hämtade listor i openPlayerPanel.");
-                playerPanel.setTournamentList(result.getList());
-                setPlayerPanelPlayer(playerId);
+                setPlayerPanelPlayer(playerId, result.getList());
             }
         });
     }
 
-    private void setPlayerPanelPlayer(final int playerId) {
-
+    private void setPlayerPanelPlayer(final int playerId, final List<TournamentProxy> tournaments) {
+        Logger.trace("entering setPlayerPanelPlayer in PlayerContent");
+//        throw new RuntimeException("test");
+        
+//        assert(false);
+        
+        Logger.debug("setPlayerPanelPlayer in PlayerContent: playerId = " + playerId + " tournaments = " + tournaments);
+        
         if (playerId == 0) {
             playerPanel.reset();
+            playerPanel.setTournamentList(tournaments);
             panel.setWidget(playerPanel);
             state = "details";
         }
@@ -215,14 +221,18 @@ public class PlayerContent extends Content {
                 }
 
                 public void onSuccess(PlayerDetails player) {
+                    Logger.trace("entering playerService.getPlayer.onSuccess in PlayerContent");
 //                throw new UnsupportedOperationException("Not supported yet.");
                     playerPanel.setPlayer(player);
+                    playerPanel.setTournamentList(tournaments);
 //                playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
                     panel.setWidget(playerPanel);
                     state = "details";
+                    Logger.trace("exiting playerService.getPlayer.onSuccess in PlayerContent");
                 }
             });
         }
+        Logger.trace("exiting setPlayerPanelPlayer in PlayerContent");
     }
 //    private AsyncCallback<ListResult<TournamentProxy>> 
     @Override

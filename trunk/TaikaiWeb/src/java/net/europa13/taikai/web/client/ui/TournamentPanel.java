@@ -21,11 +21,14 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.List;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
-import net.europa13.taikai.web.proxy.TournamentProxy;
+import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 
 /**
  *
@@ -35,7 +38,12 @@ public class TournamentPanel extends VerticalPanel {
 
     private final TextBox tbId;
     private final TextBox tbName;
-    private final TextBox tbTaikaiId;
+    private final TextBox tbTaikai;
+    private final ListBox lbPoolSize;
+    private final RadioButton rbPreferLarger;
+    private final RadioButton rbPreferSmaller;
+    private final TournamentSeedTable seedTable;
+    
     private final Button btnSave;
 //    private final ListBox lbTaikaiList;
 //    private List<TaikaiProxy> taikaiList;
@@ -48,32 +56,52 @@ public class TournamentPanel extends VerticalPanel {
 
         FlexTable table = new FlexTable();
         
-        table.setText(0, 0, "Id");
+        int row = 0;
+        
+        
+        table.setText(row, 0, "Id");
         tbId = new TextBox();
         tbId.setEnabled(false);
-        table.setWidget(0, 1, tbId);
+        table.setWidget(row++, 1, tbId);
         
-        table.setText(1, 0, "Namn");
+        table.setText(row, 0, "Namn");
         tbName = new TextBox();
-        table.setWidget(1, 1, tbName);
+        table.setWidget(row++, 1, tbName);
         
-        table.setText(2, 0, "Taikai id");
-        tbTaikaiId = new TextBox();
-        tbTaikaiId.setEnabled(false);
-        table.setWidget(2, 1, tbTaikaiId);
+        table.setText(row, 0, "Poolstorlek");
+        lbPoolSize = new ListBox();
+        lbPoolSize.addItem("2", "2");
+        lbPoolSize.addItem("3", "3");
+        lbPoolSize.setSelectedIndex(1);
+        table.setWidget(row++, 1, lbPoolSize);
+        
+        table.setText(row, 0, "Vid udda deltagare");
+        FlowPanel prefersLargerPanel = new FlowPanel();
+        rbPreferLarger = new RadioButton("rePreferringLarger", "Föredrar större pooler");
+        rbPreferLarger.setChecked(true);
+        rbPreferSmaller = new RadioButton("rePreferringLarger", "Föredrar mindre pooler");
+        prefersLargerPanel.add(rbPreferLarger);
+        prefersLargerPanel.add(rbPreferSmaller);
+        table.setWidget(row++, 1, prefersLargerPanel);
+        
+        table.setText(row, 0, "Taikai");
+        tbTaikai = new TextBox();
+        tbTaikai.setEnabled(false);
+        table.setWidget(row++, 1, tbTaikai);
+        
+        seedTable = new TournamentSeedTable();
+        table.setWidget(row, 0, seedTable);
+        table.getFlexCellFormatter().setColSpan(row, 0, table.getCellCount(0));
+        row++;
         
         FlowPanel buttonPanel = new FlowPanel();
-        table.setWidget(3, 0, buttonPanel);
-        table.getFlexCellFormatter().setColSpan(3, 0, table.getCellCount(0));
+        table.setWidget(row, 0, buttonPanel);
+        table.getFlexCellFormatter().setColSpan(row, 0, table.getCellCount(0));
         
         btnSave = new Button("Spara");
         buttonPanel.add(btnSave);
         add(table);
     }
-
-//    private void addControl(Widget control, String label) {
-//        
-//    }
     
     public void addSaveListener(ClickListener listener) {
         btnSave.addClickListener(listener);
@@ -87,6 +115,13 @@ public class TournamentPanel extends VerticalPanel {
         }
         
         newTournament.setName(tbName.getText());
+        newTournament.setPoolSize(Integer.parseInt(lbPoolSize.getValue(lbPoolSize.getSelectedIndex())));
+        if (rbPreferLarger.isChecked()) {
+            newTournament.setPreferringLargerPools(true);
+        }
+        else {
+            newTournament.setPreferringLargerPools(false);
+        }
         newTournament.setTaikaiId(taikai.getId());
         return newTournament;
     }
@@ -99,7 +134,11 @@ public class TournamentPanel extends VerticalPanel {
         tournament = null;
         tbId.setText("");
         tbName.setText("");
-        tbTaikaiId.setText("");
+        lbPoolSize.setSelectedIndex(1);
+        rbPreferLarger.setChecked(true);
+        rbPreferSmaller.setChecked(false);
+        tbTaikai.setText("");
+        seedTable.reset();
     }
     
     public void setTaikai(TaikaiProxy taikai) {
@@ -114,7 +153,12 @@ public class TournamentPanel extends VerticalPanel {
             this.tournament = tournament;
             tbId.setText(String.valueOf(tournament.getId()));
             tbName.setText(tournament.getName());
-            tbTaikaiId.setText(String.valueOf(tournament.getTaikaiId()));
+            tbTaikai.setText(String.valueOf(tournament.getTaikaiId()));
+            
+//            List<TournamentSeedProxy> seeds = tournament.get
+            for (int i = 0 ; i < 4; ++i) {
+                seedTable.setSeededPlayer(i + 1, tournament.getSeededPlayer(i + 1));
+            }
         }
     }
 

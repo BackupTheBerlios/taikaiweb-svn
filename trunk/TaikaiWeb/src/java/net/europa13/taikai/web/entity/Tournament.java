@@ -20,6 +20,7 @@ package net.europa13.taikai.web.entity;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -47,7 +48,7 @@ uniqueConstraints = {
 })
 @NamedQueries({
     @NamedQuery(name = "getUncheckedPlayers",
-    query = "SELECT p FROM Taikai t JOIN t.players p WHERE p.checkedIn = FALSE"),
+    query = "SELECT p FROM Tournament tmt JOIN tmt.players p WHERE p.checkedIn = FALSE AND tmt = :tournament"),
     @NamedQuery(name = "getTournamentsForPlayer",
     query = "SELECT t FROM Tournament t JOIN t.players p WHERE p = :player")
 })
@@ -72,7 +73,7 @@ public class Tournament implements Serializable {
     private Taikai taikai;
     @ManyToMany
     private List<Player> players;
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<TournamentSeed> tournamentSeeds;
     @OneToOne
     @JoinColumn(name = "treeId")
@@ -85,6 +86,10 @@ public class Tournament implements Serializable {
 
     public void addPlayer(Player player) {
         players.add(player);
+    }
+
+    public void addSeed(TournamentSeed seed) {
+        tournamentSeeds.add(seed);
     }
 
     public void draw() {
@@ -117,6 +122,10 @@ public class Tournament implements Serializable {
         return null;
     }
 
+    public List<TournamentSeed> getSeeds() {
+        return tournamentSeeds;
+    }
+
     public Taikai getTaikai() {
         return taikai;
     }
@@ -131,6 +140,10 @@ public class Tournament implements Serializable {
 
     public void removePlayer(Player player) {
         players.remove(player);
+    }
+
+    public void removeSeed(TournamentSeed seed) {
+        tournamentSeeds.remove(seed);
     }
 
     public void setId(Integer id) {

@@ -29,10 +29,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 /**
@@ -50,10 +50,10 @@ public class Taikai implements Serializable {
     private Integer id;
     @Column(name = "playerNumber")
     private int playerNumber = 1;
-    @Column(name="name", nullable=false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
     @Temporal(value = TemporalType.DATE)
-    @Column(name="startDate")
+    @Column(name = "startDate")
     private Date startDate;
     @Temporal(value = TemporalType.DATE)
     @Column(name = "endDate")
@@ -62,8 +62,10 @@ public class Taikai implements Serializable {
     @Column(name = "lastUpdate")
     private Timestamp lastUpdate;
     @OneToMany(mappedBy = "taikai", cascade = CascadeType.ALL)
+    @OrderBy(value = "name ASC")
     private List<Tournament> tournaments = new ArrayList<Tournament>();
     @OneToMany(mappedBy = "taikai", cascade = CascadeType.ALL)
+    @OrderBy(value = "surname ASC")
     private List<Player> players;
     @OneToMany(mappedBy = "taikai", cascade = CascadeType.ALL)
     private List<Court> courts;

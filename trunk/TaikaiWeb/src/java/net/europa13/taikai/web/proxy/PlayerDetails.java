@@ -26,12 +26,35 @@ import java.util.List;
  */
 public class PlayerDetails extends PlayerProxy {
 
+    private List<TournamentSeedProxy> seeds;
     private List<TournamentProxy> tournaments;
 
+    public int getPlayerSeedInTournament(TournamentProxy tournament) {
+        
+        int seedNumber = -1;
+        
+        for (TournamentSeedProxy seed : seeds) {
+            if (seed.getTournament().equals(tournament)) {
+                seedNumber = seed.getSeedNumber();
+            }
+        }
+        
+        return seedNumber;
+        
+    }
+    
+    public List<TournamentSeedProxy> getSeeds() {
+        return seeds;
+    }
+    
     public List<TournamentProxy> getTournaments() {
         return tournaments;
     }
 
+    public void setSeeds(List<TournamentSeedProxy> seeds) {
+        this.seeds = seeds;
+    }
+    
     public void setTournaments(List<TournamentProxy> tournaments) {
         this.tournaments = new ArrayList<TournamentProxy>(tournaments);
     }

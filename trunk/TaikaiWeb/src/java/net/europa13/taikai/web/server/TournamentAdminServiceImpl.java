@@ -26,9 +26,12 @@ import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.TournamentAdminService;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
+import net.europa13.taikai.web.entity.TournamentSeed;
+import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
+import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 
 /**
  *
@@ -58,6 +61,37 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
         return proxies;
     }
     
+    public List<Integer> getAvailableSeeds(TournamentProxy proxy) {
+        
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            
+            if (proxy == null) {
+                System.out.println("proxy == null");
+            }
+            
+            Tournament tournament = em.find(Tournament.class, proxy.getId());
+            
+            List<Integer> availableSeeds = new ArrayList<Integer>();
+            availableSeeds.add(1);
+            availableSeeds.add(2);
+            availableSeeds.add(3);
+            availableSeeds.add(4);
+                
+            List<TournamentSeed> takenSeeds = tournament.getSeeds();
+            for (TournamentSeed seed : takenSeeds) {
+                availableSeeds.remove((Integer)seed.getSeedNumber());
+            }
+            
+            return availableSeeds;
+        }
+        finally {
+            em.close();
+        }
+        
+    }
+    
     public TournamentDetails getTournament(int tournamentId) {
 
         EntityManager em = emf.createEntityManager();
@@ -74,6 +108,38 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
             em.close();
         }
 
+    }
+    
+    public ListResult<TournamentSeedProxy> getTournamentSeeds(TournamentProxy proxy) {
+        
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            Tournament tournament = em.find(Tournament.class, proxy.getId());
+            
+            
+            
+            List<TournamentSeedProxy> seedProxies = new ArrayList<TournamentSeedProxy>();
+        
+            for (TournamentSeed seed : tournament.getSeeds()) {
+                
+                PlayerProxy playerProxy = new PlayerProxy();
+                EntityToProxy.player(seed.getPlayer(), playerProxy, em);
+                TournamentProxy tournamentProxy = new TournamentProxy();
+                EntityToProxy.tournament(tournament, tournamentProxy, em);
+                
+                TournamentSeedProxy seedProxy = 
+                    new TournamentSeedProxy(seed.getId(), tournamentProxy, playerProxy, seed.getSeedNumber());
+                seedProxies.add(seedProxy);
+            }
+            
+            return new ListResult<TournamentSeedProxy>(seedProxies, 0, seedProxies.size());
+        
+        }
+        finally {
+            em.close();
+        }
+        
     }
 
     @SuppressWarnings(value = "unchecked")
@@ -100,7 +166,7 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
     @SuppressWarnings(value="unchecked")
     private ListResult<TournamentProxy> getTournaments(EntityManager em, String query, Object owner) {
         List<Object[]> data =
-            em.createQuery(query).
+            em.createQuery(query + " ORDER BY tmt.name ").
             setParameter("owner", owner).getResultList();
 
         ListResult<TournamentProxy> result =

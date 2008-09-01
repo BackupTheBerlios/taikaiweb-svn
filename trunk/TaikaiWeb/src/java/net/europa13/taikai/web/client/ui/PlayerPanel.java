@@ -22,7 +22,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -33,6 +32,7 @@ import net.europa13.taikai.web.proxy.Grade;
 import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
+import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 
 /**
  *
@@ -90,7 +90,7 @@ public class PlayerPanel extends VerticalPanel {
         table.setText(row, 0, "Ålder");
         table.setWidget(row++, 1, tbAge);
         
-        int ggrow = 0;
+//        int ggrow = 0;
         int ggcol = 0;
         FlowPanel genderPanel = new FlowPanel();
         rbGenderMale = new RadioButton("rgGender", "Man");
@@ -145,8 +145,6 @@ public class PlayerPanel extends VerticalPanel {
 
     }
 
-
-
     public void addSaveListener(ClickListener listener) {
         btnSave.addClickListener(listener);
     }
@@ -172,10 +170,18 @@ public class PlayerPanel extends VerticalPanel {
         List<TournamentProxy> tournaments = activeTournamentsTable.getSelectedTournaments();
         
         newPlayer.setTournaments(tournaments);
-        for (TournamentProxy tournament : newPlayer.getTournaments()) {
-            Logger.debug("Tournament name = " + tournament.getName());
-        }
+//        for (TournamentProxy tournament : newPlayer.getTournaments()) {
+//            Logger.debug("Tournament name = " + tournament.getName());
+//        }
 
+        List<TournamentSeedProxy> seeds = activeTournamentsTable.getSeeds();
+        for (TournamentSeedProxy seed : seeds) {
+            Logger.debug("Seed added: " + seed.getTournament().getName() + " " + seed.getSeedNumber());
+            seed.setPlayer(newPlayer);
+        }
+        newPlayer.setSeeds(seeds);
+        
+        
         return newPlayer;
     }
 
@@ -199,6 +205,8 @@ public class PlayerPanel extends VerticalPanel {
     }
 
     public void setPlayer(PlayerDetails player) {
+        Logger.trace("entering setPlayer in PlayerPanel");
+        
         if (player == null) {
             reset();
             return;
@@ -223,7 +231,8 @@ public class PlayerPanel extends VerticalPanel {
         }
         
         lbGrade.setSelectedGrade(player.getGrade());
-        activeTournamentsTable.setSelectedTournaments(player.getTournaments());
+        
+        Logger.trace("exiting setPlayer in PlayerPanel");
     }
 
     public void setTaikai(TaikaiProxy taikai) {
@@ -231,7 +240,12 @@ public class PlayerPanel extends VerticalPanel {
     }
 
     public void setTournamentList(List<? extends TournamentProxy> tournaments) {
-        activeTournamentsTable.setTournamentList(tournaments);
+        Logger.trace("entering setTournamentList in PlayerPanel");
+        
+        activeTournamentsTable.setData(tournaments, player);
+//        activeTournamentsTable.setSelectedTournaments(player.getTournaments());
+        
+        Logger.trace("exiting setTournamentList in PlayerPanel");
     }
 
 }

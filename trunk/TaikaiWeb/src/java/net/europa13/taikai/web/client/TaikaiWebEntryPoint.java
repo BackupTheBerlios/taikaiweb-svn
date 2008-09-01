@@ -112,7 +112,7 @@ public class TaikaiWebEntryPoint implements EntryPoint {
 
 
         Logger.setTarget(new PanelHtmlLogTarget(logPanelContents));
-        Logger.setLevel(LogLevel.TRACE);
+        Logger.setLevel(LogLevel.DEBUG);
     }
 
     private void initState() {

@@ -23,11 +23,13 @@ import javax.persistence.EntityManager;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
+import net.europa13.taikai.web.entity.TournamentSeed;
 import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiDetails;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
+import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 
 /**
  *
@@ -36,50 +38,61 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 public class EntityToDetails {
 
     public static void player(Player entity, PlayerDetails details, EntityManager em) {
-        details.setAge(entity.getAge());
-        details.setCheckedIn(entity.isCheckedIn());
-        details.setGender(entity.getGender());
-        details.setGrade(entity.getGrade());
-        details.setId(entity.getId());
-        details.setName(entity.getName());
-        details.setNumber(entity.getNumber());
-        details.setSurname(entity.getSurname());
-        details.setTaikaiId(entity.getTaikai().getId());
+        EntityToProxy.player(entity, details, em);
         
-//        System.out.println("Before getting tournaments");
-        
-        // Felaktigt cast, det här blir ju inte TournamentProxies...
         List<Tournament> tournaments =
             em.createNamedQuery("getTournamentsForPlayer").setParameter("player", entity).getResultList();
         
-//        System.out.println("After getting tournaments. Tournaments size = " + tournaments.size());
-        
         List<TournamentProxy> tournamentProxies = 
-            new ArrayList<TournamentProxy>();
+            new ArrayList<TournamentProxy>();            
+        
+        List<TournamentSeedProxy> tournamentSeedProxies =
+            new ArrayList<TournamentSeedProxy>();
+
         
         for (Tournament tournament : tournaments) {
-            TournamentDetails td = new TournamentDetails();
-            tournament(tournament, td, em);
-            tournamentProxies.add(td);
+            TournamentProxy tp = new TournamentProxy();
+            EntityToProxy.tournament(tournament, tp, em);
+            tournamentProxies.add(tp);
+            
+            for (TournamentSeed seed : tournament.getSeeds()) {
+                if (seed.getPlayer().equals(entity)) {
+                    TournamentSeedProxy seedProxy =
+                        new TournamentSeedProxy();
+                    
+                    PlayerProxy pp = new PlayerProxy();
+                    EntityToProxy.player(seed.getPlayer(), pp, em);
+                    
+                    seedProxy.setId(seed.getId());
+                    seedProxy.setSeedNumber(seed.getSeedNumber());
+                    seedProxy.setPlayer(pp);
+                    seedProxy.setTournament(tp);
+                    
+                    tournamentSeedProxies.add(seedProxy);
+                }
+            }
         }
         details.setTournaments(tournamentProxies);
+        details.setSeeds(tournamentSeedProxies);
         
     }
 
     public static void taikai(Taikai entity, TaikaiDetails details, EntityManager em) {
+        EntityToProxy.taikai(entity, details, em);
     }
 
     public static void tournament(Tournament entity, TournamentDetails details, EntityManager em) {
-        details.setId(entity.getId());
-        details.setName(entity.getName());
-
-//        for (int i = 0; i < 4; ++i) {
-//            PlayerDetails playerDetails = new PlayerDetails();
-//            EntityToDetails.player(entity.getSeededPlayer(i), playerDetails, em);
-//            details.setPlayerSeed(i, playerDetails);
-//        }
-
-        details.setTaikaiId(entity.getTaikai().getId());
-
+        EntityToProxy.tournament(entity, details, em);
+        
+        List<TournamentSeed> seeds = entity.getSeeds();
+        List<TournamentSeedProxy> seedProxies = new ArrayList<TournamentSeedProxy>();
+        
+        for (TournamentSeed seed : seeds) {
+            TournamentSeedProxy seedProxy = new TournamentSeedProxy();
+            EntityToProxy.tournamentSeed(seed, seedProxy, em);
+            seedProxies.add(seedProxy);
+        }
+        details.setSeeds(seedProxies);
     }
+    
 }

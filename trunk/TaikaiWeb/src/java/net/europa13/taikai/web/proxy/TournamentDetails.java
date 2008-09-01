@@ -27,17 +27,18 @@ import java.util.List;
 public class TournamentDetails extends TournamentProxy {
 
     private List<CourtProxy> courts = new ArrayList<CourtProxy>();
-    private List<PlayerProxy> seededPlayers =
-        new ArrayList<PlayerProxy>(4);
+    private List<TournamentSeedProxy> seeds;
+//    private List<PlayerProxy> seededPlayers =
+//        new ArrayList<PlayerProxy>(4);
 
     private int poolSize;
     private boolean preferringLargerPools;
     
     public TournamentDetails() {
-        seededPlayers.add(null);
-        seededPlayers.add(null);
-        seededPlayers.add(null);
-        seededPlayers.add(null);
+//        seededPlayers.add(null);
+//        seededPlayers.add(null);
+//        seededPlayers.add(null);
+//        seededPlayers.add(null);
     }
     
     public void addCourt(CourtProxy court) {
@@ -48,8 +49,15 @@ public class TournamentDetails extends TournamentProxy {
         return poolSize;
     }
     
-    public PlayerProxy getSeededPlayer(int seed) {
-        return seededPlayers.get(seed);
+    public PlayerProxy getSeededPlayer(int seedNumber) {
+        
+        for (TournamentSeedProxy seed : seeds) {
+            if (seed.getSeedNumber() == seedNumber) {
+                return seed.getPlayer();
+            }
+        }
+        
+        return null;
     }
 
     public boolean isPreferringLargerPools() {
@@ -60,9 +68,9 @@ public class TournamentDetails extends TournamentProxy {
         courts.remove(court);
     }
 
-    public void setPlayerSeed(int seed, PlayerProxy player) {
-        seededPlayers.set(seed, player);
-    }
+//    public void setPlayerSeed(int seed, PlayerProxy player) {
+//        seededPlayers.set(seed, player);
+//    }
     
     public void setPoolSize(int poolSize) {
         this.poolSize = poolSize;
@@ -70,5 +78,9 @@ public class TournamentDetails extends TournamentProxy {
     
     public void setPreferringLargerPools(boolean preferringLargerPools) {
         this.preferringLargerPools = preferringLargerPools;
+    }
+    
+    public void setSeeds(List<? extends TournamentSeedProxy> seeds) {
+        this.seeds = new ArrayList<TournamentSeedProxy>(seeds);
     }
 }

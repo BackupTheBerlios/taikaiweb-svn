@@ -18,6 +18,7 @@
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -26,7 +27,9 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
 import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
+import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 
 /**
  *
@@ -35,11 +38,11 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 public class PlayerTournamentsList extends FlexTable {
 
     private Button btnAddTournamentConnection;
-//    private List<TournamentProxy> selectedTournaments;
-    private List<? extends TournamentProxy> tournaments;
-    private List<ListBox> tournamentControls = new ArrayList<ListBox>();
-    private List<ListBox> seedControls = new ArrayList<ListBox>();
-    private List<ListBox> activateSeedControls = new ArrayList<ListBox>();
+    private List<TournamentProxy> tournaments;
+    private PlayerDetails player;
+    private List<TournamentSelector> tournamentControls = new ArrayList<TournamentSelector>();
+    private List<SeedSelector> seedControls = new ArrayList<SeedSelector>();
+    private List<CheckBox> activateSeedControls = new ArrayList<CheckBox>();
 
     PlayerTournamentsList() {
 
@@ -52,27 +55,76 @@ public class PlayerTournamentsList extends FlexTable {
         });
 
         setWidget(0, 0, btnAddTournamentConnection);
-        getFlexCellFormatter().setColSpan(0, 0, 2);
+//        getFlexCellFormatter().setColSpan(0, 0, 2);
 //        addTournamentConnection();
     }
 
     private void addTournamentConnection() {
-        addTournamentConnection(-1);
+        addTournamentConnection(null);
     }
 
-    private void addTournamentConnection(long selectedTournament) {
+//    private class TournamentChangeListener implements ChangeListener {
+//
+//        private SeedSelector seedSelector;
+//
+//        public TournamentChangeListener(SeedSelector seedSelector) {
+//            this.seedSelector = seedSelector;
+//        }
+//
+//        public void onChange(Widget sender) {
+//        }
+//    }
 
-//        final int nbrTournaments = tournamentControls.size();
+    private void addTournamentConnection(TournamentProxy selectedTournament) {
+
         final int nbrTournaments = sizeConsitencyCheck();
-        ListBox tournamentControl = new ListBox();
-        CheckBox activateSeedControl = new CheckBox("Seeda");
-        ListBox seedControl = new ListBox();
+
+        TournamentSelector tournamentControl =
+            new TournamentSelector();
         setTournamentControlData(tournamentControl, selectedTournament);
-        setActivateSeedControlData(activateSeedControl, selectedTournament);
-        setSeedControlData(seedControl, selectedTournament);
         tournamentControls.add(tournamentControl);
-        activateSeedControls.add(tournamentControl);
-        seedControls.add(tournamentControl);
+
+        final CheckBox activateSeedControl = new CheckBox("Seeda");
+
+        activateSeedControls.add(activateSeedControl);
+
+
+
+        final SeedSelector seedControl = new SeedSelector();
+        Logger.debug("seedControl.setTournament");
+        seedControl.setData(tournamentControl.getSelectedTournament(), player);
+        seedControls.add(seedControl);
+
+
+
+        activateSeedControl.addClickListener(new ClickListener() {
+
+            public void onClick(Widget sender) {
+//                CheckBox cb = (CheckBox)sender;
+                seedControl.setEnabled(activateSeedControl.isChecked());
+            }
+        });
+
+        if (player.getPlayerSeedInTournament(selectedTournament) > -1) {
+            activateSeedControl.setChecked(true);
+            seedControl.setEnabled(true);
+        }
+        else {
+            seedControl.setEnabled(false);
+        }
+
+//        tournamentControl.addChangeListener(new TournamentChangeListener(seedControl));
+        tournamentControl.addChangeListener(new ChangeListener() {
+
+            public void onChange(Widget sender) {
+                TournamentSelector tournamentSelector = (TournamentSelector) sender;
+                seedControl.setData(tournamentSelector.getSelectedTournament(), player);
+                
+                activateSeedControl.setChecked(false);
+                seedControl.setEnabled(false);
+            }
+        });
+
                 
         activateSeedControl.addClickListener(new ClickListener() {
 //            private int row = nbrTournaments;
@@ -128,8 +180,23 @@ public class PlayerTournamentsList extends FlexTable {
 
     }
 
-    
-    
+    public List<TournamentSeedProxy> getSeeds() {
+        List<TournamentSeedProxy> seeds = new ArrayList<TournamentSeedProxy>();
+
+        for (int i = 0; i < seedControls.size(); ++i) {
+            if (activateSeedControls.get(i).isChecked()) {
+                TournamentSeedProxy seed = new TournamentSeedProxy();
+                seed.setTournament(tournamentControls.get(i).getSelectedTournament());
+                seed.setSeedNumber(seedControls.get(i).getSelectedSeed());
+                seeds.add(seed);
+            }
+
+        }
+
+        return seeds;
+
+    }
+
     public List<TournamentProxy> getSelectedTournaments() {
 
         List<TournamentProxy> selectedTournaments = new ArrayList<TournamentProxy>();
@@ -143,7 +210,7 @@ public class PlayerTournamentsList extends FlexTable {
     }
 
     private void removeTournamentConnection(int row) {
-        Logger.debug("Tar bort rad " + row);
+//        Logger.debug("Tar bort rad " + row);
         removeRow(row);
         tournamentControls.remove(row);
         activateSeedControls.remove(row);
@@ -156,85 +223,68 @@ public class PlayerTournamentsList extends FlexTable {
         }
     }
 
-    private void setControlData(ListBox control) {
-        setTournamentControlData(control, -1);
+    public void setPlayer(PlayerDetails player) {
+        this.player = player;
     }
 
-    private void setTournamentControlData(ListBox control, long selectedId) {
-        control.clear();
+//    private void setControlData(ListBox control) {
+//        setTournamentControlData(control, -1);
+//    }
+    private void setTournamentControlData(TournamentSelector control, TournamentProxy tournament) {
 
-        for (int i = 0; i < tournaments.size(); ++i) {
-            TournamentProxy tournament = tournaments.get(i);
-            control.addItem(tournament.getName(), String.valueOf(tournament.getId()));
-            if (tournament.getId() == selectedId) {
-                control.setSelectedIndex(i);
-            }
-        }
+        control.setTournaments(tournaments);
+        control.setSelectedTournament(tournament);
     }
 
-    private void setActivateSeedControlData(CheckBox control, long selectedId) {
-//        control.clear();
+//    private void setActivateSeedControlData(CheckBox control, long selectedId) {
 //
-//        for (int i = 0; i < tournaments.size(); ++i) {
-//            TournamentProxy tournament = tournaments.get(i);
-//            control.addItem(tournament.getName(), String.valueOf(tournament.getId()));
-//            if (tournament.getId() == selectedId) {
-//                control.setSelectedIndex(i);
-//            }
-//        }
-    }
-    
-        private void setSeedControlData(ListBox control, long selectedId) {
-//        control.clear();
+//    }
 //
-//        for (int i = 0; i < tournaments.size(); ++i) {
-//            TournamentProxy tournament = tournaments.get(i);
-//            control.addItem(tournament.getName(), String.valueOf(tournament.getId()));
-//            if (tournament.getId() == selectedId) {
-//                control.setSelectedIndex(i);
-//            }
-//        }
-            
-           
-            // Temporary solution, data should be acquired from database
-            control.addItem("1");
-            control.addItem("2");
-            control.addItem("3");
-            control.addItem("4");
-    }
-    
-    
-    public void setSelectedTournaments(List<? extends TournamentProxy> selectedTournaments) {
+//    private void setSeedControlData(ListBox control,  TournamentProxy tournament) {
+//        control.addItem("1");
+//        control.addItem("2");
+//        control.addItem("3");
+//        control.addItem("4");
+//    }
+
+//    public void setSeedData() {
+//
+//    }
+    private void setSelectedTournaments(List<? extends TournamentProxy> selectedTournaments) {
 
         if (selectedTournaments == null) {
             Logger.debug(PlayerTournamentsList.class.getName() + ".setSelectedTournaments: selectedTournaments == null");
             return;
         }
-        
+
+//        Logger.debug(PlayerTournamentsList.class.getName() + ".setSelectedTournaments: selectedTournaments.size = " + selectedTournaments.size());
         reset();
 
-//        if (!tournaments.containsAll(selectedTournaments)) {
-//            Logger.debug("PlayerTournamentList.setSelectedTournaments: selectedTournaments innehåller " +
-//                "turneringar som inte finns i tournaments.");
-//            return;
-//        }
-
         for (TournamentProxy tournament : selectedTournaments) {
-//            if (tournaments.contains(tournament))
-//            int index = tournaments.indexOf(tournament);
-            addTournamentConnection(tournament.getId());
+            addTournamentConnection(tournament);
         }
 
     }
 
-    public void setTournamentList(List<? extends TournamentProxy> tournaments) {
-//        Logger.info("setTournaments size = " + tournaments.size());
-        this.tournaments = tournaments;
+    public void setData(List<? extends TournamentProxy> tournaments, PlayerDetails player) {
+        Logger.trace("entering setDate in PlayerTournamentList");
 
-        for (ListBox control : tournamentControls) {
-            setTournamentControlData(control, control.getSelectedIndex());
+        if (tournaments == null) {
+            throw new RuntimeException("tournaments is null");
         }
 
+        this.player = player;
+
+        this.tournaments = new ArrayList<TournamentProxy>(tournaments);
+        Logger.debug("Added tournaments to PlayerTournamentsList");
+
+        for (TournamentSelector control : tournamentControls) {
+            control.setTournaments(tournaments);
+        }
+
+        setSelectedTournaments(player.getTournaments());
+
+        Logger.trace("exiting setDate in PlayerTournamentList");
     }
 
     private int sizeConsitencyCheck() {
