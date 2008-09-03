@@ -42,14 +42,23 @@ public class TaikaiProxy implements Serializable {
     }
     
     /**
-     * Get the value of tournamentCount
+     * Get the value of id
      *
-     * @return the value of tournamentCount
+     * @return the value of id
      */
-    public int getTournamentCount() {
-        return tournamentCount;
+    public int getId() {
+        return id;
     }
-
+    
+    /**
+     * Get the value of name
+     *
+     * @return the value of name
+     */
+    public String getName() {
+        return name;
+    }
+    
     /**
      * Get the value of playerCount
      *
@@ -58,15 +67,14 @@ public class TaikaiProxy implements Serializable {
     public int getPlayerCount() {
         return playerCount;
     }
-
-
+    
     /**
-     * Get the value of name
+     * Get the value of tournamentCount
      *
-     * @return the value of name
+     * @return the value of tournamentCount
      */
-    public String getName() {
-        return name;
+    public int getTournamentCount() {
+        return tournamentCount;
     }
 
     public void setId(int id) {
@@ -77,13 +85,13 @@ public class TaikaiProxy implements Serializable {
         this.name = name;
     }
 
-    
-    /**
-     * Get the value of id
-     *
-     * @return the value of id
-     */
-    public int getId() {
-        return id;
+    public void setPlayerCount(int playerCount) {
+        this.playerCount = playerCount;
     }
+    
+    public void setTournamentCount(int tournamentCount) {
+        this.tournamentCount = tournamentCount;
+    }
+    
+    
 }

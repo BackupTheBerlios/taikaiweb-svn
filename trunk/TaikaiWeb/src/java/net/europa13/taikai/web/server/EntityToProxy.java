@@ -29,11 +29,18 @@ public static void player(Player entity, PlayerProxy proxy, EntityManager em) {
         proxy.setName(entity.getName());
         proxy.setNumber(entity.getNumber());
         proxy.setSurname(entity.getSurname());
-        proxy.setTaikaiId(entity.getTaikai().getId());
+        
+        TaikaiProxy taikaiProxy = new TaikaiProxy();
+        taikai(entity.getTaikai(), taikaiProxy, em);
+        proxy.setTaikai(taikaiProxy);
         
     }
 
-    public static void taikai(Taikai entity, TaikaiProxy details, EntityManager em) {
+    public static void taikai(Taikai entity, TaikaiProxy proxy, EntityManager em) {
+        proxy.setId(entity.getId());
+        proxy.setName(entity.getName());
+        proxy.setPlayerCount(entity.getPlayers().size());
+        proxy.setTournamentCount(entity.getTournaments().size());
     }
 
     public static void tournament(Tournament entity, TournamentProxy proxy, EntityManager em) {

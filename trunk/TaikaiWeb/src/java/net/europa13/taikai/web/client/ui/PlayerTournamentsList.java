@@ -55,8 +55,7 @@ public class PlayerTournamentsList extends FlexTable {
         });
 
         setWidget(0, 0, btnAddTournamentConnection);
-//        getFlexCellFormatter().setColSpan(0, 0, 2);
-//        addTournamentConnection();
+
     }
 
     private void addTournamentConnection() {
@@ -294,7 +293,7 @@ public class PlayerTournamentsList extends FlexTable {
             result = tournamentControls.size();
         }
         if (result < 0) {
-            Logger.error("Inkonsekvent liststorlek i PlayerTournamentList");
+            Logger.debug("Inkonsekvent liststorlek i PlayerTournamentList");
         }
         return result;
     }

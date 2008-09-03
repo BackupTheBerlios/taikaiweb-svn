@@ -42,7 +42,7 @@ public class PlayerPanel extends VerticalPanel {
 
 //    private final Panel panel = new SimplePanel();
     private final TextBox tbId;
-    private final TextBox tbTaikaiId;
+    private final TextBox tbTaikai;
     private final TextBox tbName;
     private final TextBox tbSurname;
     private final CheckBox cbCheckedIn;
@@ -69,10 +69,10 @@ public class PlayerPanel extends VerticalPanel {
         table.setText(row, 0, "Id");
         table.setWidget(row++, 1, tbId);
 
-        tbTaikaiId = new TextBox();
-        tbTaikaiId.setEnabled(false);
-        table.setText(row, 0, "TaikaiId");
-        table.setWidget(row++, 1, tbTaikaiId);
+        tbTaikai = new TextBox();
+        tbTaikai.setEnabled(false);
+        table.setText(row, 0, "Taikai");
+        table.setWidget(row++, 1, tbTaikai);
 
         tbName = new TextBox();
         table.setText(row, 0, "Förnamn");
@@ -156,7 +156,7 @@ public class PlayerPanel extends VerticalPanel {
             newPlayer.setId(player.getId());
             newPlayer.setNumber(player.getNumber());
         }
-        newPlayer.setTaikaiId(taikai.getId());
+        newPlayer.setTaikai(taikai);
         newPlayer.setName(tbName.getText());
         newPlayer.setSurname(tbSurname.getText());
         newPlayer.setCheckedIn(cbCheckedIn.isChecked());
@@ -192,7 +192,7 @@ public class PlayerPanel extends VerticalPanel {
     public void reset() {
         this.player = null;
         tbId.setText("");
-        tbTaikaiId.setText("");
+        tbTaikai.setText("");
         tbName.setText("");
         tbSurname.setText("");
         cbCheckedIn.setChecked(false);
@@ -214,7 +214,7 @@ public class PlayerPanel extends VerticalPanel {
 
         this.player = player;
         tbId.setText(String.valueOf(player.getId()));
-        tbTaikaiId.setText(String.valueOf(player.getTaikaiId()));
+        tbTaikai.setText(player.getTaikai().getName());
         tbName.setText(player.getName());
         tbSurname.setText(player.getSurname());
         cbCheckedIn.setChecked(player.isCheckedIn());

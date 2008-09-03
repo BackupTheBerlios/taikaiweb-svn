@@ -34,7 +34,7 @@ public class PlayerProxy implements Serializable {
     private String name;
     private int number;
     private String surname;
-    private int taikaiId;
+    private TaikaiProxy taikai;
     
     
     public PlayerProxy() {
@@ -71,8 +71,8 @@ public class PlayerProxy implements Serializable {
         return surname;
     }
     
-    public int getTaikaiId() {
-        return taikaiId;
+    public TaikaiProxy getTaikai() {
+        return taikai;
     }
     
     public boolean isCheckedIn() {
@@ -116,7 +116,7 @@ public class PlayerProxy implements Serializable {
         this.surname = surname;
     }
     
-    public void setTaikaiId(int taikaiId) {
-        this.taikaiId = taikaiId;
+    public void setTaikai(TaikaiProxy taikai) {
+        this.taikai = taikai;
     }
 }

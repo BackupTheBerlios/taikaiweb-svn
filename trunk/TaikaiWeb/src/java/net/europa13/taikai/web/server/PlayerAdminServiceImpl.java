@@ -149,7 +149,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
 
             if (player == null) {
                 player = new Player();
-                Taikai taikai = em.find(Taikai.class, details.getTaikaiId());
+                Taikai taikai = em.find(Taikai.class, details.getTaikai());
                 if (taikai == null) {
                     throw new RuntimeException("no taikai");
                 }
