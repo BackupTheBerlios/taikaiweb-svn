@@ -28,8 +28,10 @@ import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
+import net.europa13.taikai.web.client.ContentHandlerNotFoundException;
 import net.europa13.taikai.web.client.CustomCallback;
 import net.europa13.taikai.web.client.ListResult;
+import net.europa13.taikai.web.client.NavigationPath;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
@@ -41,13 +43,13 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  */
 public class TaikaiListContent extends Content {
 
-    private final TaikaiPanel taikaiPanel;
     private final TaikaiTable taikaiTable;
     private final SimplePanel panel;
     private TaikaiAdminServiceAsync taikaiService =
         GWT.create(TaikaiAdminService.class);
     private List<TaikaiProxy> taikaiList;
     private final String historyToken;
+    private final TaikaiDetailsContent taikaiDetailsContent;
 
     /**
      * Constructor.
@@ -72,15 +74,9 @@ public class TaikaiListContent extends Content {
             }
         });
 
-        taikaiPanel = new TaikaiPanel();
-        taikaiPanel.addSaveListener(new ClickListener() {
+//        taikaiPanel = new TaikaiPanel();
 
-            public void onClick(Widget arg0) {
-                TaikaiProxy taikai = taikaiPanel.getTaikai();
-                storeTaikai(taikai);
-
-            }
-        });
+        taikaiDetailsContent = new TaikaiDetailsContent();
 
         panel.setWidget(taikaiTable);
 
@@ -116,21 +112,6 @@ public class TaikaiListContent extends Content {
         }
     }
 
-    private void storeTaikai(final TaikaiProxy proxy) {
-        taikaiService.storeTaikai(proxy, new AsyncCallback() {
-
-            public void onFailure(Throwable t) {
-                Logger.error("Det gick inte att spara evenemang " + proxy.getId() + ".");
-                Logger.debug(t.getLocalizedMessage());
-            }
-            
-            public void onSuccess(Object nothing) {
-                Logger.info(proxy.getName() + " sparad.");
-                updateTaikaiList();
-            }
-        });
-    }
-
     private void updateTaikaiList() {
         taikaiService.getTaikais(new CustomCallback<ListResult<TaikaiProxy>>() {
 
@@ -142,34 +123,20 @@ public class TaikaiListContent extends Content {
     }
 
     @Override
-    public void handleState(String state) {
-        if ("new".equals(state)) {
-            taikaiPanel.reset();
-            panel.setWidget(taikaiPanel);
+    public Content handleState(NavigationPath path) throws ContentHandlerNotFoundException {
+        if ("new".equals(path.getPathItem(0))) {
+            return taikaiDetailsContent.handleState(path.getSubPath());
         }
-        else if (state.isEmpty()) {
+        else if (path.isEmpty()) {
             panel.setWidget(taikaiTable);
+            return this;
         }
         else {
             try {
-                final int taikaiId = Integer.parseInt(state);
-
-                taikaiService.getTaikai(taikaiId, new AsyncCallback<TaikaiProxy>() {
-
-                    public void onFailure(Throwable t) {
-                        Logger.error("Det gick inte att hitta evenemang " + taikaiId + ".");
-                        Logger.debug(t.getLocalizedMessage());
-                    }
-
-                    public void onSuccess(TaikaiProxy taikai) {
-                        taikaiPanel.setTaikai(taikai);
-                        panel.setWidget(taikaiPanel);
-                    }
-                });
-
+                return taikaiDetailsContent.handleState(path);
             }
-            catch (NumberFormatException ex) {
-                Logger.error(state + " är ett ogiltigt värde för evenemang.");
+            catch (ContentHandlerNotFoundException ex) {
+                return this;
             }
         }
     }

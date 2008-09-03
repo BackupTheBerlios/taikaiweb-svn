@@ -75,7 +75,7 @@ public class SeedSelector extends ListBox {
     private void updateList(List<Integer> seeds, PlayerDetails player) {
         clear();
         
-        int playerSeed = player.getPlayerSeedInTournament(tournament);
+        int playerSeed = player != null ? player.getPlayerSeedInTournament(tournament) : -1;
         
         if (playerSeed > - 1 && !seeds.contains(playerSeed)) {
             int position = 0;

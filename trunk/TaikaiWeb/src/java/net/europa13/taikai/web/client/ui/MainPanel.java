@@ -36,7 +36,7 @@ public class MainPanel extends HTMLPanel {
     private SidePanel sidePanel;
     private HTMLPanel contentContainerPanel;
     private Panel toolbarPanel;
-    private Panel contentPanel;
+    private Widget contentWidget;
 //    private Session session;
     private Content currentContent;
     private static MainPanel instance = new MainPanel();
@@ -129,8 +129,8 @@ public class MainPanel extends HTMLPanel {
     }
     
     private void setContent(Content content, MainPanel mp) {
-        if (contentPanel != null) {
-            contentContainerPanel.remove(contentPanel);
+        if (contentWidget != null) {
+            contentContainerPanel.remove(contentWidget);
             
         }
         if (currentContent != null) {
@@ -139,9 +139,9 @@ public class MainPanel extends HTMLPanel {
 
         currentContent = content;
         
-        contentPanel = currentContent.getPanel();
-        contentPanel.setWidth("100%");
-        contentContainerPanel.add(contentPanel, "content");
+        contentWidget = currentContent.getPanel();
+        contentWidget.setWidth("100%");
+        contentContainerPanel.add(contentWidget, "content");
         currentContent.setActive(true);
         
         toolbarPanel.clear();

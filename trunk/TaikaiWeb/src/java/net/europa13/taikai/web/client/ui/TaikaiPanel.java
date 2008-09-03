@@ -37,7 +37,7 @@ public class TaikaiPanel extends VerticalPanel {
     private Grid dataGrid;
     private TextBox tournamentNameTB;
     private TextBox tournamentLocationTB;
-    private Button saveTournamentBTN;
+//    private Button saveTournamentBTN;
     private DisclosurePanel infoPanel;
 
 //    private Panel panel = new VerticalPanel();
@@ -67,14 +67,14 @@ public class TaikaiPanel extends VerticalPanel {
         
         add(dataGrid);
         
-        saveTournamentBTN = new Button("Save Taikai");        
-        add(saveTournamentBTN);
+//        saveTournamentBTN = new Button("Save Taikai");        
+//        add(saveTournamentBTN);
         
     }
     
-    public void addSaveListener(ClickListener listener) {
-        saveTournamentBTN.addClickListener(listener);
-    }
+//    public void addSaveListener(ClickListener listener) {
+//        saveTournamentBTN.addClickListener(listener);
+//    }
     
     public TaikaiProxy getTaikai() {
         TaikaiProxy newTaikai = new TaikaiProxy();
@@ -87,9 +87,9 @@ public class TaikaiPanel extends VerticalPanel {
         return newTaikai;
     }  
     
-    public void removeSaveListener(ClickListener listener) {
-        saveTournamentBTN.removeClickListener(listener);
-    }
+//    public void removeSaveListener(ClickListener listener) {
+//        saveTournamentBTN.removeClickListener(listener);
+//    }
     
     public void reset() {
         taikai = null;

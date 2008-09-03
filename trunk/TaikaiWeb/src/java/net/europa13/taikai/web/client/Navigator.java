@@ -29,27 +29,55 @@ public class Navigator {
     private static HashMap<String, Content> contentMap =
             new HashMap<String, Content>();
     
+    private static Content defaultContent;
+    
     private Navigator() {
         
     }
     
     public static Content getContent(String historyToken) {
         
-        int pos = historyToken.indexOf('/');
-        int handlerNameEnd = pos == -1 ? historyToken.length() : pos;
+//        int pos = historyToken.indexOf('/');
+//        int handlerNameEnd = pos == -1 ? historyToken.length() : pos;
+//        
+//        String handlerName = historyToken.substring(0, handlerNameEnd);
+//        Content content = contentMap.get(handlerName);
+//        if (content != null) {
+//            content.handleState(historyToken.substring(handlerNameEnd + 1));
+//        }
         
-        String handlerName = historyToken.substring(0, handlerNameEnd);
-        Content content = contentMap.get(handlerName);
-        if (content != null) {
-            content.handleState(historyToken.substring(handlerNameEnd + 1));
+        NavigationPath path = new NavigationPath(historyToken.split("/"));
+        
+        Content rootContent;
+        
+        if (path.isEmpty()) {
+            rootContent = defaultContent;
+        }
+        else {
+            rootContent = contentMap.get(path.getPathItem(0));
         }
         
-        return content;
+        if (rootContent == null) {
+            rootContent = defaultContent;
+        }
+        
+//        Content content
+        
+        try {
+            return rootContent.handleState(path.getSubPath());
+        }
+        catch (ContentHandlerNotFoundException ex) {
+            return defaultContent;
+        }
         
     }
     
     public static void registerContent(Content content, String historyToken) {
         contentMap.put(historyToken, content);
+    }
+    
+    public static void registerDefaultContent(Content content) {
+        Navigator.defaultContent = content;
     }
     
 }

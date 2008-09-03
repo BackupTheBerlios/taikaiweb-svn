@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -41,14 +42,14 @@ import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 public class PlayerPanel extends VerticalPanel {
 
 //    private final Panel panel = new SimplePanel();
-    private final TextBox tbId;
-    private final TextBox tbTaikai;
+    private final Label tbId;
+    private final Label tbTaikai;
     private final TextBox tbName;
     private final TextBox tbSurname;
     private final CheckBox cbCheckedIn;
     private final TextBox tbAge;
-    private final TextBox tbNumber;
-    private final Button btnSave;
+    private final Label tbNumber;
+//    private final Button btnSave;
     private PlayerDetails player;
     private TaikaiProxy taikai;
     private final RadioButton rbGenderMale;
@@ -64,13 +65,13 @@ public class PlayerPanel extends VerticalPanel {
 
         int row = 0;
 
-        tbId = new TextBox();
-        tbId.setEnabled(false);
+        tbId = new Label();
+//        tbId.setEnabled(false);
         table.setText(row, 0, "Id");
         table.setWidget(row++, 1, tbId);
 
-        tbTaikai = new TextBox();
-        tbTaikai.setEnabled(false);
+        tbTaikai = new Label();
+//        tbTaikai.setEnabled(false);
         table.setText(row, 0, "Taikai");
         table.setWidget(row++, 1, tbTaikai);
 
@@ -112,8 +113,8 @@ public class PlayerPanel extends VerticalPanel {
         table.setText(row, ggcol, "Grad");
         table.setWidget(row++, ggcol + 1, lbGrade);
 
-        tbNumber = new TextBox();
-        tbNumber.setEnabled(false);
+        tbNumber = new Label();
+//        tbNumber.setEnabled(false);
         table.setText(row, 0, "Nummer");
         table.setWidget(row++, 1, tbNumber);
 
@@ -129,14 +130,14 @@ public class PlayerPanel extends VerticalPanel {
         table.setWidget(ttrow, ttcol + 1, activeTournamentsTable);
 
 
-        FlowPanel buttonPanel = new FlowPanel();
-
-        btnSave = new Button("Spara");
-        buttonPanel.add(btnSave);
-
-        int buttonRow = table.getRowCount();
-        table.setWidget(buttonRow, 0, buttonPanel);
-        table.getFlexCellFormatter().setColSpan(buttonRow, 0, table.getCellCount(0));
+//        FlowPanel buttonPanel = new FlowPanel();
+//
+//        btnSave = new Button("Spara");
+//        buttonPanel.add(btnSave);
+//
+//        int buttonRow = table.getRowCount();
+//        table.setWidget(buttonRow, 0, buttonPanel);
+//        table.getFlexCellFormatter().setColSpan(buttonRow, 0, table.getCellCount(0));
 
         table.getFlexCellFormatter().setRowSpan(ttrow, ttcol + 1, row);
         table.getFlexCellFormatter().setVerticalAlignment(ttrow, ttcol + 1, ALIGN_TOP);
@@ -145,9 +146,9 @@ public class PlayerPanel extends VerticalPanel {
 
     }
 
-    public void addSaveListener(ClickListener listener) {
-        btnSave.addClickListener(listener);
-    }
+//    public void addSaveListener(ClickListener listener) {
+//        btnSave.addClickListener(listener);
+//    }
 
     public PlayerDetails getPlayer() {
         PlayerDetails newPlayer = new PlayerDetails();
@@ -185,9 +186,9 @@ public class PlayerPanel extends VerticalPanel {
         return newPlayer;
     }
 
-    public void removeSaveListener(ClickListener listener) {
-        btnSave.removeClickListener(listener);
-    }
+//    public void removeSaveListener(ClickListener listener) {
+//        btnSave.removeClickListener(listener);
+//    }
 
     public void reset() {
         this.player = null;

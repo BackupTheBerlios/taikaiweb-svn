@@ -28,8 +28,10 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
 //import net.europa13.taikai.web.client.Controllers;
+import net.europa13.taikai.web.client.ContentHandlerNotFoundException;
 import net.europa13.taikai.web.client.CustomCallback;
 import net.europa13.taikai.web.client.ListResult;
+import net.europa13.taikai.web.client.NavigationPath;
 import net.europa13.taikai.web.client.Session;
 import net.europa13.taikai.web.client.TaikaiAdminService;
 import net.europa13.taikai.web.client.TaikaiAdminServiceAsync;
@@ -196,5 +198,10 @@ public class SessionContent extends Content {
                 setTaikaiList(result.getList());
             }
         });
+    }
+
+    @Override
+    public Content handleState(NavigationPath path) throws ContentHandlerNotFoundException {
+        return this;
     }
 }

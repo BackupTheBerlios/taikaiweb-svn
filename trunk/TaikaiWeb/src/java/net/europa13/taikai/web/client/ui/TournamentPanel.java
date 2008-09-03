@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import net.europa13.taikai.web.client.logging.Logger;
@@ -33,12 +34,12 @@ import net.europa13.taikai.web.proxy.TournamentDetails;
  */
 public class TournamentPanel extends VerticalPanel {
 
-    private final TextBox tbId;
+    private final Label tbId;
     private final TextBox tbName;
-    private final TextBox tbTaikai;
+    private final Label tbTaikai;
     private final TournamentSeedPanel seedTable;
     private final TournamentPoolPanel poolBox;
-    private final Button btnSave;
+//    private final Button btnSave;
     private TaikaiProxy taikai;
     private TournamentDetails tournament;
 
@@ -50,14 +51,14 @@ public class TournamentPanel extends VerticalPanel {
         //*********************************************************************
         // Id and taikai info, mostly for debugging purposes.
         table.setText(row, 0, "Id");
-        tbId = new TextBox();
-        tbId.setEnabled(false);
+        tbId = new Label();
+//        tbId.setEnabled(false);
         table.setWidget(row++, 1, tbId);
 
 
         table.setText(row, 0, "Taikai");
-        tbTaikai = new TextBox();
-        tbTaikai.setEnabled(false);
+        tbTaikai = new Label();
+//        tbTaikai.setEnabled(false);
         table.setWidget(row++, 1, tbTaikai);
 
         //*********************************************************************
@@ -79,20 +80,20 @@ public class TournamentPanel extends VerticalPanel {
         table.getFlexCellFormatter().setColSpan(row, 0, table.getCellCount(0));
         row++;
 
-        //*********************************************************************
-        // Button panel
-        final FlowPanel buttonPanel = new FlowPanel();
-        table.setWidget(row, 0, buttonPanel);
-        table.getFlexCellFormatter().setColSpan(row, 0, table.getCellCount(0));
-
-        btnSave = new Button("Spara");
-        buttonPanel.add(btnSave);
+//        //*********************************************************************
+//        // Button panel
+//        final FlowPanel buttonPanel = new FlowPanel();
+//        table.setWidget(row, 0, buttonPanel);
+//        table.getFlexCellFormatter().setColSpan(row, 0, table.getCellCount(0));
+//
+//        btnSave = new Button("Spara");
+//        buttonPanel.add(btnSave);
         add(table);
     }
 
-    public void addSaveListener(ClickListener listener) {
-        btnSave.addClickListener(listener);
-    }
+//    public void addSaveListener(ClickListener listener) {
+//        btnSave.addClickListener(listener);
+//    }
 
     public TournamentDetails getTournament() {
         final TournamentDetails newTournament = new TournamentDetails();
@@ -100,7 +101,7 @@ public class TournamentPanel extends VerticalPanel {
         if (tournament != null) {
             newTournament.setId(tournament.getId());
         }
-        newTournament.setTaikaiId(taikai.getId());
+        newTournament.setTaikai(taikai);
         
         newTournament.setName(tbName.getText());
         newTournament.setPoolSize(poolBox.getPoolSize());
@@ -109,9 +110,9 @@ public class TournamentPanel extends VerticalPanel {
         return newTournament;
     }
 
-    public void removeSaveListener(ClickListener listener) {
-        btnSave.removeClickListener(listener);
-    }
+//    public void removeSaveListener(ClickListener listener) {
+//        btnSave.removeClickListener(listener);
+//    }
 
     public void reset() {
         tournament = null;
@@ -132,13 +133,14 @@ public class TournamentPanel extends VerticalPanel {
 
     public void setTournament(TournamentDetails tournament) {
         if (tournament == null) {
+            Logger.debug("setTournament in TournamentPanel: tournament == null");
             reset();
         }
         else {
             this.tournament = tournament;
             tbId.setText(String.valueOf(tournament.getId()));
             tbName.setText(tournament.getName());
-            tbTaikai.setText(String.valueOf(tournament.getTaikaiId()));
+            tbTaikai.setText(tournament.getTaikai().getName());
 
             poolBox.setPoolSize(tournament.getPoolSize());
             poolBox.setPreferringLargerPools(tournament.isPreferringLargerPools());

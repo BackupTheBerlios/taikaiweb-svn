@@ -68,6 +68,7 @@ public class TaikaiWebEntryPoint implements EntryPoint {
         // Session Content
         Content sessionContent = new SessionContent(TaikaiWeb.getSession());
         MainPanel.getInstance().registerContent(sessionContent, MainPanel.Subsystem.SESSION, "session");
+//        Navigator.registerDefaultContent(sessionContent);
 
         //*********************************************************************
         // Taikai Content

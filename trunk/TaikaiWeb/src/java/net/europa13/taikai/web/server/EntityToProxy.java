@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package net.europa13.taikai.web.server;
 
 import javax.persistence.EntityManager;
@@ -20,7 +19,8 @@ import net.europa13.taikai.web.proxy.TournamentSeedProxy;
  * @author daniel
  */
 public class EntityToProxy {
-public static void player(Player entity, PlayerProxy proxy, EntityManager em) {
+
+    public static void player(Player entity, PlayerProxy proxy, EntityManager em) {
         proxy.setAge(entity.getAge());
         proxy.setCheckedIn(entity.isCheckedIn());
         proxy.setGender(entity.getGender());
@@ -29,11 +29,11 @@ public static void player(Player entity, PlayerProxy proxy, EntityManager em) {
         proxy.setName(entity.getName());
         proxy.setNumber(entity.getNumber());
         proxy.setSurname(entity.getSurname());
-        
+
         TaikaiProxy taikaiProxy = new TaikaiProxy();
         taikai(entity.getTaikai(), taikaiProxy, em);
         proxy.setTaikai(taikaiProxy);
-        
+
     }
 
     public static void taikai(Taikai entity, TaikaiProxy proxy, EntityManager em) {
@@ -47,10 +47,12 @@ public static void player(Player entity, PlayerProxy proxy, EntityManager em) {
         proxy.setId(entity.getId());
         proxy.setName(entity.getName());
 
-        proxy.setTaikaiId(entity.getTaikai().getId());
+        TaikaiProxy taikaiProxy = new TaikaiProxy();
+        taikai(entity.getTaikai(), taikaiProxy, em);
+        proxy.setTaikai(taikaiProxy);
 
     }
-    
+
     public static void tournamentSeed(TournamentSeed entity, TournamentSeedProxy proxy, EntityManager em) {
         proxy.setId(entity.getId());
         PlayerProxy playerProxy = new PlayerProxy();
@@ -60,6 +62,6 @@ public static void player(Player entity, PlayerProxy proxy, EntityManager em) {
         tournament(entity.getTournament(), tournamentProxy, em);
         proxy.setTournament(tournamentProxy);
         proxy.setSeedNumber(entity.getSeedNumber());
-        
+
     }
 }

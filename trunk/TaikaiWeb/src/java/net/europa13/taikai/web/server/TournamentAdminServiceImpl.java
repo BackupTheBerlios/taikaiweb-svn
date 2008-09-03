@@ -187,7 +187,7 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
 
             if (tournament == null) {
                 tournament = new Tournament();
-                int taikaiId = details.getTaikaiId();
+                int taikaiId = details.getTaikai().getId();
                 Taikai taikai = em.find(Taikai.class, taikaiId);
                 if (taikai == null) {
                     throw new RuntimeException("no taikai");
@@ -198,6 +198,7 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
                 tournament.setTaikai(taikai);
                 taikai.addTournament(tournament);
 
+                em.persist(tournament);
                 em.merge(taikai);
             }
             else {

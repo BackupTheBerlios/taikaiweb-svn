@@ -27,8 +27,17 @@ public class TournamentTable extends Grid {
         getCellFormatter().setStyleName(0, 3, "taikaiweb-TableLastColumn");
     }
 
+    public void reset() {
+        resize(1, getColumnCount());
+    }
+    
     public void setTournamentList(List<TournamentProxy> tournamentList) {
 
+        if (tournamentList == null) {
+            reset();
+            return;
+        }
+        
         int columnCount = getColumnCount();
         
         CellFormatter formatter = getCellFormatter();

@@ -22,6 +22,8 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
+import net.europa13.taikai.web.client.ContentHandlerNotFoundException;
+import net.europa13.taikai.web.client.NavigationPath;
 import net.europa13.taikai.web.client.logging.Logger;
 
 /**
@@ -46,15 +48,13 @@ public abstract class Content {
         return controlList;
     }
     
-    public abstract Panel getPanel();
+    public abstract Widget getPanel();
     
     public String getTitle() {
         return title;
     }
     
-    public void handleState(String state) {
-//        Logger.debug(state);
-    }
+    public abstract Content handleState(NavigationPath path) throws ContentHandlerNotFoundException;
     
     public boolean isActive() {
         return active;

@@ -41,7 +41,16 @@ public class PlayerTable extends Grid {
 
     }
 
+    public void reset() {
+        resize(1, getColumnCount());
+    }
+    
     public void setPlayerList(List<PlayerProxy> playerList) {
+        if (playerList == null) {
+            reset();
+            return;
+        }
+        
         int columnCount = getColumnCount();
 
         int playerCount = playerList.size();
@@ -74,4 +83,6 @@ public class PlayerTable extends Grid {
         }
 
     }
+
+    
 }

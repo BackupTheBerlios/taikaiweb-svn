@@ -28,8 +28,10 @@ import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
+import net.europa13.taikai.web.client.ContentHandlerNotFoundException;
 import net.europa13.taikai.web.client.CustomCallback;
 import net.europa13.taikai.web.client.ListResult;
+import net.europa13.taikai.web.client.NavigationPath;
 import net.europa13.taikai.web.client.PlayerAdminService;
 import net.europa13.taikai.web.client.PlayerAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiWeb;
@@ -49,7 +51,6 @@ public class PlayerContent extends Content {
 
     private final SimplePanel panel = new SimplePanel();
     private final PlayerTable playerTable;
-    private final PlayerPanel playerPanel;
     private final PlayerAdminServiceAsync playerService =
         GWT.create(PlayerAdminService.class);
     private final TournamentAdminServiceAsync tournamentService =
@@ -58,7 +59,8 @@ public class PlayerContent extends Content {
     private final String historyToken;
     private final Button btnNewPlayer;
     private final Button btnImportPlayers;
-    private String state;
+//    private String state;
+    private final PlayerDetailsContent playerDetailsContent;
 
     public PlayerContent(final String historyToken) {
 
@@ -95,16 +97,7 @@ public class PlayerContent extends Content {
             }
         });
 
-        //*********************************************************************
-        // Panel
-        playerPanel = new PlayerPanel();
-        playerPanel.addSaveListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                PlayerDetails player = playerPanel.getPlayer();
-                storePlayer(player);
-            }
-        });
+        playerDetailsContent = new PlayerDetailsContent();
     }
 
     @Override
@@ -123,21 +116,6 @@ public class PlayerContent extends Content {
 
     }
 
-    private void storePlayer(final PlayerDetails details) {
-        playerService.storePlayer(details, new AsyncCallback() {
-
-            public void onFailure(Throwable t) {
-                Logger.error("Det gick inte att spara deltagare " + details.getId() + ".");
-                Logger.debug(t.getLocalizedMessage());
-            }
-
-            public void onSuccess(Object nothing) {
-                Logger.info(details.getName() + " sparad.");
-                updatePlayerList();
-            }
-        });
-    }
-
     private void updateControls() {
         TaikaiProxy taikai = TaikaiWeb.getSession().getTaikai();
 
@@ -150,12 +128,12 @@ public class PlayerContent extends Content {
             btnImportPlayers.setEnabled(true);
         }
 
-        if ("details".equals(state)) {
-            btnImportPlayers.setVisible(false);
-        }
-        else {
-            btnImportPlayers.setVisible(true);
-        }
+//        if ("details".equals(state)) {
+//            btnImportPlayers.setVisible(false);
+//        }
+//        else {
+//            btnImportPlayers.setVisible(true);
+//        }
 
     }
 
@@ -163,6 +141,7 @@ public class PlayerContent extends Content {
         if (TaikaiWeb.getSession().getTaikai() == null) {
             Logger.warn("Inget evenemang aktiverat. Listan över deltagare " +
                 "kan inte hämtas.");
+            playerTable.reset();
             return;
         }
         playerService.getPlayers(TaikaiWeb.getSession().getTaikai(),
@@ -175,90 +154,34 @@ public class PlayerContent extends Content {
             });
     }
 
-    private void openPlayerPanel() {
-        openPlayerPanel(0);
-    }
-
-    private void openPlayerPanel(final int playerId) {
-
-        playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
-
-        tournamentService.getTournaments(TaikaiWeb.getSession().getTaikai(), new AsyncCallback<ListResult<TournamentProxy>>() {
-
-            public void onFailure(Throwable t) {
-                Logger.debug("Misslyckades med att hämta listor i openPlayerPanel.");
-                Logger.debug(t.getLocalizedMessage());
-            //throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            public void onSuccess(ListResult<TournamentProxy> result) {
-                Logger.debug("Hämtade listor i openPlayerPanel.");
-                setPlayerPanelPlayer(playerId, result.getList());
-            }
-        });
-    }
-
-    private void setPlayerPanelPlayer(final int playerId, final List<TournamentProxy> tournaments) {
-        Logger.trace("entering setPlayerPanelPlayer in PlayerContent");
-//        throw new RuntimeException("test");
-        
-//        assert(false);
-        
-        Logger.debug("setPlayerPanelPlayer in PlayerContent: playerId = " + playerId + " tournaments = " + tournaments);
-        
-        if (playerId == 0) {
-            playerPanel.reset();
-            playerPanel.setTournamentList(tournaments);
-            panel.setWidget(playerPanel);
-            state = "details";
-        }
-        else {
-            playerService.getPlayer(playerId, new AsyncCallback<PlayerDetails>() {
-
-                public void onFailure(Throwable t) {
-                    Logger.debug("Misslyckades med att hämta deltagare " + playerId + " i setPlayerPanelPlayer.");
-                    Logger.debug(t.getLocalizedMessage());
-                }
-
-                public void onSuccess(PlayerDetails player) {
-                    Logger.trace("entering playerService.getPlayer.onSuccess in PlayerContent");
-//                throw new UnsupportedOperationException("Not supported yet.");
-                    playerPanel.setPlayer(player);
-                    playerPanel.setTournamentList(tournaments);
-//                playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
-                    panel.setWidget(playerPanel);
-                    state = "details";
-                    Logger.trace("exiting playerService.getPlayer.onSuccess in PlayerContent");
-                }
-            });
-        }
-        Logger.trace("exiting setPlayerPanelPlayer in PlayerContent");
-    }
+//    private void openPlayerPanel() {
+//        openPlayerPanel(0);
+//    }
 //    private AsyncCallback<ListResult<TournamentProxy>> 
     @Override
-    public void handleState(String stateToken) {
+    public Content handleState(NavigationPath path) throws ContentHandlerNotFoundException {
 
-        if ("new".equals(stateToken)) {
-            openPlayerPanel();
+        if ("new".equals(path.getPathItem(0))) {
+            return playerDetailsContent.handleState(path.getSubPath());
         }
-        else if ("import".equals(stateToken)) {
-            state = "import";
+        else if ("import".equals(path)) {
+//            state = "import";
             Logger.debug("Import är inte implementerad");
+            return this;
         }
-        else if (stateToken.isEmpty()) {
-            state = "list";
+        else if (path.isEmpty()) {
+//            state = "list";
             panel.setWidget(playerTable);
+            return this;
         }
         else {
             try {
-                final int playerId = Integer.parseInt(stateToken);
-                openPlayerPanel(playerId);
+                return playerDetailsContent.handleState(path);
             }
-            catch (NumberFormatException ex) {
-                Logger.error(stateToken + " är ett ogiltigt värde för deltagare.");
+            catch (ContentHandlerNotFoundException ex) {
+                return this;
             }
         }
-    }//    private void preparePlayerPanel() {
-//        
-//    }
+    }
+    
 }

@@ -104,7 +104,7 @@ public class PlayerTournamentsList extends FlexTable {
             }
         });
 
-        if (player.getPlayerSeedInTournament(selectedTournament) > -1) {
+        if (player != null && player.getPlayerSeedInTournament(selectedTournament) > -1) {
             activateSeedControl.setChecked(true);
             seedControl.setEnabled(true);
         }
@@ -222,9 +222,9 @@ public class PlayerTournamentsList extends FlexTable {
         }
     }
 
-    public void setPlayer(PlayerDetails player) {
-        this.player = player;
-    }
+//    public void setPlayer(PlayerDetails player) {
+//        this.player = player;
+//    }
 
 //    private void setControlData(ListBox control) {
 //        setTournamentControlData(control, -1);
@@ -272,17 +272,18 @@ public class PlayerTournamentsList extends FlexTable {
             throw new RuntimeException("tournaments is null");
         }
 
-        this.player = player;
-
         this.tournaments = new ArrayList<TournamentProxy>(tournaments);
-        Logger.debug("Added tournaments to PlayerTournamentsList");
 
         for (TournamentSelector control : tournamentControls) {
             control.setTournaments(tournaments);
         }
 
-        setSelectedTournaments(player.getTournaments());
-
+        // player == null means that we are creating a new player.
+        this.player = player;
+        if (player != null) {
+            setSelectedTournaments(player.getTournaments());
+        }
+        
         Logger.trace("exiting setDate in PlayerTournamentList");
     }
 
