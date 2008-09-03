@@ -28,6 +28,8 @@ import net.europa13.taikai.web.client.PlayerAdminService;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
+import net.europa13.taikai.web.proxy.Gender;
+import net.europa13.taikai.web.proxy.Grade;
 import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
@@ -43,7 +45,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
     @PersistenceUnit
     EntityManagerFactory emf;
     private final String baseListQuery =
-        "SELECT p.id, p.name, p.surname, p.checkedIn, p.age, p.number " +
+        "SELECT p.id, p.name, p.surname, p.checkedIn, p.age, p.number, p.grade, p.gender " +
         "FROM Player p ";
 
     private List<PlayerProxy> dataToProxyList(List<Object[]> data) {
@@ -57,6 +59,8 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
             proxy.setCheckedIn((Boolean) datum[3]);
             proxy.setAge((Integer) datum[4]);
             proxy.setNumber((Integer) datum[5]);
+            proxy.setGrade((Grade) datum[6]);
+            proxy.setGender((Gender) datum[7]);
             proxies.add(proxy);
         }
 
@@ -139,7 +143,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
 
     
 
-    public void storePlayer(PlayerDetails details) {
+    public int storePlayer(PlayerDetails details) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -168,11 +172,14 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
             }
 
             em.getTransaction().commit();
+            
+            return player.getId();
         }
-        catch (Exception ex) {
+        catch (RuntimeException ex) {
             System.out.println("Exception: rollback!");
             ex.printStackTrace();
             em.getTransaction().rollback();
+            throw ex;
         }
 //        catch (RuntimeException ex) {
 //            em.getTransaction().rollback();

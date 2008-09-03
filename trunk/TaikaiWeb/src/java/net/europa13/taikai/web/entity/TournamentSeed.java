@@ -116,7 +116,10 @@ public class TournamentSeed implements Serializable {
         return hash;
     }
 
-    
+    @Override
+    public String toString() {
+        return "Tournament seed number " + seedNumber + " in tournament " + tournament.getName() + ": " + player;
+    }
 
     
 }

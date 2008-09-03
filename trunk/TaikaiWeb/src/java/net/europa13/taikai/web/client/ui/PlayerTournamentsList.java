@@ -37,12 +37,12 @@ import net.europa13.taikai.web.proxy.TournamentSeedProxy;
  */
 public class PlayerTournamentsList extends FlexTable {
 
-    private Button btnAddTournamentConnection;
+    private final Button btnAddTournamentConnection;
     private List<TournamentProxy> tournaments;
     private PlayerDetails player;
-    private List<TournamentSelector> tournamentControls = new ArrayList<TournamentSelector>();
-    private List<SeedSelector> seedControls = new ArrayList<SeedSelector>();
-    private List<CheckBox> activateSeedControls = new ArrayList<CheckBox>();
+    private final List<TournamentSelector> tournamentControls = new ArrayList<TournamentSelector>();
+    private final List<SeedSelector> seedControls = new ArrayList<SeedSelector>();
+    private final List<CheckBox> activateSeedControls = new ArrayList<CheckBox>();
 
     PlayerTournamentsList() {
 
@@ -73,9 +73,13 @@ public class PlayerTournamentsList extends FlexTable {
 //        public void onChange(Widget sender) {
 //        }
 //    }
-
     private void addTournamentConnection(TournamentProxy selectedTournament) {
 
+        Logger.trace("entering addTournamentConnection(TournamentProxy) in PlayerTournamentList");
+
+        if (tournaments == null) {
+            Logger.debug("addTournamentConnection in PlayerTournamentList: tournaments is null");
+        }
         final int nbrTournaments = sizeConsitencyCheck();
 
         TournamentSelector tournamentControl =
@@ -118,13 +122,13 @@ public class PlayerTournamentsList extends FlexTable {
             public void onChange(Widget sender) {
                 TournamentSelector tournamentSelector = (TournamentSelector) sender;
                 seedControl.setData(tournamentSelector.getSelectedTournament(), player);
-                
+
                 activateSeedControl.setChecked(false);
                 seedControl.setEnabled(false);
             }
         });
 
-                
+
         activateSeedControl.addClickListener(new ClickListener() {
 //            private int row = nbrTournaments;
             public void onClick(Widget checkBox) {
@@ -136,19 +140,19 @@ public class PlayerTournamentsList extends FlexTable {
                         break;
                     }
                 }
-                Logger.debug("rowToChange="+rowToChange);
+                Logger.debug("rowToChange=" + rowToChange);
                 if (rowToChange >= 0) {
                     Widget w = getWidget(rowToChange, 2);
                     if (w instanceof ListBox) {
                         Logger.debug("Ändrar Enabled på rad " + rowToChange +
-                                     " kolumn 2");
-                        ((CheckBox)w).setVisible(false);
+                            " kolumn 2");
+                        ((CheckBox) w).setVisible(false);
                     }
                 }
 //                removeTournamentConnection(row);
             }
         });
-        
+
 //        if (nbrTournaments > 0) {
         Button drbtn = new Button("Ta bort");
         drbtn.addClickListener(new ClickListener() {
@@ -176,6 +180,7 @@ public class PlayerTournamentsList extends FlexTable {
         setWidget(nbrTournaments + 1, 0, btnAddTournamentConnection);
         getFlexCellFormatter().setColSpan(nbrTournaments + 1, 0, 2);
 
+        Logger.trace("exiting addTournamentConnection(TournamentProxy) in PlayerTournamentList");
 
     }
 
@@ -220,6 +225,8 @@ public class PlayerTournamentsList extends FlexTable {
         while (!tournamentControls.isEmpty()) {
             removeTournamentConnection(0);
         }
+
+//        tournaments = null;
     }
 
 //    public void setPlayer(PlayerDetails player) {
@@ -230,9 +237,14 @@ public class PlayerTournamentsList extends FlexTable {
 //        setTournamentControlData(control, -1);
 //    }
     private void setTournamentControlData(TournamentSelector control, TournamentProxy tournament) {
+        Logger.trace("entering setTournamentControlData(TournamentSelector, TournamentProxy) in PlayerTournamentList");
 
+        if (tournaments == null) {
+            Logger.debug("setTournamentControlData in PlayerTournamentsList: tournaments is null");
+        }
         control.setTournaments(tournaments);
         control.setSelectedTournament(tournament);
+        Logger.trace("exiting setTournamentControlData(TournamentSelector, TournamentProxy) in PlayerTournamentList");
     }
 
 //    private void setActivateSeedControlData(CheckBox control, long selectedId) {
@@ -251,6 +263,8 @@ public class PlayerTournamentsList extends FlexTable {
 //    }
     private void setSelectedTournaments(List<? extends TournamentProxy> selectedTournaments) {
 
+        Logger.trace("entering setSelectedTournaments(List<? extends TournamentProxy) in PlayerTournamentList");
+
         if (selectedTournaments == null) {
             Logger.debug(PlayerTournamentsList.class.getName() + ".setSelectedTournaments: selectedTournaments == null");
             return;
@@ -263,19 +277,26 @@ public class PlayerTournamentsList extends FlexTable {
             addTournamentConnection(tournament);
         }
 
+        Logger.trace("exiting setSelectedTournaments(List<? extends TournamentProxy) in PlayerTournamentList");
     }
 
     public void setData(List<? extends TournamentProxy> tournaments, PlayerDetails player) {
-        Logger.trace("entering setDate in PlayerTournamentList");
+        Logger.trace("entering setData in PlayerTournamentList");
 
         if (tournaments == null) {
+            Logger.debug("setData in PlayerTournamentsList: tournaments is null");
             throw new RuntimeException("tournaments is null");
+
         }
 
         this.tournaments = new ArrayList<TournamentProxy>(tournaments);
+        
+        if (this.tournaments == null) {
+            Logger.debug("setData in PlayerTournamentsList: this.tournaments is null");
+        }
 
         for (TournamentSelector control : tournamentControls) {
-            control.setTournaments(tournaments);
+            control.setTournaments(this.tournaments);
         }
 
         // player == null means that we are creating a new player.
@@ -283,8 +304,10 @@ public class PlayerTournamentsList extends FlexTable {
         if (player != null) {
             setSelectedTournaments(player.getTournaments());
         }
-        
-        Logger.trace("exiting setDate in PlayerTournamentList");
+        else {
+            Logger.debug("setData in PlayerTournamentsList: player is null");
+        }
+        Logger.trace("exiting setData in PlayerTournamentList");
     }
 
     private int sizeConsitencyCheck() {

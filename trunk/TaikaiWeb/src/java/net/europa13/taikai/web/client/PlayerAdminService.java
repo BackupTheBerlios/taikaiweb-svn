@@ -37,5 +37,5 @@ public interface PlayerAdminService extends RemoteService {
 
     public ListResult<PlayerProxy> getPlayers(TournamentProxy proxy);
 
-    public void storePlayer(PlayerDetails details);
+    public int storePlayer(PlayerDetails details);
 }

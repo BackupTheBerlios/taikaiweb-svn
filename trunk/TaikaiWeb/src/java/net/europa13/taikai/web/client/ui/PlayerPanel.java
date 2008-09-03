@@ -74,6 +74,11 @@ public class PlayerPanel extends VerticalPanel {
 //        tbTaikai.setEnabled(false);
         table.setText(row, 0, "Taikai");
         table.setWidget(row++, 1, tbTaikai);
+        
+        tbNumber = new Label();
+//        tbNumber.setEnabled(false);
+        table.setText(row, 0, "Nummer");
+        table.setWidget(row++, 1, tbNumber);
 
         tbName = new TextBox();
         table.setText(row, 0, "Förnamn");
@@ -113,15 +118,6 @@ public class PlayerPanel extends VerticalPanel {
         table.setText(row, ggcol, "Grad");
         table.setWidget(row++, ggcol + 1, lbGrade);
 
-        tbNumber = new Label();
-//        tbNumber.setEnabled(false);
-        table.setText(row, 0, "Nummer");
-        table.setWidget(row++, 1, tbNumber);
-
-        
-
-
-
         int ttrow = 0;
         int ttcol = ggcol + 3;
 
@@ -129,26 +125,12 @@ public class PlayerPanel extends VerticalPanel {
         table.setText(ttrow, ttcol, "Aktiv i turnering");
         table.setWidget(ttrow, ttcol + 1, activeTournamentsTable);
 
-
-//        FlowPanel buttonPanel = new FlowPanel();
-//
-//        btnSave = new Button("Spara");
-//        buttonPanel.add(btnSave);
-//
-//        int buttonRow = table.getRowCount();
-//        table.setWidget(buttonRow, 0, buttonPanel);
-//        table.getFlexCellFormatter().setColSpan(buttonRow, 0, table.getCellCount(0));
-
         table.getFlexCellFormatter().setRowSpan(ttrow, ttcol + 1, row);
         table.getFlexCellFormatter().setVerticalAlignment(ttrow, ttcol + 1, ALIGN_TOP);
         add(table);
 
 
     }
-
-//    public void addSaveListener(ClickListener listener) {
-//        btnSave.addClickListener(listener);
-//    }
 
     public PlayerDetails getPlayer() {
         PlayerDetails newPlayer = new PlayerDetails();
@@ -171,9 +153,6 @@ public class PlayerPanel extends VerticalPanel {
         List<TournamentProxy> tournaments = activeTournamentsTable.getSelectedTournaments();
         
         newPlayer.setTournaments(tournaments);
-//        for (TournamentProxy tournament : newPlayer.getTournaments()) {
-//            Logger.debug("Tournament name = " + tournament.getName());
-//        }
 
         List<TournamentSeedProxy> seeds = activeTournamentsTable.getSeeds();
         for (TournamentSeedProxy seed : seeds) {
@@ -185,10 +164,6 @@ public class PlayerPanel extends VerticalPanel {
         
         return newPlayer;
     }
-
-//    public void removeSaveListener(ClickListener listener) {
-//        btnSave.removeClickListener(listener);
-//    }
 
     public void reset() {
         this.player = null;
@@ -244,7 +219,6 @@ public class PlayerPanel extends VerticalPanel {
         Logger.trace("entering setTournamentList in PlayerPanel");
         
         activeTournamentsTable.setData(tournaments, player);
-//        activeTournamentsTable.setSelectedTournaments(player.getTournaments());
         
         Logger.trace("exiting setTournamentList in PlayerPanel");
     }

@@ -55,7 +55,7 @@ public class Player implements Serializable {
     @Column(name = "gender")
     private Gender gender;
     @Column(name = "number")
-    private Integer number;
+    private int number;
     @ManyToOne
     @JoinColumn(name = "taikaiId")
     private Taikai taikai;
@@ -175,7 +175,7 @@ public class Player implements Serializable {
         return id;
     }
 
-    public Integer getNumber() {
+    public int getNumber() {
         return number;
     }
 
@@ -183,7 +183,7 @@ public class Player implements Serializable {
         this.id = id;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(int number) {
         this.number = number;
     }
 
@@ -209,6 +209,6 @@ public class Player implements Serializable {
 
     @Override
     public String toString() {
-        return "net.europa13.taikai.entity.Player[id=" + id + "]";
+        return "Player " + id + ", " + name + " " + surname;
     }
 }

@@ -37,5 +37,5 @@ public interface TournamentAdminService extends RemoteService {
 
     public ListResult<TournamentProxy> getTournaments(TaikaiProxy proxy);
 
-    public void storeTournament(TournamentDetails details);
+    public int storeTournament(TournamentDetails details);
 }

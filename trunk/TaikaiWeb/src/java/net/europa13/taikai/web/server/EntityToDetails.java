@@ -84,6 +84,9 @@ public class EntityToDetails {
     public static void tournament(Tournament entity, TournamentDetails details, EntityManager em) {
         EntityToProxy.tournament(entity, details, em);
         
+        details.setPoolSize(entity.getPoolSize());
+        details.setPreferringLargerPools(entity.isPreferringLargerPools());
+        
         List<TournamentSeed> seeds = entity.getSeeds();
         List<TournamentSeedProxy> seedProxies = new ArrayList<TournamentSeedProxy>();
         

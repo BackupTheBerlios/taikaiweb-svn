@@ -8,6 +8,7 @@ package net.europa13.taikai.web.client.ui;
 import com.google.gwt.user.client.ui.ListBox;
 import java.util.ArrayList;
 import java.util.List;
+import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
@@ -45,8 +46,14 @@ public class TournamentSelector extends ListBox {
     }
     
     public void setTournaments(List<? extends TournamentProxy> tournaments) {
+        Logger.trace("entering setTournaments(List<? extends TournamentProxy>) in TournamentSelector");
+        
+        if (tournaments == null) {
+            Logger.debug("setTournaments in TournamentSelector: tournaments is null");
+        }
         this.tournaments = new ArrayList<TournamentProxy>(tournaments);
         updateList();
+        Logger.trace("exiting setTournaments(List<? extends TournamentProxy>) in TournamentSelector");
     }
     
     private void updateList() {

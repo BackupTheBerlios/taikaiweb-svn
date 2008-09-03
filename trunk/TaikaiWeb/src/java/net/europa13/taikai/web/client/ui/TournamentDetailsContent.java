@@ -1,11 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * TaikaiWeb - a web application for managing and running kendo tournaments.
+ * Copyright (C) 2008  Daniel Wentzel & Jonatan Wentzel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -18,6 +31,7 @@ import net.europa13.taikai.web.client.TournamentAdminService;
 import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TournamentDetails;
+import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
@@ -28,6 +42,7 @@ public class TournamentDetailsContent extends Content {
     private final TournamentAdminServiceAsync tournamentService =
         GWT.create(TournamentAdminService.class);
     private final TournamentPanel panel;
+    private final Button btnGenerate;
     
     public TournamentDetailsContent() {
         //*********************************************************************
@@ -40,8 +55,17 @@ public class TournamentDetailsContent extends Content {
                 storeTournament(tournament);
             }
         });
-        
         addControl(btnSave);
+        
+        btnGenerate = new Button("Generera...", new ClickListener() {
+
+            public void onClick(Widget sender) {
+                TournamentProxy tournament = panel.getTournament();
+                History.newItem("tournaments/confirmGenerate/" + tournament.getId());
+            }
+            
+        });
+        addControl(btnGenerate);
     }
 
     @Override
@@ -49,18 +73,47 @@ public class TournamentDetailsContent extends Content {
         return panel;
     }
     
+    private void reloadTournament(final int tournamentId) {
+        
+        tournamentService.getTournament(tournamentId, new AsyncCallback<TournamentDetails>() {
+
+            public void onFailure(Throwable t) {
+                Logger.error(t.getLocalizedMessage());
+                Logger.debug("reloadTournament in TournamentDetailsContent: failed to reload tournament.");
+            }
+
+            public void onSuccess(TournamentDetails tournament) {
+                setTournament(tournament);
+            }
+        });
+        
+    }
+    
+    private void setTournament(TournamentDetails details) {
+        if (details != null) {
+            btnGenerate.setEnabled(true);
+        }
+        else {
+            btnGenerate.setEnabled(false);
+        }
+        
+        panel.setTournament(details);
+    }
+    
     private void storeTournament(final TournamentDetails details) {
 
-        tournamentService.storeTournament(details, new AsyncCallback() {
+        tournamentService.storeTournament(details, new AsyncCallback<Integer>() {
 
             public void onFailure(Throwable t) {
                 Logger.error("Det gick inte att spara turnering " + details.getId() + ".");
                 Logger.debug(t.getLocalizedMessage());
             }
 
-            public void onSuccess(Object nothing) {
+            public void onSuccess(Integer tournamentId) {
                 Logger.info(details.getName() + " sparad.");
-//                updateTournamentList();
+                if (details.getId() == 0 && tournamentId > 0) {
+                    reloadTournament(tournamentId);
+                }
             }
         });
     }
@@ -72,7 +125,8 @@ public class TournamentDetailsContent extends Content {
         
         // If state is empty a new tournament should be created.
         if (path.isEmpty()) {
-            panel.reset();
+//            panel.reset();
+            setTournament(null);
             panel.setTaikai(TaikaiWeb.getSession().getTaikai());
             return this;
         }
@@ -87,7 +141,7 @@ public class TournamentDetailsContent extends Content {
                     }
 
                     public void onSuccess(TournamentDetails tournament) {
-                        panel.setTournament(tournament);
+                        setTournament(tournament);
                         panel.setTaikai(TaikaiWeb.getSession().getTaikai());
 //                        panel.setWidget(panel);
                     }

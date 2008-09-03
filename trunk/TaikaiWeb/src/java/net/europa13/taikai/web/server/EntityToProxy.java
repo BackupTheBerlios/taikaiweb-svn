@@ -47,6 +47,8 @@ public class EntityToProxy {
         proxy.setId(entity.getId());
         proxy.setName(entity.getName());
 
+        
+        
         TaikaiProxy taikaiProxy = new TaikaiProxy();
         taikai(entity.getTaikai(), taikaiProxy, em);
         proxy.setTaikai(taikaiProxy);

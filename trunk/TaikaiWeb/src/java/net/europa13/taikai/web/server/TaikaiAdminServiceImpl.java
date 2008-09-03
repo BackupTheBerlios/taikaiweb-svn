@@ -87,7 +87,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
 
     
 
-    public void storeTaikai(TaikaiProxy proxy) {
+    public int storeTaikai(TaikaiProxy proxy) {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -108,6 +108,7 @@ public class TaikaiAdminServiceImpl extends RemoteServiceServlet implements
 
             em.getTransaction().commit();
 
+            return taikai.getId();
 
         }
         finally {

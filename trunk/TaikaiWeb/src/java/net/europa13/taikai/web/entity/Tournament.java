@@ -193,6 +193,7 @@ public class Tournament implements Serializable {
 
     @Override
     public String toString() {
-        return "net.europa13.taikai.entity.Tournament[id=" + id + "]";
+//        return "net.europa13.taikai.entity.Tournament[id=" + id + "]";
+        return "Tournament " + id + ", " + name;
     }
 }

@@ -176,7 +176,7 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
     
     
     
-    public void storeTournament(TournamentDetails details) {
+    public int storeTournament(TournamentDetails details) {
 
         EntityManager em = emf.createEntityManager();
         try {
@@ -208,6 +208,8 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
             }
 
             em.getTransaction().commit();
+            
+            return tournament.getId();
         }
         finally {
             em.close();

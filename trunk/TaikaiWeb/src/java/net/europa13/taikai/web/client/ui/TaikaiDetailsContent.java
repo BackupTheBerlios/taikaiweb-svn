@@ -1,6 +1,19 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * TaikaiWeb - a web application for managing and running kendo tournaments.
+ * Copyright (C) 2008  Daniel Wentzel & Jonatan Wentzel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.europa13.taikai.web.client.ui;
 
@@ -78,16 +91,33 @@ public class TaikaiDetailsContent extends Content {
         }
     }
     
+    private void reloadTaikai(final int taikaiId) {
+        taikaiService.getTaikai(taikaiId, new AsyncCallback<TaikaiProxy>() {
+
+            public void onFailure(Throwable t) {
+                Logger.debug("Failed to reload taikai " + taikaiId);
+                Logger.error(t.getLocalizedMessage());
+            }
+
+            public void onSuccess(TaikaiProxy taikai) {
+                panel.setTaikai(taikai);
+            }
+        });
+    }
+    
     private void storeTaikai(final TaikaiProxy proxy) {
-        taikaiService.storeTaikai(proxy, new AsyncCallback() {
+        taikaiService.storeTaikai(proxy, new AsyncCallback<Integer>() {
 
             public void onFailure(Throwable t) {
                 Logger.error("Det gick inte att spara evenemang " + proxy.getId() + ".");
                 Logger.debug(t.getLocalizedMessage());
             }
             
-            public void onSuccess(Object nothing) {
+            public void onSuccess(Integer taikaiId) {
                 Logger.info(proxy.getName() + " sparad.");
+                if (proxy.getId() == 0 && taikaiId > 0) {
+                    reloadTaikai(taikaiId);
+                }
 //                updateTaikaiList();
             }
         });

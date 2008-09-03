@@ -1,8 +1,20 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * TaikaiWeb - a web application for managing and running kendo tournaments.
+ * Copyright (C) 2008  Daniel Wentzel & Jonatan Wentzel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.core.client.GWT;
@@ -36,6 +48,8 @@ public class PlayerDetailsContent extends Content {
     private final TournamentAdminServiceAsync tournamentService =
         GWT.create(TournamentAdminService.class);
     
+    private List<TournamentProxy> tournamentList;
+    
     
     public PlayerDetailsContent() {
         //*********************************************************************
@@ -60,10 +74,10 @@ public class PlayerDetailsContent extends Content {
     @Override
     public Content handleState(NavigationPath path) throws ContentHandlerNotFoundException {
 
-        
         if (path.isEmpty()) {
-            panel.reset();
-            panel.setTaikai(TaikaiWeb.getSession().getTaikai());
+//            panel.reset();
+//            panel.setTaikai(TaikaiWeb.getSession().getTaikai());
+            openPlayerPanel(0);
             return this;
         }
         else {
@@ -81,17 +95,24 @@ public class PlayerDetailsContent extends Content {
         }
     }
     
+    private void reloadPlayer(int playerId) {
+        setPlayer(playerId);
+    }
+    
     private void storePlayer(final PlayerDetails details) {
-        playerService.storePlayer(details, new AsyncCallback() {
+        playerService.storePlayer(details, new AsyncCallback<Integer>() {
 
             public void onFailure(Throwable t) {
                 Logger.error("Det gick inte att spara deltagare " + details.getId() + ".");
                 Logger.debug(t.getLocalizedMessage());
             }
 
-            public void onSuccess(Object nothing) {
+            public void onSuccess(Integer playerId) {
                 Logger.info(details.getName() + " sparad.");
 //                updatePlayerList();
+                if (details.getId() == 0 && playerId > 0) {
+                    reloadPlayer(playerId);
+                }
             }
         });
     }
@@ -105,29 +126,22 @@ public class PlayerDetailsContent extends Content {
             public void onFailure(Throwable t) {
                 Logger.debug("Misslyckades med att hämta listor i openPlayerPanel.");
                 Logger.debug(t.getLocalizedMessage());
-            //throw new UnsupportedOperationException("Not supported yet.");
             }
 
             public void onSuccess(ListResult<TournamentProxy> result) {
                 Logger.debug("Hämtade listor i openPlayerPanel.");
-                setPlayerPanelPlayer(playerId, result.getList());
+                tournamentList = result.getList();
+                setPlayer(playerId);
             }
         });
     }
 
-    private void setPlayerPanelPlayer(final int playerId, final List<TournamentProxy> tournaments) {
+    private void setPlayer(final int playerId) {
         Logger.trace("entering setPlayerPanelPlayer in PlayerContent");
-//        throw new RuntimeException("test");
-        
-//        assert(false);
-        
-        Logger.debug("setPlayerPanelPlayer in PlayerContent: playerId = " + playerId + " tournaments = " + tournaments);
         
         if (playerId == 0) {
             panel.reset();
-            panel.setTournamentList(tournaments);
-//            panel.setWidget(panel);
-//            state = "details";
+            panel.setTournamentList(tournamentList);
         }
         else {
             playerService.getPlayer(playerId, new AsyncCallback<PlayerDetails>() {
@@ -139,12 +153,12 @@ public class PlayerDetailsContent extends Content {
 
                 public void onSuccess(PlayerDetails player) {
                     Logger.trace("entering playerService.getPlayer.onSuccess in PlayerContent");
-//                throw new UnsupportedOperationException("Not supported yet.");
+
+                    Logger.debug(player.toString());
+                    
                     panel.setPlayer(player);
-                    panel.setTournamentList(tournaments);
-//                playerPanel.setTaikai(TaikaiWeb.getSession().getTaikai());
-//                    panel.setWidget(panel);
-//                    state = "details";
+                    panel.setTournamentList(tournamentList);
+
                     Logger.trace("exiting playerService.getPlayer.onSuccess in PlayerContent");
                 }
             });

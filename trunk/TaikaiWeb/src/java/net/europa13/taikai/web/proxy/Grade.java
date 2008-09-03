@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.europa13.taikai.web.proxy;
 
 /**
@@ -43,6 +42,54 @@ public enum Grade {
     Dan7,
     Dan8,
     Dan9,
-    Dan10
-        
+    Dan10;
+
+    @Override
+    public String toString() {
+
+        switch (this) {
+            case Kyu10:
+                return "10 Kyu";
+            case Kyu9:
+                return "9 Kyu";
+            case Kyu8:
+                return "8 Kyu";
+            case Kyu7:
+                return "7 Kyu";
+            case Kyu6:
+                return "6 Kyu";
+            case Kyu5:
+                return "5 Kyu";
+            case Kyu4:
+                return "4 Kyu";
+            case Kyu3:
+                return "3 Kyu";
+            case Kyu2:
+                return "2 Kyu";
+            case Kyu1:
+                return "1 Kyu";
+            case Dan1:
+                return "1 Dan";
+            case Dan2:
+                return "2 Dan";
+            case Dan3:
+                return "3 Dan";
+            case Dan4:
+                return "4 Dan";
+            case Dan5:
+                return "5 Dan";
+            case Dan6:
+                return "6 Dan";
+            case Dan7:
+                return "7 Dan";
+            case Dan8:
+                return "8 Dan";
+            case Dan9:
+                return "9 Dan";
+            case Dan10:
+                return "10 Dan";
+            default:
+                return "Error";
+        }
+    }
 }

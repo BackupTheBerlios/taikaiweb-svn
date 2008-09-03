@@ -34,6 +34,6 @@ public interface TaikaiAdminService extends RemoteService{
     
 
         
-    public void storeTaikai(TaikaiProxy proxy);
+    public int storeTaikai(TaikaiProxy proxy);
 
 }
