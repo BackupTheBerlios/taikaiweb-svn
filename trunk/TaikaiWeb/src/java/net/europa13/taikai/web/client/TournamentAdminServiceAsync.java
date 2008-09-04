@@ -16,22 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.europa13.taikai.web.client;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.List;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
+import net.europa13.taikai.web.proxy.TournamentGenerationInfo;
 import net.europa13.taikai.web.proxy.TournamentProxy;
-
 
 /**
  *
  * @author daniel
  */
 public interface TournamentAdminServiceAsync {
+
+    public void getAvailableSeeds(TournamentProxy tournament, AsyncCallback<List<Integer>> callback);
+
+    public void getGenerationInfo(int tournamentId, AsyncCallback<TournamentGenerationInfo> callback);
     
-    public void getAvailableSeeds(TournamentProxy tournament, AsyncCallback callback);
-    
-    public void getTournament(int tournamentId, AsyncCallback callback);
-    public void getTournaments(TaikaiProxy proxy, AsyncCallback callback);
-    
-    public void storeTournament(TournamentDetails details, AsyncCallback callback);
+    public void getTournament(int tournamentId, AsyncCallback<TournamentDetails> callback);
+
+    public void getTournaments(TaikaiProxy proxy, AsyncCallback<ListResult<TournamentProxy>> callback);
+
+    public void storeTournament(TournamentDetails details, AsyncCallback<Integer> callback);
 }

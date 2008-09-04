@@ -33,13 +33,19 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 
 /**
- *
+ * Class for copying detailed proxies into entities.
  * @author Daniel Wentzel
  */
 public class DetailsToEntity {
     
     private static Logger logger = Logger.getLogger(DetailsToEntity.class.getName());
 
+    /**
+     * Copies a player proxy details object into a player entity object.
+     * @param details the details to copy. Id is never copied.
+     * @param entity the receiving entity.
+     * @param em the entity manager managing the player entity.
+     */
     public static void player(PlayerDetails details, Player entity, EntityManager em) {
         
         entity.setAge(details.getAge());
@@ -95,13 +101,17 @@ public class DetailsToEntity {
         }
         
         for (Tournament tournament : addedTournaments) {
-            logger.fine("Adding " + entity.toString() + " to " + tournament.toString());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Adding " + entity.toString() + " to " + tournament.toString());
+            }
             tournament.addPlayer(entity);
             em.merge(tournament);
         }
 
         for (Tournament tournament : removedTournaments) {
-            logger.fine("Removing " + entity.toString() + " from " + tournament.toString());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Removing " + entity.toString() + " from " + tournament.toString());
+            }
             tournament.removePlayer(entity);
             em.merge(tournament);
         }
@@ -110,13 +120,10 @@ public class DetailsToEntity {
         
         //*********************************************************************
         // Added and removed seeds
+//        @SuppressWarnings(value="unchecked")
         List<TournamentSeed> tournamentSeeds =
             em.createNamedQuery("getTournamentSeedsForPlayer").setParameter("player", entity).getResultList();
-//        logger.finer("");
-//        System.out.println("Number of tournamentSeeds for " + entity.getName() + ": " + tournamentSeeds.size());
-        
         List<TournamentSeedProxy> tournamentSeedProxies = details.getSeeds();
-//        System.out.println("Number of tournamentSeedProxies for " + details.getName() + ": " + tournamentSeedProxies.size());
         
         List<TournamentSeed> addedSeeds =
             new ArrayList<TournamentSeed>();
@@ -144,7 +151,6 @@ public class DetailsToEntity {
                 seed.setTournament(tournament);
                 seed.setPlayer(entity);
                 seed.setSeedNumber(seedProxy.getSeedNumber());
-//                System.out.println("Tournament seed added: " + seed.getTournament().getName() + ": " + seed.getPlayer().getName() + " " + seed.getSeedNumber());
                 addedSeeds.add(seed);
             }
         }
@@ -162,7 +168,6 @@ public class DetailsToEntity {
             }
 
             if (removed) {
-//                System.out.println("Tournament seed removed: " + seed.getTournament().getName() + ": " + seed.getPlayer().getName() + " " + seed.getSeedNumber());
                 removedSeeds.add(seed);
             }
         }

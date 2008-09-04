@@ -1,6 +1,19 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * TaikaiWeb - a web application for managing and running kendo tournaments.
+ * Copyright (C) 2008  Daniel Wentzel & Jonatan Wentzel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.europa13.taikai.web.client.ui;
 
@@ -10,10 +23,13 @@ import net.europa13.taikai.web.proxy.Grade;
 
 /**
  *
- * @author daniel
+ * @author Daniel Wentzel
  */
 public class GradeSelector extends ListBox {
 
+    /**
+     * Constructor.
+     */
     public GradeSelector() {
         
         addItem(Grade.Kyu10.toString(), Grade.Kyu10.name());
@@ -40,14 +56,25 @@ public class GradeSelector extends ListBox {
         setSelectedIndex(10);
     }
     
+    /**
+     * Returns the selected grade.
+     * @return the selected grade.
+     */
     public Grade getSelectedGrade() {
         return Grade.valueOf(Grade.class, getValue(getSelectedIndex()));
     }
     
+    /**
+     * Resets the control.
+     */
     public void reset() {
         setSelectedIndex(10);
     }
     
+    /**
+     * Sets the selected grade.
+     * @param grade the grade to select.
+     */
     public void setSelectedGrade(Grade grade) {
         if (grade == null) {
             Logger.debug(GradeSelector.class.getName() + ".setSelectedGrade: grade == null");

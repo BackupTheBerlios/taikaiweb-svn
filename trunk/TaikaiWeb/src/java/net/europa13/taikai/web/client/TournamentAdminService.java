@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.util.List;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
+import net.europa13.taikai.web.proxy.TournamentGenerationInfo;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
@@ -32,6 +33,8 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 public interface TournamentAdminService extends RemoteService {
 
     public List<Integer> getAvailableSeeds(TournamentProxy tournament);
+    
+    public TournamentGenerationInfo getGenerationInfo(int tournamentId);
     
     public TournamentDetails getTournament(int tournamentId);
 

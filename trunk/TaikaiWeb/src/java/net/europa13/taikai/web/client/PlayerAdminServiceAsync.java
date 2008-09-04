@@ -29,11 +29,11 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  */
 public interface PlayerAdminServiceAsync {
 
-    public void getPlayer(int playerId, AsyncCallback callback);
+    public void getPlayer(int playerId, AsyncCallback<PlayerDetails> callback);
 
-    public void getPlayers(TaikaiProxy proxy, AsyncCallback callback);
+    public void getPlayers(TaikaiProxy proxy, AsyncCallback<ListResult<PlayerProxy>> callback);
 
-    public void getPlayers(TournamentProxy proxy, AsyncCallback callback);
+    public void getPlayers(TournamentProxy proxy, AsyncCallback<ListResult<PlayerProxy>> callback);
 
-    public void storePlayer(PlayerDetails details, AsyncCallback callback);
+    public void storePlayer(PlayerDetails details, AsyncCallback<Integer> callback);
 }

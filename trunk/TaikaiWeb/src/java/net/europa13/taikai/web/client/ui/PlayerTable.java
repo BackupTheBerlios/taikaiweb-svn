@@ -18,7 +18,7 @@
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FlexTable;
 import java.util.List;
 import net.europa13.taikai.web.proxy.Gender;
 import net.europa13.taikai.web.proxy.PlayerProxy;
@@ -27,7 +27,7 @@ import net.europa13.taikai.web.proxy.PlayerProxy;
  *
  * @author daniel
  */
-public class PlayerTable extends Grid {
+public class PlayerTable extends FlexTable {
 
     private final int columnCount = 7;
 
@@ -35,37 +35,53 @@ public class PlayerTable extends Grid {
 
         int col = 0;
 
-        resize(1, columnCount);
 
-        setText(0, col++, "Incheckad");
-        setText(0, col++, "Id");
-        setText(0, col++, "Nummer");
-        setText(0, col++, "Förnamn");
-        setText(0, col++, "Efternamn");
-        setText(0, col++, "Grad");
-        setText(0, col++, "K/M");
+        
+        
+//        resize(2, columnCount);
+
+        setText(1, col++, "Incheckad");
+        setText(1, col++, "Id");
+        setText(1, col++, "Nummer");
+        setText(1, col++, "Förnamn");
+        setText(1, col++, "Efternamn");
+        setText(1, col++, "Grad");
+        setText(1, col++, "K/M");
 
 
         setStyleName("taikaiweb-Table");
-        getRowFormatter().setStyleName(0, "taikaiweb-TableHeader");
-        getCellFormatter().setStyleName(0, getColumnCount() - 1, "taikaiweb-TableLastColumn");
+        getRowFormatter().setStyleName(0, "taikaiweb-TableCaption");
+        getFlexCellFormatter().setColSpan(0, 0, col);
+        
+        getRowFormatter().setStyleName(1, "taikaiweb-TableHeader");
+        getCellFormatter().setStyleName(1, col - 1, "taikaiweb-TableLastColumn");
 
     }
 
     public void reset() {
-        resize(1, getColumnCount());
+//        resize(2, getColumnCount());
+        
+        while (getRowCount() > 2) {
+            removeRow(2);
+        }
+        
     }
 
+    public void setCaption(String caption) {
+        setText(0, 0, caption);
+    }
+    
     public void setPlayerList(List<PlayerProxy> playerList) {
+        reset();
         if (playerList == null) {
-            reset();
+            
             return;
         }
 
-        int columnCount = getColumnCount();
+//        int columnCount = getColumnCount();
 
         int playerCount = playerList.size();
-        resize(playerCount + 1, columnCount);
+//        resize(playerCount + 1, columnCount);
 
         for (int i = 0; i < playerCount; ++i) {
             final PlayerProxy player = playerList.get(i);
@@ -73,18 +89,25 @@ public class PlayerTable extends Grid {
             CheckBox checkedIn = new CheckBox();
             checkedIn.setChecked(player.isCheckedIn());
             checkedIn.setEnabled(false);
-            setWidget(i + 1, 0, checkedIn);
+            setWidget(i + 2, 0, checkedIn);
 
-            setText(i + 1, 1, String.valueOf(player.getId()));
-            setText(i + 1, 2, String.valueOf(player.getNumber()));
-            setText(i + 1, 3, player.getName());
-            setText(i + 1, 4, player.getSurname());
-            setText(i + 1, 5, player.getGrade().toString());
+            setText(i + 2, 1, String.valueOf(player.getId()));
+            setText(i + 2, 2, String.valueOf(player.getNumber()));
+            setText(i + 2, 3, player.getName());
+            setText(i + 2, 4, player.getSurname());
+            setText(i + 2, 5, player.getGrade().toString());
             
             String mfText = player.getGender() == Gender.FEMALE ? "K" : "M";
-            setText(i + 1, 6, mfText);
+            setText(i + 2, 6, mfText);
 
         }
-
+    }
+    
+    public void setShowCaption(boolean show) {
+        getRowFormatter().setVisible(0, show);
+    }
+    
+    public void setShowHeader(boolean show) {
+        getRowFormatter().setVisible(1, show);
     }
 }

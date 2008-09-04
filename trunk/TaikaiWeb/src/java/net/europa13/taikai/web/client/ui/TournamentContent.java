@@ -47,7 +47,7 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 public class TournamentContent extends Content {
 
 //    private final Grid tournamentGrid;
-    private final SimplePanel panel = new SimplePanel();
+//    private final SimplePanel panel = new SimplePanel();
     private final TournamentTable tournamentTable;
     
     private final TournamentAdminServiceAsync tournamentService =
@@ -57,6 +57,7 @@ public class TournamentContent extends Content {
     private final Button btnNewTournament;
     
     private final TournamentDetailsContent tournamentDetailsContent;
+    private final TournamentConfirmGenerateContent confirmGenerateContent;
 
     
     
@@ -91,10 +92,11 @@ public class TournamentContent extends Content {
 
         
         tournamentDetailsContent = new TournamentDetailsContent();
+        confirmGenerateContent = new TournamentConfirmGenerateContent();
     }
 
     public Panel getPanel() {
-        return panel;
+        return tournamentTable;
     }
 
     @Override
@@ -143,8 +145,10 @@ public class TournamentContent extends Content {
             return tournamentDetailsContent.handleState(path.getSubPath());
         }
         else if (path.isEmpty()) {
-            panel.setWidget(tournamentTable);
             return this;
+        }
+        else if ("confirmGenerate".equals(path.getPathItem(0))) {
+            return confirmGenerateContent.handleState(path.getSubPath());
         }
         else {
             try {

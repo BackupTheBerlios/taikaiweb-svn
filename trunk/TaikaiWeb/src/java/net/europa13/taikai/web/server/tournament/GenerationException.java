@@ -15,28 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.europa13.taikai.web.client;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import net.europa13.taikai.web.proxy.TaikaiDetails;
-import net.europa13.taikai.web.proxy.TaikaiProxy;
+package net.europa13.taikai.web.server.tournament;
 
 /**
  *
- * @author Daniel Wentzel
+ * @author daniel
  */
-public interface TaikaiAdminServiceAsync {
+public class GenerationException extends Exception {
 
-    public void getTaikai(int id, AsyncCallback<TaikaiProxy> callback);
-    public void getTaikais(AsyncCallback<ListResult<TaikaiProxy>> callback);
+    public GenerationException(String message) {
+        this(message, null);
+    }
     
-
+    public GenerationException(String message, Throwable cause) {
+        super(message, cause);
+    }
     
-    
-    
-    public void storeTaikai(TaikaiProxy proxy, AsyncCallback<Integer> callback);
-    
-    
-    
-    
+    public GenerationException(Throwable cause) {
+        this(null, cause);
+    }
 }

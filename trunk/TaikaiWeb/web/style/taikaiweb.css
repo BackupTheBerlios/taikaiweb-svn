@@ -35,6 +35,15 @@ Purpose of the stylesheet follows.
     
 }
 
+.taikaiweb-TableCaption  {
+    background-color: #e3e3e3;
+    font-weight: bold;
+}
+
+.taikaiweb-TableCaption td {
+    cursor: auto;
+}
+ 
 .taikaiweb-TableHeader {
     background-color: #e3e3e3;
     font-weight: bold;
@@ -55,4 +64,8 @@ Purpose of the stylesheet follows.
 .taikaiweb-Toolbar {
     background-color: #e3e3e3;
     width: 100%;
+}
+
+.taikaiweb-UncheckedSeed {
+    background-color: #ff0000;
 }

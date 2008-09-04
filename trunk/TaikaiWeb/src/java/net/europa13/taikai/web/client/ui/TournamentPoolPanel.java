@@ -18,10 +18,13 @@
 package net.europa13.taikai.web.client.ui;
 
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.Widget;
 import net.europa13.taikai.web.client.logging.Logger;
 
 /**
@@ -30,22 +33,44 @@ import net.europa13.taikai.web.client.logging.Logger;
  */
 public class TournamentPoolPanel extends CaptionPanel {
 
-    final ListBox lbPoolSize;
-    final RadioButton rbPreferLarger;
-    final RadioButton rbPreferSmaller;
+    private final FlexTable poolGrid;
+    private final ListBox lbPoolSize;
+    private final RadioButton rbPreferLarger;
+    private final RadioButton rbPreferSmaller;
+    
+    private final Label lblPoolCountTotal;
+    private final Label lblPoolCount2;
+    private final Label lblPoolCount3;
+    private final Label lblPoolCount4;
+    
+    private final int[] poolCounts;
 
+    private boolean enabled = true;
+    
     public TournamentPoolPanel() {
         super("Pooler");
 
-//        final CaptionPanel poolBox = new CaptionPanel("Pooler");
-        final Grid poolGrid = new Grid(2, 2);
+        poolCounts = new int[3];
+        lblPoolCountTotal = new Label();
+        lblPoolCount2 = new Label();
+        lblPoolCount3 = new Label();
+        lblPoolCount4 = new Label();
+        
+        poolGrid = new FlexTable();
 
         poolGrid.setText(0, 0, "Poolstorlek");
         lbPoolSize = new ListBox();
         lbPoolSize.addItem("2", "2");
         lbPoolSize.addItem("3", "3");
         lbPoolSize.setSelectedIndex(1);
+        lbPoolSize.addChangeListener(new ChangeListener() {
+
+            public void onChange(Widget sender) {
+                updateControls();
+            }
+        });
         poolGrid.setWidget(0, 1, lbPoolSize);
+        poolGrid.getFlexCellFormatter().setColSpan(0, 1, 3);
 
         poolGrid.setText(1, 0, "Vid udda deltagare");
         FlowPanel prefersLargerPanel = new FlowPanel();
@@ -55,6 +80,25 @@ public class TournamentPoolPanel extends CaptionPanel {
         prefersLargerPanel.add(rbPreferLarger);
         prefersLargerPanel.add(rbPreferSmaller);
         poolGrid.setWidget(1, 1, prefersLargerPanel);
+        poolGrid.getFlexCellFormatter().setColSpan(1, 1, 3);
+        
+        poolGrid.setText(2, 0, "Antal pooler");
+        poolGrid.getFlexCellFormatter().setColSpan(2, 0, 4);
+        
+        poolGrid.setText(3, 0, "Totalt");
+        poolGrid.setText(3, 1, "2-man");
+        poolGrid.setText(3, 2, "3-man");
+        poolGrid.setText(3, 3, "4-man");
+        poolGrid.setWidget(4, 0, lblPoolCountTotal);
+        poolGrid.setWidget(4, 1, lblPoolCount2);
+        poolGrid.setWidget(4, 2, lblPoolCount3);
+        poolGrid.setWidget(4, 3, lblPoolCount4);
+            
+        for (int i = 0; i < 3; ++i) {
+            poolGrid.getColumnFormatter().setWidth(i, "25%");
+        }
+            
+        
         add(poolGrid);
     }
 
@@ -72,6 +116,28 @@ public class TournamentPoolPanel extends CaptionPanel {
         rbPreferSmaller.setChecked(false);
     }
     
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        
+        lbPoolSize.setEnabled(enabled);
+        rbPreferLarger.setEnabled(enabled);
+        rbPreferSmaller.setEnabled(enabled);
+    }
+    
+    public void setPoolCount(int poolSize, int poolCount) {
+        if (poolSize < 2 || poolSize > 4) {
+            Logger.debug("Incorrect poolSize " + poolSize);
+            return;
+        }
+        
+        Logger.debug("Setting pool count " + poolCount + " for pool size " + poolSize);
+        
+        poolCounts[poolSize - 2] = poolCount;
+        
+        updatePoolCounts();
+        
+    }
+    
     public void setPoolSize(int poolSize) {
         if (poolSize < 2 || poolSize > 3) {
             Logger.debug("Incorrect poolSize " + poolSize);
@@ -86,10 +152,39 @@ public class TournamentPoolPanel extends CaptionPanel {
                 lbPoolSize.setSelectedIndex(1);
                 break;
         }
+        updateControls();
     }
 
     public void setPreferringLargerPools(boolean preferringLargerPools) {
         rbPreferLarger.setChecked(preferringLargerPools);
         rbPreferSmaller.setChecked(!preferringLargerPools);
     }
+    
+    private void updateControls() {
+        int poolSize = getPoolSize();
+        
+        if (poolSize == 2) {
+            rbPreferSmaller.setEnabled(false);
+            rbPreferSmaller.setChecked(false);
+            rbPreferLarger.setChecked(true);
+        }
+        else {
+            rbPreferSmaller.setEnabled(enabled);
+        }
+    }
+    
+    private void updatePoolCounts()  {
+        int totalCount = 0;
+        
+        for (int i = 0; i < 3; ++i) {
+            totalCount += poolCounts[i];
+        }
+        
+        lblPoolCountTotal.setText(String.valueOf(totalCount));
+        lblPoolCount2.setText(String.valueOf(poolCounts[0]));
+        lblPoolCount3.setText(String.valueOf(poolCounts[1]));
+        lblPoolCount4.setText(String.valueOf(poolCounts[2]));
+        
+    }
+        
 }

@@ -159,10 +159,11 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
                     throw new RuntimeException("no taikai");
                 }
 
-                DetailsToEntity.player(details, player, em);
-
                 player.setTaikai(taikai);
                 taikai.addPlayer(player);
+                
+                DetailsToEntity.player(details, player, em);
+
                 em.persist(player);
                 em.merge(taikai);
             }

@@ -54,15 +54,15 @@ public class Player implements Serializable {
     private Grade grade;
     @Column(name = "gender")
     private Gender gender;
-    @Column(name = "number")
+    @Column(name = "number", nullable = false)
     private int number;
     @ManyToOne
-    @JoinColumn(name = "taikaiId")
+    @JoinColumn(name = "taikaiId", nullable = false)
     private Taikai taikai;
     @Column(name = "checkedIn")
     private boolean checkedIn;
     @Version
-    @Column(name ="lastUpdate")
+    @Column(name = "lastUpdate")
     private Timestamp lastUpdate;
 
     public boolean isCheckedIn() {

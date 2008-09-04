@@ -38,10 +38,8 @@ import net.europa13.taikai.web.client.TaikaiWeb;
 import net.europa13.taikai.web.client.TournamentAdminService;
 import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
-import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
-import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
@@ -89,11 +87,14 @@ public class PlayerContent extends Content {
         //*********************************************************************
         // Table
         playerTable = new PlayerTable();
+        playerTable.setCaption("Deltagare");
         playerTable.addTableListener(new TableListener() {
 
             public void onCellClicked(SourcesTableEvents sender, int row, int col) {
-                PlayerProxy player = playerList.get(row - 1);
-                History.newItem(historyToken + "/" + player.getId());
+                if (row > 1) {
+                    PlayerProxy player = playerList.get(row - 2);
+                    History.newItem(historyToken + "/" + player.getId());
+                }
             }
         });
 
@@ -153,7 +154,18 @@ public class PlayerContent extends Content {
                 }
             });
     }
-
+    
+//    private void updatePlayerListTournament(int tournamentId) {
+//        playerService.getPlayersInTournament(tournamentId,
+//            new CustomCallback<ListResult<PlayerProxy>>() {
+//
+//                public void onSuccess(ListResult<PlayerProxy> result) {
+//                    playerList = result.getList();
+//                    playerTable.setPlayerList(playerList);
+//                }
+//            });
+//    }
+    
 //    private void openPlayerPanel() {
 //        openPlayerPanel(0);
 //    }
@@ -174,6 +186,16 @@ public class PlayerContent extends Content {
             panel.setWidget(playerTable);
             return this;
         }
+//        else if ("tournament".equals(path.getPathItem(0))) {
+//            try {
+//                int tournamentId = Integer.parseInt(path.getPathItem(1)); 
+//                
+//                return this;
+//            }
+//            catch (NumberFormatException ex) {
+//                return this;
+//            }
+//        }
         else {
             try {
                 return playerDetailsContent.handleState(path);
@@ -183,5 +205,4 @@ public class PlayerContent extends Content {
             }
         }
     }
-    
 }

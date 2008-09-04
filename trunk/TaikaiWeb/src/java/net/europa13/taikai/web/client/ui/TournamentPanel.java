@@ -17,10 +17,7 @@
  */
 package net.europa13.taikai.web.client.ui;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -112,6 +109,12 @@ public class TournamentPanel extends VerticalPanel {
 
 //    public void removeSaveListener(ClickListener listener) {
 //        btnSave.removeClickListener(listener);
+//    }
+    
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        Logger.debug("Detached");
 //    }
 
     public void reset() {

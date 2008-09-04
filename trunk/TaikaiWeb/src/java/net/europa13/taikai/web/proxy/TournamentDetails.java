@@ -27,7 +27,7 @@ import java.util.List;
 public class TournamentDetails extends TournamentProxy {
 
     private List<CourtProxy> courts = new ArrayList<CourtProxy>();
-    private List<TournamentSeedProxy> seeds;
+    private List<TournamentSeedProxy> seeds = new ArrayList<TournamentSeedProxy>();
 //    private List<PlayerProxy> seededPlayers =
 //        new ArrayList<PlayerProxy>(4);
 
@@ -60,6 +60,10 @@ public class TournamentDetails extends TournamentProxy {
         return null;
     }
 
+    public List<TournamentSeedProxy> getSeeds() {
+        return seeds;
+    }
+    
     public boolean isPreferringLargerPools() {
         return preferringLargerPools;
     }

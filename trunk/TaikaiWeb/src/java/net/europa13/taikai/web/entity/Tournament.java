@@ -47,6 +47,8 @@ uniqueConstraints = {
     @UniqueConstraint(columnNames = {"name", "taikaiId"})
 })
 @NamedQueries({
+    @NamedQuery(name = "getCheckedPlayers",
+    query = "SELECT p FROM Tournament tmt JOIN tmt.players p WHERE p.checkedIn = TRUE AND tmt = :tournament"),
     @NamedQuery(name = "getUncheckedPlayers",
     query = "SELECT p FROM Tournament tmt JOIN tmt.players p WHERE p.checkedIn = FALSE AND tmt = :tournament"),
     @NamedQuery(name = "getTournamentsForPlayer",
@@ -69,7 +71,7 @@ public class Tournament implements Serializable {
     @Column(name = "lastUpdate")
     private Timestamp lastUpdate;
     @ManyToOne
-    @JoinColumn(name = "taikaiId")
+    @JoinColumn(name = "taikaiId", nullable = false)
     private Taikai taikai;
     @ManyToMany
     private List<Player> players;
