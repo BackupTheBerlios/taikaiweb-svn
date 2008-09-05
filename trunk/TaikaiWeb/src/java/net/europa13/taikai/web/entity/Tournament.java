@@ -77,6 +77,8 @@ public class Tournament implements Serializable {
     private List<Player> players;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<TournamentSeed> tournamentSeeds;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "qualifyingTournament")
+    private List<TournamentAdvancement> tournamentAdvancements;
     @OneToOne
     @JoinColumn(name = "treeId")
     private Tree tree;
@@ -86,6 +88,10 @@ public class Tournament implements Serializable {
     public Tournament() {
     }
 
+    public void addAdvancement(TournamentAdvancement advancement) {
+        tournamentAdvancements.add(advancement);
+    }
+    
     public void addPlayer(Player player) {
         players.add(player);
     }
@@ -99,6 +105,10 @@ public class Tournament implements Serializable {
         // Generate tree
     }
 
+    public List<TournamentAdvancement> getAdvancements() {
+        return tournamentAdvancements;
+    }
+    
     public Integer getId() {
         return id;
     }
@@ -140,6 +150,10 @@ public class Tournament implements Serializable {
         return preferringLargerPools;
     }
 
+    public void removeAdvancement(TournamentAdvancement advancement) {
+        tournamentAdvancements.remove(advancement);
+    }
+    
     public void removePlayer(Player player) {
         players.remove(player);
     }
@@ -148,6 +162,10 @@ public class Tournament implements Serializable {
         tournamentSeeds.remove(seed);
     }
 
+//    public void setAdvancements(List<TournamentAdvancement> advancements) {
+//        this.tournamentAdvancements = advancements;
+//    }
+    
     public void setId(Integer id) {
         this.id = id;
     }
@@ -156,10 +174,10 @@ public class Tournament implements Serializable {
         this.name = name;
     }
 
-    public void setPlayerSeed(Player player, int seed) {
-//        tournamentSeed.setPlayerSeed(player, seed);
-//        seededPlayers.put(seed, player);
-    }
+//    public void setPlayerSeed(Player player, int seed) {
+////        tournamentSeed.setPlayerSeed(player, seed);
+////        seededPlayers.put(seed, player);
+//    }
 
     public void setPoolSize(int poolSize) {
         this.poolSize = poolSize;

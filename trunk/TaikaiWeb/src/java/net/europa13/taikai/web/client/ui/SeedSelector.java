@@ -59,7 +59,14 @@ public class SeedSelector extends ListBox {
     public void setData(TournamentProxy tournament, final PlayerDetails player) {
         this.tournament = tournament;
         
-        service.getAvailableSeeds(tournament, new AsyncCallback<List<Integer>>() {
+//        RpcScheduler.queueRequest(new LoadSeedListRequest(tournament.getId(), new SeedListTarget() {
+//
+//            public void setSeeds(List<Integer> seeds) {
+//                updateList(seeds, player);
+//            }
+//        }));
+        
+        service.getAvailableSeeds(tournament.getId(), new AsyncCallback<List<Integer>>() {
 
             public void onFailure(Throwable t) {
                 Logger.debug("Kunde inte hitta tillgängliga seedningar.");

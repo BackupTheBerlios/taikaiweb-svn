@@ -18,6 +18,7 @@
 package net.europa13.taikai.web.proxy;
 
 import java.io.Serializable;
+import net.europa13.taikai.web.client.logging.Logger;
 
 /**
  *
@@ -71,7 +72,7 @@ public class TournamentProxy implements Serializable {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (!(obj instanceof TournamentProxy)) {
             return false;
         }
         final TournamentProxy other = (TournamentProxy) obj;

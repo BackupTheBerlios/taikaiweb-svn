@@ -17,33 +17,35 @@
  */
 package net.europa13.taikai.web.client.ui;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.List;
 import net.europa13.taikai.web.client.ContentHandlerNotFoundException;
 import net.europa13.taikai.web.client.NavigationPath;
 import net.europa13.taikai.web.client.TaikaiWeb;
-import net.europa13.taikai.web.client.TournamentAdminService;
-import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.client.rpc.LoadTournamentDetailsRequest;
+import net.europa13.taikai.web.client.rpc.LoadTournamentsRequest;
+import net.europa13.taikai.web.client.rpc.RpcScheduler;
+import net.europa13.taikai.web.client.rpc.StoreTournamentRequest;
+import net.europa13.taikai.web.client.rpc.TournamentDetailsTarget;
+import net.europa13.taikai.web.client.rpc.TournamentListTarget;
 import net.europa13.taikai.web.proxy.TournamentDetails;
+import net.europa13.taikai.web.proxy.TournamentListKey;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
  * @author daniel
  */
-public class TournamentDetailsContent extends Content {
-    
-    private final TournamentAdminServiceAsync tournamentService =
-        GWT.create(TournamentAdminService.class);
+public class TournamentDetailsContent extends Content implements TournamentDetailsTarget {
+
     private final TournamentPanel panel;
     private final Button btnGenerate;
-    
+
     public TournamentDetailsContent() {
         //*********************************************************************
         // Panel
@@ -56,14 +58,13 @@ public class TournamentDetailsContent extends Content {
             }
         });
         addControl(btnSave);
-        
+
         btnGenerate = new Button("Generera...", new ClickListener() {
 
             public void onClick(Widget sender) {
                 TournamentProxy tournament = panel.getTournament();
                 History.newItem("tournaments/confirmGenerate/" + tournament.getId());
             }
-            
         });
         addControl(btnGenerate);
     }
@@ -72,60 +73,31 @@ public class TournamentDetailsContent extends Content {
     public Panel getPanel() {
         return panel;
     }
-    
-    private void reloadTournament(final int tournamentId) {
-        
-        tournamentService.getTournament(tournamentId, new AsyncCallback<TournamentDetails>() {
 
-            public void onFailure(Throwable t) {
-                Logger.error(t.getLocalizedMessage());
-                Logger.debug("reloadTournament in TournamentDetailsContent: failed to reload tournament.");
-            }
-
-            public void onSuccess(TournamentDetails tournament) {
-                setTournament(tournament);
-            }
-        });
-        
-    }
-    
-    private void setTournament(TournamentDetails details) {
+    public void setTournament(TournamentDetails details) {
         if (details != null) {
             btnGenerate.setEnabled(true);
         }
         else {
             btnGenerate.setEnabled(false);
         }
-        
+
         panel.setTournament(details);
     }
-    
+
     private void storeTournament(final TournamentDetails details) {
-
-        tournamentService.storeTournament(details, new AsyncCallback<Integer>() {
-
-            public void onFailure(Throwable t) {
-                Logger.error("Det gick inte att spara turnering " + details.getId() + ".");
-                Logger.debug(t.getLocalizedMessage());
-            }
-
-            public void onSuccess(Integer tournamentId) {
-                Logger.info(details.getName() + " sparad.");
-                if (details.getId() == 0 && tournamentId > 0) {
-                    reloadTournament(tournamentId);
-                }
-            }
-        });
+        RpcScheduler.queueRequest(new StoreTournamentRequest(details, this, details.getId() == 0));
     }
-    
+
     @Override
     public Content handleState(NavigationPath path) throws ContentHandlerNotFoundException {
+
+
         
-        Logger.debug("handleState in TournamentDetailsContent: path is " + path);
-        
+
+
         // If state is empty a new tournament should be created.
         if (path.isEmpty()) {
-//            panel.reset();
             setTournament(null);
             panel.setTaikai(TaikaiWeb.getSession().getTaikai());
             return this;
@@ -133,19 +105,7 @@ public class TournamentDetailsContent extends Content {
         else {
             try {
                 final int tournamentId = Integer.parseInt(path.getPathItem(0));
-                tournamentService.getTournament(tournamentId, new AsyncCallback<TournamentDetails>() {
-
-                    public void onFailure(Throwable t) {
-                        Logger.error("Det gick inte att hitta turnering " + tournamentId + ".");
-                        Logger.debug(t.getLocalizedMessage());
-                    }
-
-                    public void onSuccess(TournamentDetails tournament) {
-                        setTournament(tournament);
-                        panel.setTaikai(TaikaiWeb.getSession().getTaikai());
-//                        panel.setWidget(panel);
-                    }
-                });
+                RpcScheduler.queueRequest(new LoadTournamentDetailsRequest(tournamentId, this));
             }
             catch (NumberFormatException ex) {
                 Logger.error(path + " är ett ogiltigt värde för turneringar.");
@@ -156,5 +116,4 @@ public class TournamentDetailsContent extends Content {
         }
 
     }
-
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentGenerationInfo;
+import net.europa13.taikai.web.proxy.TournamentListKey;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
@@ -30,13 +31,15 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  */
 public interface TournamentAdminServiceAsync {
 
-    public void getAvailableSeeds(TournamentProxy tournament, AsyncCallback<List<Integer>> callback);
+    public void getAvailableSeeds(int tournamentId, AsyncCallback<List<Integer>> callback);
 
     public void getGenerationInfo(int tournamentId, AsyncCallback<TournamentGenerationInfo> callback);
     
     public void getTournament(int tournamentId, AsyncCallback<TournamentDetails> callback);
 
-    public void getTournaments(TaikaiProxy proxy, AsyncCallback<ListResult<TournamentProxy>> callback);
+//    public void getTournaments(TaikaiProxy proxy, AsyncCallback<ListResult<TournamentProxy>> callback);
+    public void getTournaments(TournamentListKey key, AsyncCallback<ListResult<TournamentProxy>> callback);
+    
 
     public void storeTournament(TournamentDetails details, AsyncCallback<Integer> callback);
 }

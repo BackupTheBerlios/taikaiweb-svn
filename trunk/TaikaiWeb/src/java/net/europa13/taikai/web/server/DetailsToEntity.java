@@ -25,9 +25,11 @@ import javax.persistence.EntityManager;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
+import net.europa13.taikai.web.entity.TournamentAdvancement;
 import net.europa13.taikai.web.entity.TournamentSeed;
 import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.TaikaiDetails;
+import net.europa13.taikai.web.proxy.TournamentAdvancementProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 import net.europa13.taikai.web.proxy.TournamentSeedProxy;
@@ -37,7 +39,7 @@ import net.europa13.taikai.web.proxy.TournamentSeedProxy;
  * @author Daniel Wentzel
  */
 public class DetailsToEntity {
-    
+
     private static Logger logger = Logger.getLogger(DetailsToEntity.class.getName());
 
     /**
@@ -47,7 +49,7 @@ public class DetailsToEntity {
      * @param em the entity manager managing the player entity.
      */
     public static void player(PlayerDetails details, Player entity, EntityManager em) {
-        
+
         entity.setAge(details.getAge());
         entity.setCheckedIn(details.isCheckedIn());
         entity.setGender(details.getGender());
@@ -99,7 +101,7 @@ public class DetailsToEntity {
         if (tournaments.size() + addedTournaments.size() - removedTournaments.size() != tournamentProxies.size()) {
             throw new RuntimeException("entity tournament count couldn't be made consistent with proxy tournament count");
         }
-        
+
         for (Tournament tournament : addedTournaments) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Adding " + entity.toString() + " to " + tournament.toString());
@@ -117,19 +119,19 @@ public class DetailsToEntity {
         }
 
         em.flush();
-        
+
         //*********************************************************************
         // Added and removed seeds
 //        @SuppressWarnings(value="unchecked")
         List<TournamentSeed> tournamentSeeds =
             em.createNamedQuery("getTournamentSeedsForPlayer").setParameter("player", entity).getResultList();
         List<TournamentSeedProxy> tournamentSeedProxies = details.getSeeds();
-        
+
         List<TournamentSeed> addedSeeds =
             new ArrayList<TournamentSeed>();
         List<TournamentSeed> removedSeeds =
             new ArrayList<TournamentSeed>();
-        
+
         for (TournamentSeedProxy seedProxy : tournamentSeedProxies) {
             boolean added = true;
 
@@ -171,11 +173,11 @@ public class DetailsToEntity {
                 removedSeeds.add(seed);
             }
         }
-        
+
         if (tournamentSeeds.size() + addedSeeds.size() - removedSeeds.size() != tournamentSeedProxies.size()) {
             throw new RuntimeException("entity seed count couldn't be made consistent with proxy seed count");
         }
-        
+
         for (TournamentSeed seed : removedSeeds) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Removing " + seed);
@@ -183,18 +185,18 @@ public class DetailsToEntity {
             seed.getTournament().removeSeed(seed);
             em.remove(seed);
         }
-        
+
         em.flush();
-        
+
         for (TournamentSeed seed : addedSeeds) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Adding " + seed);
             }
             seed.getTournament().addSeed(seed);
         }
-        
+
         em.flush();
-        
+
     }
 
     public static void taikai(TaikaiDetails details, Taikai entity, EntityManager em) {
@@ -204,6 +206,79 @@ public class DetailsToEntity {
         entity.setName(details.getName());
         entity.setPoolSize(details.getPoolSize());
         entity.setPreferringLargerPools(details.isPreferringLargerPools());
+
+        List<TournamentAdvancementProxy> advancementProxies = details.getAdvancements();
+        List<TournamentAdvancement> advancementEntities = entity.getAdvancements();
+
+        List<TournamentAdvancement> addedAdvancements = new ArrayList<TournamentAdvancement>();
+        List<TournamentAdvancement> removedAdvancements = new ArrayList<TournamentAdvancement>();
+
+        for (TournamentAdvancementProxy advancementProxy : advancementProxies) {
+            
+            boolean added = true;
+            
+            for (TournamentAdvancement advancement : advancementEntities) {
+                if (advancement.getQualifyingTournament().getId().equals(advancementProxy.getQualifyingTournament().getId()) &&
+                    advancement.getAdvancementTournament().getId().equals(advancementProxy.getAdvancementTournament().getId()) &&
+                    advancement.getPlayerPosition() == advancementProxy.getPlayerNumber()) {
+                    
+                    added = false;
+                }
+            }
+            
+            if (added) {
+                TournamentAdvancement advancement = new TournamentAdvancement();
+                
+                int tournamentId = advancementProxy.getAdvancementTournament().getId();
+                Tournament advancementTournament = em.find(Tournament.class, tournamentId);
+                
+                advancement.setAdvancementTournament(advancementTournament);
+                advancement.setQualifyingTournament(entity);
+                advancement.setPlayerPosition(advancementProxy.getPlayerNumber());
+                   
+                addedAdvancements.add(advancement);
+                
+            }
+        
+        }
+        
+        for (TournamentAdvancement advancement : advancementEntities) {
+            
+            boolean removed = true;
+            
+            for (TournamentAdvancementProxy advancementProxy : advancementProxies) {
+                if (advancement.getQualifyingTournament().getId().equals(advancementProxy.getQualifyingTournament().getId()) &&
+                    advancement.getAdvancementTournament().getId().equals(advancementProxy.getAdvancementTournament().getId()) &&
+                    advancement.getPlayerPosition() == advancementProxy.getPlayerNumber()) {
+                    
+                    removed = false;
+                }
+            }
+            
+            if (removed) {   
+                removedAdvancements.add(advancement);
+            }
+        
+        }
+        
+        for (TournamentAdvancement advancement : removedAdvancements) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Removing " + advancement);
+            }
+            advancement.getQualifyingTournament().removeAdvancement(advancement);
+            em.remove(advancement);
+        }
+
+        em.flush();
+
+        for (TournamentAdvancement advancement : addedAdvancements) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Adding " + advancement);
+            }
+            advancement.getQualifyingTournament().addAdvancement(advancement);
+        }
+
+        em.flush();
 
     }
 }

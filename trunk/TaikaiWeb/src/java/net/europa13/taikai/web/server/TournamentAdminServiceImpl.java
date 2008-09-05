@@ -35,6 +35,7 @@ import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentGenerationInfo;
+import net.europa13.taikai.web.proxy.TournamentListKey;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 import net.europa13.taikai.web.server.tournament.GenerationException;
@@ -70,17 +71,18 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
         return proxies;
     }
 
-    public List<Integer> getAvailableSeeds(TournamentProxy proxy) {
+    public List<Integer> getAvailableSeeds(int tournamentId) {
 
         EntityManager em = emf.createEntityManager();
 
         try {
 
-            if (proxy == null) {
-                System.out.println("proxy == null");
-            }
-
-            Tournament tournament = em.find(Tournament.class, proxy.getId());
+//            if (proxy == null) {
+//                System.out.println("proxy == null");
+//            }
+//
+//            int tournamentId = proxy.getId();
+            Tournament tournament = em.find(Tournament.class, tournamentId);
 
             List<Integer> availableSeeds = new ArrayList<Integer>();
             availableSeeds.add(1);
@@ -207,12 +209,17 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
 
     }
 
+//    public ListResult<TournamentProxy> getTournaments(TournamentListKey key) {
+//        
+//    }
+    
     @SuppressWarnings(value = "unchecked")
-    public ListResult<TournamentProxy> getTournaments(TaikaiProxy taikaiProxy) {
+    public ListResult<TournamentProxy> getTournaments(TournamentListKey key) {
         EntityManager em = emf.createEntityManager();
 
         try {
-            Taikai taikai = em.find(Taikai.class, taikaiProxy.getId());
+            int taikaiId = key.getOwnerId();
+            Taikai taikai = em.find(Taikai.class, taikaiId);
             if (taikai == null) {
                 throw new RuntimeException("no taikai");
             }

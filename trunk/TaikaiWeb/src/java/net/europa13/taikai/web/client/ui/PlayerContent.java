@@ -17,27 +17,22 @@
  */
 package net.europa13.taikai.web.client.ui;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 import java.util.List;
 import net.europa13.taikai.web.client.ContentHandlerNotFoundException;
-import net.europa13.taikai.web.client.CustomCallback;
-import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.NavigationPath;
-import net.europa13.taikai.web.client.PlayerAdminService;
-import net.europa13.taikai.web.client.PlayerAdminServiceAsync;
 import net.europa13.taikai.web.client.TaikaiWeb;
-import net.europa13.taikai.web.client.TournamentAdminService;
-import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.client.rpc.LoadPlayersRequest;
+import net.europa13.taikai.web.client.rpc.PlayerListTarget;
+import net.europa13.taikai.web.client.rpc.RpcScheduler;
+import net.europa13.taikai.web.proxy.PlayerListKey;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 
@@ -45,20 +40,17 @@ import net.europa13.taikai.web.proxy.TaikaiProxy;
  *
  * @author Daniel Wentzel
  */
-public class PlayerContent extends Content {
+public class PlayerContent extends Content implements PlayerListTarget {
 
-    private final SimplePanel panel = new SimplePanel();
+
     private final PlayerTable playerTable;
-    private final PlayerAdminServiceAsync playerService =
-        GWT.create(PlayerAdminService.class);
-    private final TournamentAdminServiceAsync tournamentService =
-        GWT.create(TournamentAdminService.class);
     private List<PlayerProxy> playerList;
     private final String historyToken;
     private final Button btnNewPlayer;
     private final Button btnImportPlayers;
-//    private String state;
     private final PlayerDetailsContent playerDetailsContent;
+    
+    private PlayerListKey playerListKey;
 
     public PlayerContent(final String historyToken) {
 
@@ -102,8 +94,8 @@ public class PlayerContent extends Content {
     }
 
     @Override
-    public Panel getPanel() {
-        return panel;
+    public Widget getPanel() {
+        return playerTable;
     }
 
     @Override
@@ -117,6 +109,11 @@ public class PlayerContent extends Content {
 
     }
 
+    public void setPlayers(List<? extends PlayerProxy> players) {
+        this.playerList = new ArrayList<PlayerProxy>(players);
+        playerTable.setPlayerList(playerList);
+    }
+    
     private void updateControls() {
         TaikaiProxy taikai = TaikaiWeb.getSession().getTaikai();
 
@@ -128,14 +125,6 @@ public class PlayerContent extends Content {
             btnNewPlayer.setEnabled(true);
             btnImportPlayers.setEnabled(true);
         }
-
-//        if ("details".equals(state)) {
-//            btnImportPlayers.setVisible(false);
-//        }
-//        else {
-//            btnImportPlayers.setVisible(true);
-//        }
-
     }
 
     private void updatePlayerList() {
@@ -145,31 +134,10 @@ public class PlayerContent extends Content {
             playerTable.reset();
             return;
         }
-        playerService.getPlayers(TaikaiWeb.getSession().getTaikai(),
-            new CustomCallback<ListResult<PlayerProxy>>() {
+        RpcScheduler.queueRequest(new LoadPlayersRequest(playerListKey, this));
 
-                public void onSuccess(ListResult<PlayerProxy> result) {
-                    playerList = result.getList();
-                    playerTable.setPlayerList(playerList);
-                }
-            });
     }
     
-//    private void updatePlayerListTournament(int tournamentId) {
-//        playerService.getPlayersInTournament(tournamentId,
-//            new CustomCallback<ListResult<PlayerProxy>>() {
-//
-//                public void onSuccess(ListResult<PlayerProxy> result) {
-//                    playerList = result.getList();
-//                    playerTable.setPlayerList(playerList);
-//                }
-//            });
-//    }
-    
-//    private void openPlayerPanel() {
-//        openPlayerPanel(0);
-//    }
-//    private AsyncCallback<ListResult<TournamentProxy>> 
     @Override
     public Content handleState(NavigationPath path) throws ContentHandlerNotFoundException {
 
@@ -177,25 +145,23 @@ public class PlayerContent extends Content {
             return playerDetailsContent.handleState(path.getSubPath());
         }
         else if ("import".equals(path)) {
-//            state = "import";
             Logger.debug("Import är inte implementerad");
             return this;
         }
         else if (path.isEmpty()) {
-//            state = "list";
-            panel.setWidget(playerTable);
+            playerListKey = new PlayerListKey(PlayerListKey.Owner.TAIKAI, TaikaiWeb.getSession().getTaikaiId());
             return this;
         }
-//        else if ("tournament".equals(path.getPathItem(0))) {
-//            try {
-//                int tournamentId = Integer.parseInt(path.getPathItem(1)); 
-//                
-//                return this;
-//            }
-//            catch (NumberFormatException ex) {
-//                return this;
-//            }
-//        }
+        else if ("tournament".equals(path.getPathItem(0))) {
+            try {
+                int tournamentId = Integer.parseInt(path.getPathItem(1)); 
+                playerListKey = new PlayerListKey(PlayerListKey.Owner.TOURNAMENT, tournamentId);
+                return this;
+            }
+            catch (NumberFormatException ex) {
+                return this;
+            }
+        }
         else {
             try {
                 return playerDetailsContent.handleState(path);

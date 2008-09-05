@@ -41,7 +41,7 @@ public class TournamentSeedPanel extends CaptionPanel {
         grid.setText(0, 3, "4:e");
         add(grid);
         
-        grid.setWidth("100%");
+//        grid.setWidth("100%");
         for (int i = 0; i < 3; ++i) {
             grid.getColumnFormatter().setWidth(i, "25%");
         }

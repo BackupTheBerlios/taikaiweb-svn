@@ -17,50 +17,39 @@
  */
 package net.europa13.taikai.web.client.ui;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 import java.util.List;
 import net.europa13.taikai.web.client.ContentHandlerNotFoundException;
-import net.europa13.taikai.web.client.CustomCallback;
-import net.europa13.taikai.web.client.ListResult;
 import net.europa13.taikai.web.client.NavigationPath;
 import net.europa13.taikai.web.client.TaikaiWeb;
-import net.europa13.taikai.web.client.TournamentAdminService;
-import net.europa13.taikai.web.client.TournamentAdminServiceAsync;
 import net.europa13.taikai.web.client.logging.Logger;
+import net.europa13.taikai.web.client.rpc.LoadTournamentsRequest;
+import net.europa13.taikai.web.client.rpc.RpcScheduler;
+import net.europa13.taikai.web.client.rpc.TournamentListTarget;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
-import net.europa13.taikai.web.proxy.TournamentDetails;
+import net.europa13.taikai.web.proxy.TournamentListKey;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
  *
  * @author daniel
  */
-public class TournamentContent extends Content {
+public class TournamentContent extends Content implements TournamentListTarget {
 
-//    private final Grid tournamentGrid;
-//    private final SimplePanel panel = new SimplePanel();
     private final TournamentTable tournamentTable;
-    
-    private final TournamentAdminServiceAsync tournamentService =
-        GWT.create(TournamentAdminService.class);
     private List<TournamentProxy> tournamentList;
     private final String historyToken;
     private final Button btnNewTournament;
-    
     private final TournamentDetailsContent tournamentDetailsContent;
     private final TournamentConfirmGenerateContent confirmGenerateContent;
 
-    
-    
     public TournamentContent(final String historyToken) {
 
         setTitle("Turneringar");
@@ -90,7 +79,7 @@ public class TournamentContent extends Content {
             }
         });
 
-        
+
         tournamentDetailsContent = new TournamentDetailsContent();
         confirmGenerateContent = new TournamentConfirmGenerateContent();
     }
@@ -110,6 +99,11 @@ public class TournamentContent extends Content {
         }
     }
 
+    public void setTournaments(List<? extends TournamentProxy> tournaments) {
+        tournamentList = new ArrayList<TournamentProxy>(tournaments);
+        tournamentTable.setTournamentList(tournamentList);
+    }
+
     private void updateControls() {
         TaikaiProxy taikai = TaikaiWeb.getSession().getTaikai();
 
@@ -119,7 +113,7 @@ public class TournamentContent extends Content {
         else {
             btnNewTournament.setEnabled(true);
         }
-        
+
     }
 
     private void updateTournamentList() {
@@ -129,14 +123,9 @@ public class TournamentContent extends Content {
             tournamentTable.reset();
             return;
         }
-        tournamentService.getTournaments(TaikaiWeb.getSession().getTaikai(),
-            new CustomCallback<ListResult<TournamentProxy>>() {
 
-                public void onSuccess(ListResult<TournamentProxy> result) {
-                    tournamentList = result.getList();
-                    tournamentTable.setTournamentList(tournamentList);
-                }
-            });
+        RpcScheduler.queueRequest(new LoadTournamentsRequest(new TournamentListKey(TaikaiWeb.getSession().getTaikaiId()), this));
+
     }
 
     @Override
@@ -153,7 +142,8 @@ public class TournamentContent extends Content {
         else {
             try {
                 return tournamentDetailsContent.handleState(path);
-            } catch(ContentHandlerNotFoundException ex) {
+            }
+            catch (ContentHandlerNotFoundException ex) {
                 return this;
             }
         }

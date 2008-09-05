@@ -23,6 +23,7 @@ import java.util.List;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentGenerationInfo;
+import net.europa13.taikai.web.proxy.TournamentListKey;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 
 /**
@@ -32,13 +33,14 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 @RemoteServiceRelativePath(value = "tournamentadminservice")
 public interface TournamentAdminService extends RemoteService {
 
-    public List<Integer> getAvailableSeeds(TournamentProxy tournament);
+    public List<Integer> getAvailableSeeds(int tournamentId);
     
     public TournamentGenerationInfo getGenerationInfo(int tournamentId);
     
     public TournamentDetails getTournament(int tournamentId);
 
-    public ListResult<TournamentProxy> getTournaments(TaikaiProxy proxy);
+//    public ListResult<TournamentProxy> getTournaments(TaikaiProxy proxy);
+    public ListResult<TournamentProxy> getTournaments(TournamentListKey key);
 
     public int storeTournament(TournamentDetails details);
 }

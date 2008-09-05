@@ -28,23 +28,24 @@ public class TournamentDetails extends TournamentProxy {
 
     private List<CourtProxy> courts = new ArrayList<CourtProxy>();
     private List<TournamentSeedProxy> seeds = new ArrayList<TournamentSeedProxy>();
-//    private List<PlayerProxy> seededPlayers =
-//        new ArrayList<PlayerProxy>(4);
+    private List<TournamentAdvancementProxy> advancements =
+        new ArrayList<TournamentAdvancementProxy>();
 
     private int poolSize;
     private boolean preferringLargerPools;
     
     public TournamentDetails() {
-//        seededPlayers.add(null);
-//        seededPlayers.add(null);
-//        seededPlayers.add(null);
-//        seededPlayers.add(null);
+
     }
     
     public void addCourt(CourtProxy court) {
         courts.add(court);
     }
 
+    public List<TournamentAdvancementProxy> getAdvancements() {
+        return advancements;
+    }
+    
     public int getPoolSize() {
         return poolSize;
     }
@@ -75,6 +76,10 @@ public class TournamentDetails extends TournamentProxy {
 //    public void setPlayerSeed(int seed, PlayerProxy player) {
 //        seededPlayers.set(seed, player);
 //    }
+    
+    public void setAdvancements(List<? extends TournamentAdvancementProxy> advancements) {
+        this.advancements = new ArrayList<TournamentAdvancementProxy>(advancements);
+    }
     
     public void setPoolSize(int poolSize) {
         this.poolSize = poolSize;

@@ -31,6 +31,7 @@ import net.europa13.taikai.web.entity.Tournament;
 import net.europa13.taikai.web.proxy.Gender;
 import net.europa13.taikai.web.proxy.Grade;
 import net.europa13.taikai.web.proxy.PlayerDetails;
+import net.europa13.taikai.web.proxy.PlayerListKey;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
@@ -45,8 +46,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
     @PersistenceUnit
     EntityManagerFactory emf;
     private final String baseListQuery =
-        "SELECT p.id, p.name, p.surname, p.checkedIn, p.age, p.number, p.grade, p.gender " +
-        "FROM Player p ";
+        "SELECT p.id, p.name, p.surname, p.checkedIn, p.age, p.number, p.grade, p.gender ";
 
     private List<PlayerProxy> dataToProxyList(List<Object[]> data) {
         List<PlayerProxy> proxies = new ArrayList<PlayerProxy>();
@@ -66,7 +66,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
 
         return proxies;
     }
-    
+
     public PlayerDetails getPlayer(int playerId) {
         EntityManager em = emf.createEntityManager();
 
@@ -78,8 +78,8 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
 
             System.out.println("name = " + player.getName() + " surname = " + player.getSurname());
             System.out.println("name = " + details.getName() + " surname = " + details.getSurname());
-            
-            
+
+
             return details;
         }
         finally {
@@ -87,46 +87,55 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
         }
     }
 
-    @SuppressWarnings(value = "unchecked")
-    public ListResult<PlayerProxy> getPlayers(TaikaiProxy taikaiProxy) {
-        EntityManager em = emf.createEntityManager();
-
-        try {
-            Taikai taikai = em.find(Taikai.class, taikaiProxy.getId());
-            if (taikai == null) {
-                throw new RuntimeException("no taikai");
-            }
-
-            StringBuilder query = new StringBuilder(baseListQuery);
-            query.append("WHERE p.taikai = :owner ");
-
-            return getPlayers(em, query.toString(), taikai);
+//    @SuppressWarnings(value = "unchecked")
+    private ListResult<PlayerProxy> getPlayersTaikai(int taikaiId, EntityManager em) {
+//        int taikaiId = taikaiProxy.getId();
+        Taikai taikai = em.find(Taikai.class, taikaiId);
+        if (taikai == null) {
+            throw new RuntimeException("no taikai");
         }
-        finally {
-            em.close();
-        }
+
+        StringBuilder query = new StringBuilder(baseListQuery);
+        query.append("FROM Player p WHERE p.taikai = :owner ");
+
+        return getPlayers(em, query.toString(), taikai);
     }
 
-    @SuppressWarnings(value = "unchecked")
-    public ListResult<PlayerProxy> getPlayers(TournamentProxy tournamentProxy) {
+//    @SuppressWarnings(value = "unchecked")
+    private ListResult<PlayerProxy> getPlayersTournament(int tournamentId, EntityManager em) {
+
+//        int tournamentId = tournamentProxy.getId();
+        Tournament tournament = em.find(Tournament.class, tournamentId);
+        if (tournament == null) {
+            throw new RuntimeException("no taikai");
+        }
+
+        StringBuilder query = new StringBuilder(baseListQuery);
+        query.append("FROM Tournament tmt LEFT JOIN tmt.players p WHERE tmt = :owner ");
+
+        return getPlayers(em, query.toString(), tournament);
+
+
+
+    }
+
+    public ListResult<PlayerProxy> getPlayers(PlayerListKey key) {
+
         EntityManager em = emf.createEntityManager();
 
         try {
-            Tournament tournament = em.find(Tournament.class, tournamentProxy.getId());
-            if (tournament == null) {
-                throw new RuntimeException("no taikai");
+            switch (key.getOwner()) {
+                case TAIKAI:
+                    return getPlayersTaikai(key.getOwnerId(), em);
+                case TOURNAMENT:
+                    return getPlayersTournament(key.getOwnerId(), em);
+                default:
+                    throw new RuntimeException("illegal player list owner");
             }
-
-            StringBuilder query = new StringBuilder(baseListQuery);
-            query.append("WHERE p.tournament = :owner ");
-            
-            return getPlayers(em, query.toString(), tournament);
-
         }
         finally {
             em.close();
         }
-
     }
 
     private ListResult<PlayerProxy> getPlayers(EntityManager em, String query, Object owner) {
@@ -140,8 +149,6 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
         return result;
 
     }
-
-    
 
     public int storePlayer(PlayerDetails details) {
         EntityManager em = emf.createEntityManager();
@@ -161,7 +168,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
 
                 player.setTaikai(taikai);
                 taikai.addPlayer(player);
-                
+
                 DetailsToEntity.player(details, player, em);
 
                 em.persist(player);
@@ -173,7 +180,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
             }
 
             em.getTransaction().commit();
-            
+
             return player.getId();
         }
         catch (RuntimeException ex) {
@@ -188,7 +195,7 @@ public class PlayerAdminServiceImpl extends RemoteServiceServlet implements
         finally {
             em.clear();
             em.close();
-            
+
         }
     }
 }

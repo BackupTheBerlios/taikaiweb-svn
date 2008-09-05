@@ -44,6 +44,15 @@ public class Session implements Serializable {
         return taikai;
     }
     
+    public int getTaikaiId() {
+        if (taikai != null) {
+            return taikai.getId();
+        }
+        else {
+            return 0;
+        }
+    }
+    
     public TournamentProxy getTournament() {
         return tournament;
     }
