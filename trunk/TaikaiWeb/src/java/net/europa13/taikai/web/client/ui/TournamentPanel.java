@@ -43,7 +43,7 @@ public class TournamentPanel extends VerticalPanel {
     private final Label tbTaikai;
     private final TournamentSeedPanel seedTable;
     private final TournamentPoolPanel poolBox;
-    private final TournamentAdvancementTable advancementTable;
+//    private final TournamentAdvancementTable advancementTable;
 //    private final Button btnSave;
     private TaikaiProxy taikai;
     private TournamentDetails tournament;
@@ -85,10 +85,10 @@ public class TournamentPanel extends VerticalPanel {
         table.getFlexCellFormatter().setColSpan(row, 0, table.getCellCount(0));
         row++;
 
-        advancementTable = new TournamentAdvancementTable();
-        table.setWidget(row, 0, advancementTable);
-        table.getFlexCellFormatter().setColSpan(row, 0, table.getCellCount(0));
-        row++;
+//        advancementTable = new TournamentAdvancementTable();
+//        table.setWidget(row, 0, advancementTable);
+//        table.getFlexCellFormatter().setColSpan(row, 0, table.getCellCount(0));
+//        row++;
         
 
         add(table);
@@ -110,7 +110,7 @@ public class TournamentPanel extends VerticalPanel {
         newTournament.setPoolSize(poolBox.getPoolSize());
         newTournament.setPreferringLargerPools(poolBox.isPreferringLargerPools());
         
-        newTournament.setAdvancements(advancementTable.getAdvancements());
+//        newTournament.setAdvancements(advancementTable.getAdvancements());
         
         return newTournament;
     }
@@ -161,19 +161,23 @@ public class TournamentPanel extends VerticalPanel {
                 seedTable.setSeededPlayer(i + 1, tournament.getSeededPlayer(i + 1));
             }
             
-            advancementTable.setTournament(tournament);
+            
+            
 //            advancementTable.setAdvancements(tournament.getAdvancements());
         }
         
-        RpcScheduler.queueRequest(new LoadTournamentsRequest(new TournamentListKey(TaikaiWeb.getSession().getTaikaiId()), new TournamentListTarget() {
-
-            public void setTournaments(List<? extends TournamentProxy> tournaments) {
-                tournaments.remove(tournament);
-//                Logger.debug("tournaments size = " + tournaments.size());
-                
-                advancementTable.setTournaments(tournaments);
-            }
-        }));
+//        RpcScheduler.queueRequest(new LoadTournamentsRequest(new TournamentListKey(TaikaiWeb.getSession().getTaikaiId()), new TournamentListTarget() {
+//
+//            public void setTournaments(List<? extends TournamentProxy> tournaments) {
+//                tournaments.remove(tournament);
+////                Logger.debug("tournaments size = " + tournaments.size());
+//                
+//                advancementTable.setTournaments(tournaments);
+//                if (tournament != null) {
+//                    advancementTable.setTournament(tournament);
+//                }
+//            }
+//        }));
     }
     
 }

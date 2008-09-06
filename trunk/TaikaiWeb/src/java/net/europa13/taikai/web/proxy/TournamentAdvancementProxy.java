@@ -25,18 +25,23 @@ import java.io.Serializable;
  */
 public class TournamentAdvancementProxy implements Serializable {
 
+    private int id;
     private TournamentProxy qualifyingTournament;
     private TournamentProxy advancementTournament;
-    private int playerNumber;
+    private int playerPosition;
     
-    private TournamentAdvancementProxy() {
+    public TournamentAdvancementProxy() {
         
     }
     
     public TournamentAdvancementProxy(TournamentProxy qualifyingTournament, TournamentProxy advancementTournament, int playerNumber) {
         this.qualifyingTournament = qualifyingTournament;
         this.advancementTournament = advancementTournament;
-        this.playerNumber = playerNumber;
+        this.playerPosition = playerNumber;
+    }
+    
+    public int getId() {
+        return id;
     }
     
     public TournamentProxy getQualifyingTournament() {
@@ -47,7 +52,29 @@ public class TournamentAdvancementProxy implements Serializable {
         return advancementTournament;
     }
     
-    public int getPlayerNumber() {
-        return playerNumber;
+    public int getPlayerPosition() {
+        return playerPosition;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public void setQualifyingTournament(TournamentProxy tournament) {
+        this.qualifyingTournament = tournament;
+    }
+    
+    public void setAdvancementTournament(TournamentProxy tournament) {
+        this.advancementTournament = tournament;
+    }
+    
+    public void setPlayerPosition(int playerPosition) {
+        this.playerPosition = playerPosition;
+    }
+    
+    @Override
+    public String toString() {
+        return "TournamentAdvancementProxy: qt = " + qualifyingTournament + 
+            " at = " + advancementTournament + " pp = " + playerPosition;
     }
 }

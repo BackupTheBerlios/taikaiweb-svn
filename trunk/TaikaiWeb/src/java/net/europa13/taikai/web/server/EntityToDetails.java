@@ -19,14 +19,17 @@ package net.europa13.taikai.web.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
+import net.europa13.taikai.web.entity.TournamentAdvancement;
 import net.europa13.taikai.web.entity.TournamentSeed;
 import net.europa13.taikai.web.proxy.PlayerDetails;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiDetails;
+import net.europa13.taikai.web.proxy.TournamentAdvancementProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 import net.europa13.taikai.web.proxy.TournamentSeedProxy;
@@ -36,6 +39,8 @@ import net.europa13.taikai.web.proxy.TournamentSeedProxy;
  * @author Daniel Wentzel
  */
 public class EntityToDetails {
+    
+    private static Logger logger = Logger.getLogger(EntityToDetails.class.getName());
 
     public static void player(Player entity, PlayerDetails details, EntityManager em) {
         EntityToProxy.player(entity, details, em);
@@ -96,6 +101,20 @@ public class EntityToDetails {
             seedProxies.add(seedProxy);
         }
         details.setSeeds(seedProxies);
+        
+//        List<TournamentAdvancement> advancements = entity.getAdvancements();
+//        List<TournamentAdvancementProxy> advancementProxies = 
+//            new ArrayList<TournamentAdvancementProxy>();
+//        
+//        for (TournamentAdvancement advancement : advancements) {
+//            TournamentAdvancementProxy proxy = new TournamentAdvancementProxy();
+//            EntityToProxy.tournamentAdvancement(advancement, proxy, em);
+//            advancementProxies.add(proxy);
+//            
+//            logger.fine("Added " + proxy + " to advancements");
+//        }
+//        details.setAdvancements(advancementProxies);
+        
     }
     
 }

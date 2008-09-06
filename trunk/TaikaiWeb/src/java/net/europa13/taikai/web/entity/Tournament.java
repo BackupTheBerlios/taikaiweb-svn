@@ -20,6 +20,7 @@ package net.europa13.taikai.web.entity;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +34,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -77,23 +79,29 @@ public class Tournament implements Serializable {
     private List<Player> players;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<TournamentSeed> tournamentSeeds;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "qualifyingTournament")
-    private List<TournamentAdvancement> tournamentAdvancements;
-    @OneToOne
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
+    private List<Pool> pools;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "qualifyingTournament")
+//    @OrderBy(value = "playerPosition")
+//    private List<TournamentAdvancement> tournamentAdvancements;
+//    @OneToMany
+//    private Map<Integer, Tournament> advancements;
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "treeId")
     private Tree tree;
-    @OneToMany
-    private List<Pool> pools;
 
     public Tournament() {
     }
 
-    public void addAdvancement(TournamentAdvancement advancement) {
-        tournamentAdvancements.add(advancement);
-    }
-    
+//    public void addAdvancement(TournamentAdvancement advancement) {
+//        tournamentAdvancements.add(advancement);
+//    }
     public void addPlayer(Player player) {
         players.add(player);
+    }
+
+    public void addPool(Pool pool) {
+        pools.add(pool);
     }
 
     public void addSeed(TournamentSeed seed) {
@@ -105,10 +113,9 @@ public class Tournament implements Serializable {
         // Generate tree
     }
 
-    public List<TournamentAdvancement> getAdvancements() {
-        return tournamentAdvancements;
-    }
-    
+//    public List<TournamentAdvancement> getAdvancements() {
+//        return tournamentAdvancements;
+//    }
     public Integer getId() {
         return id;
     }
@@ -150,10 +157,9 @@ public class Tournament implements Serializable {
         return preferringLargerPools;
     }
 
-    public void removeAdvancement(TournamentAdvancement advancement) {
-        tournamentAdvancements.remove(advancement);
-    }
-    
+//    public void removeAdvancement(TournamentAdvancement advancement) {
+//        tournamentAdvancements.remove(advancement);
+//    }
     public void removePlayer(Player player) {
         players.remove(player);
     }
@@ -165,7 +171,6 @@ public class Tournament implements Serializable {
 //    public void setAdvancements(List<TournamentAdvancement> advancements) {
 //        this.tournamentAdvancements = advancements;
 //    }
-    
     public void setId(Integer id) {
         this.id = id;
     }
@@ -178,7 +183,6 @@ public class Tournament implements Serializable {
 ////        tournamentSeed.setPlayerSeed(player, seed);
 ////        seededPlayers.put(seed, player);
 //    }
-
     public void setPoolSize(int poolSize) {
         this.poolSize = poolSize;
     }
@@ -189,6 +193,10 @@ public class Tournament implements Serializable {
 
     public void setTaikai(Taikai taikai) {
         this.taikai = taikai;
+    }
+
+    public void setTree(Tree tree) {
+        this.tree = tree;
     }
 
     @Override

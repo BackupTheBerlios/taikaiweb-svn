@@ -71,6 +71,59 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
         return proxies;
     }
 
+    public void generate(int tournamentId) {
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            
+            Tournament tournament = em.find(Tournament.class, tournamentId);
+            
+            if (tournament == null) {
+                throw new RuntimeException("Tournament " + tournamentId + " not found");
+            }
+            
+            List<Player> checkedPlayers = 
+                em.createNamedQuery("getCheckedPlayers").setParameter("tournament", tournament).getResultList();
+            List<Player> uncheckedPlayers = 
+                em.createNamedQuery("getUncheckedPlayers").setParameter("tournament", tournament).getResultList();
+            List<PlayerProxy> uncheckedPlayerProxies = new ArrayList<PlayerProxy>();
+            for (Player player : uncheckedPlayers) {
+//                em.merge(player);
+
+                logger.fine("Unchecked player " + player.getId() + " has taikai " + player.getTaikai());
+
+                PlayerProxy proxy = new PlayerProxy();
+                EntityToProxy.player(player, proxy, em);
+                uncheckedPlayerProxies.add(proxy);
+            }
+
+//            info.setPlayerCount(checkedPlayers.size());
+//            info.setUncheckedPlayers(uncheckedPlayerProxies);
+
+            TournamentGenerationData data = new TournamentGenerationData();
+            data.setTournament(tournament);
+            data.setCheckedPlayers(checkedPlayers);
+            data.setUncheckedPlayers(uncheckedPlayers);
+            
+            em.getTransaction().begin();
+            
+            try {
+                Generator.generate(data, em);
+                em.getTransaction().commit();
+//                info.setGenerationPossible(true);
+            }
+            catch (GenerationException ex) {
+                em.getTransaction().rollback();
+//                info.setGenerationPossible(false);
+                logger.log(Level.FINE, "", ex);
+            }
+            
+        }
+        finally {
+            em.close();
+        }
+    }
+    
     public List<Integer> getAvailableSeeds(int tournamentId) {
 
         EntityManager em = emf.createEntityManager();
@@ -263,12 +316,15 @@ public class TournamentAdminServiceImpl extends RemoteServiceServlet implements
                     throw new RuntimeException("no taikai");
                 }
 //                detailsToEntity(details, tournament);
-                DetailsToEntity.tournament(details, tournament, em);
-
+                
                 tournament.setTaikai(taikai);
                 taikai.addTournament(tournament);
 
                 em.persist(tournament);
+                
+                DetailsToEntity.tournament(details, tournament, em);
+
+                
                 em.merge(taikai);
             }
             else {

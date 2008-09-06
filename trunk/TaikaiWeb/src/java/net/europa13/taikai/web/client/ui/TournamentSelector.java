@@ -17,7 +17,8 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  */
 public class TournamentSelector extends ListBox implements TournamentListTarget {
 
-    private List<TournamentProxy> tournaments;
+    private List<TournamentProxy> tournaments =
+        new ArrayList<TournamentProxy>();
 //    private boolean allowingNoTournament;
 
     public TournamentSelector() {

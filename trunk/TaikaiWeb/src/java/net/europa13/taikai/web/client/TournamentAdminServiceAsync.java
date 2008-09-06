@@ -31,6 +31,8 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
  */
 public interface TournamentAdminServiceAsync {
 
+    public void generate(int tournamentId, AsyncCallback<Void> callback);
+    
     public void getAvailableSeeds(int tournamentId, AsyncCallback<List<Integer>> callback);
 
     public void getGenerationInfo(int tournamentId, AsyncCallback<TournamentGenerationInfo> callback);

@@ -20,7 +20,10 @@ package net.europa13.taikai.web.server.tournament;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import net.europa13.taikai.web.entity.Pool;
 import net.europa13.taikai.web.entity.Tournament;
+import net.europa13.taikai.web.entity.Tree;
 import net.europa13.taikai.web.proxy.TournamentGenerationInfo;
 
 /**
@@ -30,6 +33,26 @@ import net.europa13.taikai.web.proxy.TournamentGenerationInfo;
 public class Generator {
     
     private static Logger logger = Logger.getLogger(Generator.class.getName());
+
+    public static void generate(TournamentGenerationData data, EntityManager em) throws GenerationException {
+        List<PoolCounter> poolCounts = getPoolCount(data);
+        
+        Tournament tournament = data.getTournament();
+        
+        for (PoolCounter poolCount : poolCounts) {
+            
+            for (int i = 0; i < poolCount.poolCount; ++i) {
+                Pool pool = new Pool();
+                pool.setTournament(tournament);
+                tournament.addPool(pool);
+            }
+        }
+        
+        em.merge(tournament);
+        
+        Tree tree = new Tree();
+        tournament.setTree(tree);
+    }
 
     private static class PoolCounter {
         public int poolSize;
@@ -146,6 +169,17 @@ public class Generator {
         poolCounts.add(smallerSizeCounter);
         
         return poolCounts;
+    }
+    
+    private int getTreeNodeCount(int poolCount, int poolAdvancementCount) {
+        
+        int openings = poolCount * poolAdvancementCount;
+        
+        int fullLevels = 0;
+        
+        
+        
+        return 0;
     }
      
     

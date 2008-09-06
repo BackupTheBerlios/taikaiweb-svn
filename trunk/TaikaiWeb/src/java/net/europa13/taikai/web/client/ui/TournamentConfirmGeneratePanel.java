@@ -35,7 +35,7 @@ public class TournamentConfirmGeneratePanel extends FlexTable {
 
     private final TournamentSeedPanel seedPanel;
     private final TournamentPoolPanel poolPanel;
-    private final TournamentAdvancementTable advancementPanel;
+//    private final TournamentAdvancementTable advancementPanel;
     private final PlayerTable playerTable;
     private final Hyperlink lnkTournamentName;
     private final Label lblPlayerCount;
@@ -77,9 +77,9 @@ public class TournamentConfirmGeneratePanel extends FlexTable {
         setWidget(4, 0, poolPanel);
         getFlexCellFormatter().setColSpan(4, 0, 2);
         
-        advancementPanel = new TournamentAdvancementTable();
-        setWidget(5, 0, advancementPanel);
-        getFlexCellFormatter().setColSpan(5, 0, 2);
+//        advancementPanel = new TournamentAdvancementTable();
+//        setWidget(5, 0, advancementPanel);
+//        getFlexCellFormatter().setColSpan(5, 0, 2);
 
     }
 
@@ -108,7 +108,7 @@ public class TournamentConfirmGeneratePanel extends FlexTable {
             poolPanel.setPoolCount(i, info.getPoolCount(i));
         }
 
-        advancementPanel.setEnabled(false);
+//        advancementPanel.setEnabled(false);
 
     }
 }

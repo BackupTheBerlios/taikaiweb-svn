@@ -207,78 +207,88 @@ public class DetailsToEntity {
         entity.setPoolSize(details.getPoolSize());
         entity.setPreferringLargerPools(details.isPreferringLargerPools());
 
-        List<TournamentAdvancementProxy> advancementProxies = details.getAdvancements();
-        List<TournamentAdvancement> advancementEntities = entity.getAdvancements();
-
-        List<TournamentAdvancement> addedAdvancements = new ArrayList<TournamentAdvancement>();
-        List<TournamentAdvancement> removedAdvancements = new ArrayList<TournamentAdvancement>();
-
-        for (TournamentAdvancementProxy advancementProxy : advancementProxies) {
-            
-            boolean added = true;
-            
-            for (TournamentAdvancement advancement : advancementEntities) {
-                if (advancement.getQualifyingTournament().getId().equals(advancementProxy.getQualifyingTournament().getId()) &&
-                    advancement.getAdvancementTournament().getId().equals(advancementProxy.getAdvancementTournament().getId()) &&
-                    advancement.getPlayerPosition() == advancementProxy.getPlayerNumber()) {
-                    
-                    added = false;
-                }
-            }
-            
-            if (added) {
-                TournamentAdvancement advancement = new TournamentAdvancement();
-                
-                int tournamentId = advancementProxy.getAdvancementTournament().getId();
-                Tournament advancementTournament = em.find(Tournament.class, tournamentId);
-                
-                advancement.setAdvancementTournament(advancementTournament);
-                advancement.setQualifyingTournament(entity);
-                advancement.setPlayerPosition(advancementProxy.getPlayerNumber());
-                   
-                addedAdvancements.add(advancement);
-                
-            }
-        
-        }
-        
-        for (TournamentAdvancement advancement : advancementEntities) {
-            
-            boolean removed = true;
-            
-            for (TournamentAdvancementProxy advancementProxy : advancementProxies) {
-                if (advancement.getQualifyingTournament().getId().equals(advancementProxy.getQualifyingTournament().getId()) &&
-                    advancement.getAdvancementTournament().getId().equals(advancementProxy.getAdvancementTournament().getId()) &&
-                    advancement.getPlayerPosition() == advancementProxy.getPlayerNumber()) {
-                    
-                    removed = false;
-                }
-            }
-            
-            if (removed) {   
-                removedAdvancements.add(advancement);
-            }
-        
-        }
-        
-        for (TournamentAdvancement advancement : removedAdvancements) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Removing " + advancement);
-            }
-            advancement.getQualifyingTournament().removeAdvancement(advancement);
-            em.remove(advancement);
-        }
-
-        em.flush();
-
-        for (TournamentAdvancement advancement : addedAdvancements) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding " + advancement);
-            }
-            advancement.getQualifyingTournament().addAdvancement(advancement);
-        }
-
-        em.flush();
+//        List<TournamentAdvancementProxy> advancementProxies = details.getAdvancements();
+//        List<TournamentAdvancement> advancementEntities = entity.getAdvancements();
+//
+//        
+//        logger.fine("advancement entities: " + advancementEntities.size());
+//        logger.fine("advancement proxies: " + advancementProxies);
+//        
+//        List<TournamentAdvancement> addedAdvancements = new ArrayList<TournamentAdvancement>();
+//        List<TournamentAdvancement> removedAdvancements = new ArrayList<TournamentAdvancement>();
+//
+//        for (TournamentAdvancementProxy advancementProxy : advancementProxies) {
+//            
+//            boolean added = true;
+//            
+//            for (TournamentAdvancement advancement : advancementEntities) {
+//                if (advancement.getQualifyingTournament().getId().equals(advancementProxy.getAdvancementTournament().getId()) &&
+//                    advancement.getAdvancementTournament().getId().equals(advancementProxy.getAdvancementTournament().getId()) &&
+//                    advancement.getPlayerPosition() == advancementProxy.getPlayerPosition()) {
+//                    
+//                    logger.fine("Don't add " + advancementProxy);
+//                    
+////                    added = false;
+//                }
+//            }
+//            
+//            if (added) {
+//                TournamentAdvancement advancement = new TournamentAdvancement();
+//                
+//                int tournamentId = advancementProxy.getAdvancementTournament().getId();
+//                Tournament advancementTournament = em.find(Tournament.class, tournamentId);
+//                
+//                advancement.setAdvancementTournament(advancementTournament);
+//                advancement.setQualifyingTournament(entity);
+//                advancement.setPlayerPosition(advancementProxy.getPlayerPosition());
+//                   
+//                addedAdvancements.add(advancement);
+//                
+//            }
+//        
+//        }
+//        
+//        for (TournamentAdvancement advancement : advancementEntities) {
+//            
+//            boolean removed = true;
+//            
+//            for (TournamentAdvancementProxy advancementProxy : advancementProxies) {
+//                if (advancement.getQualifyingTournament().getId().equals(advancementProxy.getAdvancementTournament().getId()) &&
+//                    advancement.getAdvancementTournament().getId().equals(advancementProxy.getAdvancementTournament().getId()) &&
+//                    advancement.getPlayerPosition() == advancementProxy.getPlayerPosition()) {
+//                    
+//                    logger.fine("Don't remove advancement " + advancement);
+////                    removed = false;
+//                }
+//            }
+//            
+//            if (removed) {   
+//                removedAdvancements.add(advancement);
+//            }
+//        
+//        }
+//        
+//        for (TournamentAdvancement advancement : removedAdvancements) {
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Removing " + advancement);
+//            }
+////            advancement.getQualifyingTournament().removeAdvancement(advancement);
+//            entity.removeAdvancement(advancement);
+//            em.remove(advancement);
+//        }
+//
+//        em.flush();
+//
+//        for (TournamentAdvancement advancement : addedAdvancements) {
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding " + advancement);
+//            }
+////            advancement.getQualifyingTournament().addAdvancement(advancement);
+//            entity.addAdvancement(advancement);
+//        }
+//
+//        em.merge(entity);
+//        em.flush();
 
     }
 }

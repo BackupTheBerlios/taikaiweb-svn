@@ -17,13 +17,16 @@
  */
 package net.europa13.taikai.web.server;
 
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import net.europa13.taikai.web.entity.Player;
 import net.europa13.taikai.web.entity.Taikai;
 import net.europa13.taikai.web.entity.Tournament;
+import net.europa13.taikai.web.entity.TournamentAdvancement;
 import net.europa13.taikai.web.entity.TournamentSeed;
 import net.europa13.taikai.web.proxy.PlayerProxy;
 import net.europa13.taikai.web.proxy.TaikaiProxy;
+import net.europa13.taikai.web.proxy.TournamentAdvancementProxy;
 import net.europa13.taikai.web.proxy.TournamentProxy;
 import net.europa13.taikai.web.proxy.TournamentSeedProxy;
 
@@ -32,6 +35,8 @@ import net.europa13.taikai.web.proxy.TournamentSeedProxy;
  * @author Daniel Wentzel
  */
 public class EntityToProxy {
+    
+    private static Logger logger = Logger.getLogger(EntityToProxy.class.getName());
 
     public static void player(Player entity, PlayerProxy proxy, EntityManager em) {
         proxy.setAge(entity.getAge());
@@ -64,15 +69,34 @@ public class EntityToProxy {
         proxy.setTaikai(taikaiProxy);
 
     }
+    
+//    public static void tournamentAdvancement(TournamentAdvancement entity, TournamentAdvancementProxy proxy, EntityManager em) {
+//        proxy.setId(entity.getId());
+//        
+//        TournamentProxy qualifyingTournament = new TournamentProxy();
+//        tournament(entity.getQualifyingTournament(), qualifyingTournament, em);
+//        proxy.setQualifyingTournament(qualifyingTournament);
+//        
+//        TournamentProxy advancementTournament = new TournamentProxy();
+//        tournament(entity.getAdvancementTournament(), advancementTournament, em);
+//        proxy.setAdvancementTournament(advancementTournament);
+//        
+//        logger.fine("Advancement tournament: " + advancementTournament.getId() + ", " + advancementTournament.getName());
+//        
+//        
+//        proxy.setPlayerPosition(entity.getPlayerPosition());
+//    }
 
     public static void tournamentSeed(TournamentSeed entity, TournamentSeedProxy proxy, EntityManager em) {
         proxy.setId(entity.getId());
         PlayerProxy playerProxy = new PlayerProxy();
         player(entity.getPlayer(), playerProxy, em);
         proxy.setPlayer(playerProxy);
+        
         TournamentProxy tournamentProxy = new TournamentProxy();
         tournament(entity.getTournament(), tournamentProxy, em);
         proxy.setTournament(tournamentProxy);
+        
         proxy.setSeedNumber(entity.getSeedNumber());
 
     }

@@ -92,10 +92,6 @@ public class TournamentDetailsContent extends Content implements TournamentDetai
     @Override
     public Content handleState(NavigationPath path) throws ContentHandlerNotFoundException {
 
-
-        
-
-
         // If state is empty a new tournament should be created.
         if (path.isEmpty()) {
             setTournament(null);

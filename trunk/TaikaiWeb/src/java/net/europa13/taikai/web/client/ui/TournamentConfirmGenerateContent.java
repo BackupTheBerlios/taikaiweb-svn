@@ -41,6 +41,8 @@ public class TournamentConfirmGenerateContent extends Content {
     private final TournamentConfirmGeneratePanel panel;
     
     private final Button btnConfirm;
+    
+    private int tournamentId;
 
     public TournamentConfirmGenerateContent() {
         panel = new TournamentConfirmGeneratePanel();
@@ -48,7 +50,7 @@ public class TournamentConfirmGenerateContent extends Content {
         btnConfirm = new Button("Generera", new ClickListener() {
 
             public void onClick(Widget arg0) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                generate();
             }
         });
         addControl(btnConfirm);
@@ -60,6 +62,20 @@ public class TournamentConfirmGenerateContent extends Content {
             }
         });
         addControl(btnCancel);
+    }
+    
+    private void generate() {
+        tournamentService.generate(tournamentId, new AsyncCallback<Void>() {
+
+            public void onFailure(Throwable t) {
+                Logger.debug("Generation failed");
+                Logger.error(t.getLocalizedMessage());
+            }
+
+            public void onSuccess(Void nothing) {
+                Logger.debug("Generation success");
+            }
+        });
     }
 
     @Override
@@ -74,7 +90,7 @@ public class TournamentConfirmGenerateContent extends Content {
         }
 
         try {
-            final int tournamentId = Integer.parseInt(path.getPathItem(0));
+            tournamentId = Integer.parseInt(path.getPathItem(0));
 
             tournamentService.getGenerationInfo(tournamentId, new AsyncCallback<TournamentGenerationInfo>() {
 

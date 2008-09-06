@@ -33,6 +33,8 @@ import net.europa13.taikai.web.proxy.TournamentProxy;
 @RemoteServiceRelativePath(value = "tournamentadminservice")
 public interface TournamentAdminService extends RemoteService {
 
+    public void generate(int tournamentId);
+    
     public List<Integer> getAvailableSeeds(int tournamentId);
     
     public TournamentGenerationInfo getGenerationInfo(int tournamentId);

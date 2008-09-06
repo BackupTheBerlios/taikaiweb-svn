@@ -89,5 +89,9 @@ public class TournamentProxy implements Serializable {
         return hash;
     }
     
+    @Override
+    public String toString() {
+        return "TournamentProxy " + id + ", " + name;
+    }
     
 }

@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
+import net.europa13.taikai.web.client.logging.Logger;
 import net.europa13.taikai.web.proxy.TournamentAdvancementProxy;
 import net.europa13.taikai.web.proxy.TournamentDetails;
 import net.europa13.taikai.web.proxy.TournamentProxy;
@@ -82,10 +83,13 @@ public class TournamentAdvancementTable extends CaptionPanel  {
     public List<TournamentAdvancementProxy> getAdvancements() {
         ArrayList<TournamentAdvancementProxy> advancements = new ArrayList<TournamentAdvancementProxy>();
         
+        
         for (int i = 0; i < selectors.size(); ++i) {
             TournamentAdvancementProxy advancement = 
                 new TournamentAdvancementProxy(tournament, getSelectedTournament(i), i);
-            advancements.add(advancement);
+            if (advancement.getAdvancementTournament() != null) {
+                advancements.add(advancement);
+            }
         }
         
         return advancements;
@@ -101,18 +105,27 @@ public class TournamentAdvancementTable extends CaptionPanel  {
     }
 
     public void setAdvancements(List<? extends TournamentAdvancementProxy> advancements) {
-
+        Logger.debug("entering setAdvancements");
 //        for (int i = 0; i < selectors.size(); ++i) {
 //            selectors.get(i).setSelectedTournament(tournament);
 //        }
         
+        if (advancements == null) {
+            Logger.debug("advancements is null");
+        }
+        
+        
+        
         for (TournamentAdvancementProxy advancement : advancements) {
-            int position = advancement.getPlayerNumber();
+            int position = advancement.getPlayerPosition();
             
+            Logger.debug("setting up selector at position " + position + " with tournament " + advancement.getAdvancementTournament());
             selectors.get(position).setSelectedTournament(advancement.getAdvancementTournament());
         }
 
+        Logger.debug("exiting setAdvancements");
     }
+    
     
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -130,7 +143,9 @@ public class TournamentAdvancementTable extends CaptionPanel  {
 
     public void setTournament(TournamentDetails tournament) {
         this.tournament = tournament;
-        
+        if (tournament == null) {
+            return;
+        }
         setAdvancements(tournament.getAdvancements());
     }
      
@@ -138,9 +153,6 @@ public class TournamentAdvancementTable extends CaptionPanel  {
         for (int i = 0; i < selectors.size(); ++i) {
             selectors.get(i).setTournaments(tournaments);
         }
-        
-        
-
     }
 
     private void updateControls() {
